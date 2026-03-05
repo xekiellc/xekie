@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>XEKIE • Trade Different</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<section class="hero">
+  <img src="xekie_logo.png" alt="XEKIE logo" style="width:120px;margin-bottom:20px;">
+  <h1>XEKIE</h1>
+  <h2>Trade Different</h2>
+  <p><strong>Stop browsing. Start XEKIE‑ing.</strong></p>
+  <p>Name your price. Let sellers compete.</p>
+  <a href="request.html" class="xekie-btn">XEKIE IT</a>
+  <p class="definition">A <strong>XEKIE</strong> is a post where you tell sellers what you want and how much you'll pay.</p>
+</section>
+
+<header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:30px">
+<div style="display:flex;align-items:center;gap:12px">
+<img src="xekie_logo.png" style="height:60px">
+</div>
+
+<nav style="display:flex;gap:20px;font-size:16px">
+<a href="/" style="color:white">Home</a>
+<a href="#offers" style="color:white">Market</a>
+<a href="prohibited-items.html" style="color:white">Prohibited Items</a>
+<a href="#contact" style="color:white">Contact</a>
+<a href="#profile" style="color:white">Profile</a>
+</nav>
+</header>
+
+  
+  <div id="globalDemandStrip" class="demandStrip" aria-label="Live demand strip">
+    <div class="demandStripInner">
+      <div class="demandStripLeft">
+        <span class="liveDot" aria-hidden="true"></span>
+        <span class="demandStripLabel">LIVE DEMAND</span><span id="livePulseText" style="opacity:.85;font-weight:700;margin-left:6px">—</span>
+      </div>
+      <div class="demandStripMarquee" role="marquee" aria-label="Live demand ticker">
+        <div id="globalDemandTrack" class="demandStripTrack"></div>
+      </div>
+      <a class="demandStripCTA" href="index.html#quick-request">Post</a>
+    </div>
+  </div>
+<div class="nav">
+    <div class="brandWrap"><img class="brandLogo" src="assets/logo.png" alt="XEKIE logo"/><div class="brandText">XEKIE</div></div>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="radar.html">Demand Radar</a>
+      <a href="messages.html">Messages</a>
+      <a href="profile.html">Profile</a>
+      <!-- Investors tab removed for now -->
+      <a href="login.html">Join</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+        <img src="assets/logo.png" alt="XEKIE logo" style="width:54px;height:54px;border-radius:18px;border:1px solid rgba(229,231,235,.9);object-fit:cover"/>
+        <div>
+          <div class="smallCaps">Live demand signals</div>
+          <div style="font-weight:950;font-size:16px;letter-spacing:.12em;opacity:.82">XEKIE</div>
+        </div>
+      </div>
+      <h1>XEKIE</h1>
+      <div class="tagline">Trade Different.</div>
+      <div class="sub">
+        Stop browsing. Name your price range. Let sellers compete for your business.
+      </div>
+      
+      <div class="card" style="margin-top:14px">
+        <div class="cardPad">
+          <div class="smallCaps">Quick Request</div>
+          <div class="sub" style="margin-top:8px">Post a demand signal in ~5 seconds. Add details later.</div>
+          <div class="formRow" style="margin-top:10px">
+            <div>
+              <label>What do you want?</label>
+              <input id="q_title" placeholder="e.g., MacBook Pro M3 14-inch"/>
+            </div>
+            <div>
+              <label>What will you pay? (max)</label>
+              <input id="q_max" type="number" placeholder="e.g., 1600"/>
+            </div>
+          </div>
+          <div class="ctaRow" style="margin-top:12px">
+            <button class="btn primary" id="btn_quick_post">Post Demand</button>
+            <button class="btn" id="btn_post">Post What You Want</button>
+            <a class="btn" href="radar.html">View Demand Radar</a>
+          </div>
+          <div class="mini">Quick Request creates a public page + share link. Sellers join to respond.</div>
+        <div class="card" id="previewCard" style="margin-top:12px">
+          <div class="cardPad">
+            <div class="smallCaps">Preview your demand signal</div>
+            <div style="font-weight:900;font-size:18px;margin-top:6px" id="pvTitle">What do you want?</div>
+            <div class="sub" style="margin-top:6px" id="pvPrice">What will you pay?</div>
+            <div class="meta" style="margin-top:10px">
+              <span class="badge">⏳ 48h window</span>
+              <span class="badge">⚡ X SIGNAL (when sellers respond)</span>
+              <span class="badge">📣 Share card auto-generated</span>
+            </div>
+          </div>
+        </div>
+
+        </div>
+      </div>
+    
+      <div class="mini">Prototype note: requests and “views” are stored in your browser (localStorage). When you add a real backend, these counters become real across users.</div>
+    </div>
+
+    <!-- Demand Pulse Ticker -->
+    <div class="tickerWrap" aria-label="Live Demand Pulse">
+      <div class="tickerLabel">LIVE DEMAND PULSE</div>
+      <div class="tickerViewport">
+        <div class="tickerTrack" id="tickerTrack"></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="cardPad" style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px">
+          <div>
+            <div class="smallCaps">Live Requests</div>
+            <h3 style="margin:6px 0 0">What buyers want right now</h3>
+            <div class="sub" style="margin-top:8px">Public demand posts with a 48–72 hour offer window.</div>
+          </div>
+          <div class="pill badge">👀 Views + 💬 Offers visible</div>
+        </div>
+        <div class="list" id="request_list"></div>
+      </div>
+
+      <div class="card">
+        <div class="cardPad">
+          <div class="smallCaps">How it works</div>
+          <h3 style="margin:6px 0 0">Inverted marketplace</h3>
+          <hr class="sep"/>
+          <div class="sub" style="margin:0">
+            <b>1)</b> Buyer posts what they want + price range<br/>
+            <b>2)</b> Sellers submit competing offers (best value wins)<br/>
+            <b>3)</b> Buyer selects an offer, then messaging unlocks<br/>
+            <b>4)</b> Requests expire to keep the marketplace fresh
+          </div>
+          <hr class="sep"/>
+          <div class="notice">
+            Simple growth mechanic: <b>Demand broadcasting</b> — every request is shareable, so buyers recruit sellers.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">XEKIE • Trade Different.</div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modalBackdrop" id="modal_backdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Post request">
+      <div class="modalHead">
+        <div style="font-weight:950">Post What You Want</div>
+        <div class="closeX" id="modal_close">✕</div>
+      </div>
+      <div class="modalBody">
+        <div class="formRow">
+          <div>
+            <label>Category</label>
+            <select id="f_category">
+              <option>Electronics</option>
+              <option>Local Services</option>
+              <option>Vehicles</option>
+              <option>Tools & Equipment</option>
+              <option>Trading Cards & Collectibles</option>
+              <option>Home & Furniture</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label>Location</label>
+            <input id="f_location" placeholder="e.g., Akron, OH (or Nationwide shipping ok)"/>
+          </div>
+        </div>
+
+        <label>What do you want?</label>
+        <input id="f_title" placeholder="e.g., MacBook Pro M3 14-inch (16GB/512GB)"/>
+
+        <div class="formRow">
+          <div>
+            <label>Price range (min)</label>
+            <input id="f_min" type="number" placeholder="e.g., 1400"/>
+          </div>
+          <div>
+            <label>Price range (max)</label>
+            <input id="f_max" type="number" placeholder="e.g., 1600"/>
+          </div>
+        </div>
+
+        <label>Details (condition, size, constraints)</label>
+        <textarea id="f_details" placeholder="Add the details sellers need to win your business…"></textarea>
+
+        <div class="formRow">
+          <div>
+            <label>Offer window</label>
+            <select id="f_expires">
+              <option value="24">24 hours</option>
+              <option value="48" selected>48 hours (recommended)</option>
+              <option value="72">72 hours</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn primary" style="width:100%" id="btn_submit_request">Publish Request</button>
+          </div>
+        </div>
+
+        <div class="notice" style="margin-top:12px">
+          In a launch-ready build, you’ll add login + seller accounts + payments/escrow. For now, this creates public demand pages you can share.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+    <div class="sectionTitle">Market Heat</div>
+    <div class="sub">Where demand is building right now — even with a small community.</div>
+    <div id="heatGrid" class="heatGrid"></div>
+
+    <div class="sectionTitle" style="margin-top:22px">Market Activity</div>
+    <div class="sub">Live signals that make XEKIE feel like a real exchange.</div>
+    <div class="card" style="margin-top:10px">
+      <div class="cardPad">
+        <div id="activityFeed"></div>
+      </div>
+    </div>
+
+    <!-- Investor section removed for now -->
+
+  <script src="script.js"></script>
+<p style="text-align:center;margin-top:40px"><a href="prohibited-items.html">Prohibited Items Policy</a></p>
+
+<div class="xekie-ticker">⚡ MacBook Pro M3 $1600 ⚡ Pokémon Booster Box $220 ⚡ Tacoma 4x4 $18k</div>
+
+<div id="welcomeToast" class="toast">🥂 Welcome to XEKIE — Trade Different</div>
+
+<h2>Post Demand</h2>
+<form id="demandForm">
+<input id="item" placeholder="What do you want?" required>
+<input id="price" placeholder="What will you pay?" required>
+<input type="file" id="imgUpload" accept="image/*">
+<img id="preview" style="max-width:200px;display:none">
+<button type="submit">Broadcast Demand</button>
+</form>
+
+<h2>Seller Offers</h2>
+<div id="offers"></div>
+
+<form id="offerForm">
+<input id="seller" placeholder="Seller name">
+<input id="offerprice" placeholder="Offer price">
+<button>Submit Offer</button>
+</form>
+
+<h2>Messages</h2>
+<textarea id="msg"></textarea>
+<button onclick="sendMsg()">Send</button>
+<div id="chat"></div>
+
+<audio id="fireworks" src="fireworks.mp3"></audio>
+
+<style>
+body{background:#0b0b0b;color:white;font-family:Arial;padding:40px}
+.xekie-ticker{background:#111;color:#0ff;padding:10px;margin-bottom:20px}
+.toast{display:none;position:fixed;bottom:20px;right:20px;background:#000;padding:15px;border-radius:8px}
+.card{background:#111;padding:15px;border-radius:8px;margin-top:10px}
+.timer{color:orange}
+</style>
+
+<script>
+
+function showWelcome(){
+ if(!localStorage.getItem("xekiewelcome")){
+  document.getElementById("welcomeToast").style.display="block"
+  setTimeout(()=>document.getElementById("welcomeToast").style.display="none",4000)
+  localStorage.setItem("xekiewelcome","true")
+ }
+}
+
+document.getElementById("imgUpload")?.addEventListener("change",function(e){
+ const f=e.target.files[0]
+ const r=new FileReader()
+ r.onload=function(ev){
+  const p=document.getElementById("preview")
+  p.src=ev.target.result
+  p.style.display="block"
+ }
+ if(f) r.readAsDataURL(f)
+})
+
+document.getElementById("demandForm")?.addEventListener("submit",function(e){
+ e.preventDefault()
+ launchFireworks()
+})
+
+document.getElementById("offerForm")?.addEventListener("submit",function(e){
+ e.preventDefault()
+ const seller=document.getElementById("seller").value
+ const price=document.getElementById("offerprice").value
+ const card=document.createElement("div")
+ card.className="card"
+ const timer=document.createElement("div")
+ timer.className="timer"
+ timer.textContent="Offer expires in 30s"
+ card.innerHTML=`Offer from ${seller}: $${price}<br>
+<button onclick="accept(this)">Accept</button>
+<button onclick="reject(this)">Reject</button>`
+ card.appendChild(timer)
+ document.getElementById("offers").appendChild(card)
+
+ let t=30
+ const interval=setInterval(()=>{
+  t--
+  timer.textContent="Offer expires in "+t+"s"
+  if(t<=0){
+   clearInterval(interval)
+   card.remove()
+  }
+ },1000)
+})
+
+function accept(btn){
+ launchConfetti()
+ alert("🎉 Deal completed")
+}
+
+function reject(btn){
+ btn.parentElement.remove()
+}
+
+function sendMsg(){
+ const m=document.getElementById("msg").value
+ const div=document.createElement("div")
+ div.textContent=m
+ document.getElementById("chat").appendChild(div)
+}
+
+function launchFireworks(){
+ document.getElementById("fireworks")?.play()
+ alert("🎆 Demand broadcast!")
+}
+
+function launchConfetti(){
+ if(window.confetti){
+  confetti({particleCount:120,spread:70})
+ }
+}
+
+window.onload=showWelcome
+
+// swipe gestures
+let startX=0
+document.addEventListener("touchstart",e=>startX=e.changedTouches[0].screenX)
+document.addEventListener("touchend",e=>{
+ let diff=e.changedTouches[0].screenX-startX
+ if(Math.abs(diff)>100){
+  if(diff>0) alert("Swipe Right = Accept")
+  else alert("Swipe Left = Reject")
+ }
+})
+
+</script>
+
+<section id="contact" style="margin-top:60px">
+<h2>Contact XEKIE</h2>
+<p>Email: support@xekie.com</p>
+<p>Marketplace support and partnership inquiries.</p>
+</section>
+
+<footer class="xekie-footer">
+  <div class="footer-inner">
+    <strong>XEKIE — Trade Different</strong><br/>
+    <a href="index.html">Home</a> |
+    <a href="radar.html">Market Pulse</a> |
+    <a href="request.html">XEKIE IT</a> |
+    <a href="prohibited-items.html">Prohibited Items</a> |
+    <a href="#">Terms of Service</a> |
+    <a href="#">Privacy Policy</a> |
+    <a href="#">Seller Guidelines</a> |
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+</body>
+</html>

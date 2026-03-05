@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>XEKIE • Demand Radar</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  
+  <div id="globalDemandStrip" class="demandStrip" aria-label="Live demand strip">
+    <div class="demandStripInner">
+      <div class="demandStripLeft">
+        <span class="liveDot" aria-hidden="true"></span>
+        <span class="demandStripLabel">LIVE DEMAND</span><span id="livePulseText" style="opacity:.85;font-weight:700;margin-left:6px">—</span>
+      </div>
+      <div class="demandStripMarquee" role="marquee" aria-label="Live demand ticker">
+        <div id="globalDemandTrack" class="demandStripTrack"></div>
+      </div>
+      <a class="demandStripCTA" href="index.html#quick-request">Post</a>
+    </div>
+  </div>
+<div class="nav">
+    <div class="brandWrap"><img class="brandLogo" src="assets/logo.png" alt="XEKIE logo"/><div class="brandText">XEKIE</div></div>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="radar.html">Demand Radar</a>
+      <a href="messages.html">Messages</a>
+      <a href="profile.html">Profile</a>
+      <!-- Investors tab removed for now -->
+      <a href="login.html">Join</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h1>XEKIE</h1>
+      <div class="tagline">Demand Radar</div>
+      <div class="sub">A simple “what’s trending” view powered by requests + views + offers (prototype).</div>
+    </div>
+
+    <div id="radar"></div>
+
+    <div class="footer">XEKIE • Trade Different.</div>
+  </div>
+
+  <script src="script.js"></script>
+
+<footer class="xekie-footer">
+  <div class="footer-inner">
+    <strong>XEKIE — Trade Different</strong><br/>
+    <a href="index.html">Home</a> |
+    <a href="radar.html">Market Pulse</a> |
+    <a href="request.html">XEKIE IT</a> |
+    <a href="prohibited-items.html">Prohibited Items</a> |
+    <a href="#">Terms of Service</a> |
+    <a href="#">Privacy Policy</a> |
+    <a href="#">Seller Guidelines</a> |
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+</body>
+</html>
