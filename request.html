@@ -4,9 +4,29 @@
 <head>
 
 <title>Post a XEKIE</title>
+
 <link rel="stylesheet" href="styles.css">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+
+.fireworks{
+font-size:40px;
+text-align:center;
+margin-top:20px;
+}
+
+.badge{
+background:#ffd700;
+color:black;
+padding:4px 8px;
+border-radius:12px;
+font-size:12px;
+margin-left:8px;
+}
+
+</style>
 
 </head>
 
@@ -15,15 +35,15 @@
 <header class="navbar">
 <div class="nav-inner">
 
-<a href="index.html" class="nav-logo">XEKIE</a>
+<a href="index.html" class="nav-logo">
+XEKIE <span class="badge">EARLY ADOPTER</span>
+</a>
 
 <div class="nav-links">
 <a href="radar.html">Radar</a>
-<a href="request.html">Post a XEKIE</a>
+<a href="request.html">Post</a>
+<a href="dashboard.html">My XEKIE</a>
 <a href="prohibited-items.html">Prohibited</a>
-<a href="terms.html">Terms</a>
-<a href="privacy.html">Privacy</a>
-<a href="guidelines.html">Guidelines</a>
 </div>
 
 </div>
@@ -36,37 +56,35 @@
 
 <form id="xekie-form">
 
-<input id="item" type="text" placeholder="What are you looking for?" required>
+<input type="text" placeholder="What are you looking for?" required>
 
-<input id="budget" type="text" placeholder="Budget">
+<input type="text" placeholder="Budget">
 
-<input id="location" type="text" placeholder="Location">
+<input type="text" placeholder="Location">
 
 <button type="submit">Broadcast XEKIE</button>
 
 </form>
 
-</section>
-
-
-<section id="share-section" style="display:none">
-
-<h2>Share your XEKIE</h2>
-
-<button onclick="shareTwitter()">Share on Twitter</button>
-<button onclick="shareLinkedIn()">Share on LinkedIn</button>
-<button onclick="copyLink()">Copy Link</button>
+<div id="celebration" class="fireworks"></div>
 
 </section>
 
 
 <footer class="xekie-footer">
+
 <div class="footer-inner">
 
 <strong>XEKIE — Trade Different</strong>
 
 </div>
+
 </footer>
+
+
+<audio id="toast">
+<source src="https://assets.mixkit.co/sfx/preview/mixkit-glass-toast-2159.mp3">
+</audio>
 
 
 <script>
@@ -84,44 +102,17 @@ particleCount:200,
 spread:70
 });
 
-document.getElementById("share-section").style.display="block";
+/* fireworks emoji */
+
+document.getElementById("celebration").innerHTML = "🎆 🎆 🎆";
+
+/* clinking glasses sound */
+
+document.getElementById("toast").play();
+
+alert("🚀 Your XEKIE has been broadcast!");
 
 });
-
-
-function shareTwitter(){
-
-const item = document.getElementById("item").value;
-
-const url =
-"https://twitter.com/intent/tweet?text=🚨 XEKIE REQUEST: Looking for "
-+ item +
-" — respond on XEKIE.com";
-
-window.open(url);
-
-}
-
-
-function shareLinkedIn(){
-
-const item = document.getElementById("item").value;
-
-const url =
-"https://www.linkedin.com/sharing/share-offsite/?url=https://xekie.com";
-
-window.open(url);
-
-}
-
-
-function copyLink(){
-
-navigator.clipboard.writeText("https://xekie.com");
-
-alert("Link copied!");
-
-}
 
 </script>
 
