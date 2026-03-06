@@ -8,6 +8,34 @@
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
+<style>
+
+/* swipe card styling */
+
+.swipe-card{
+
+width:320px;
+padding:25px;
+background:white;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.15);
+margin:auto;
+text-align:center;
+position:relative;
+touch-action:none;
+
+}
+
+.swipe-hint{
+
+margin-top:10px;
+font-size:12px;
+color:#777;
+
+}
+
+</style>
+
 </head>
 
 <body>
@@ -32,26 +60,12 @@
 
 <h1>My XEKIE Dashboard</h1>
 
-<h2>My XEKIEs</h2>
-
-<div class="xekie-card">
-<strong>iPhone 15 Pro</strong><br>
-Budget: $900<br>
-📍 Akron
-</div>
-
-<div class="xekie-card">
-<strong>Bedroom Painting</strong><br>
-Budget: $600<br>
-📍 Cuyahoga Falls
-</div>
+<h2>Swipe Offers</h2>
 
 
-<h2>Offers Received</h2>
+<div id="card" class="swipe-card">
 
-<div class="offer-card">
-
-<strong>Offer: iPhone 15 Pro</strong>
+<h3>Offer: iPhone 15 Pro</h3>
 
 <p>Seller Price: $850</p>
 
@@ -59,33 +73,15 @@ Budget: $600<br>
 
 <p>Location: Cleveland</p>
 
-<button onclick="rejectOffer()">Reject</button>
-
-<button onclick="acceptOffer()">Accept</button>
+<div class="swipe-hint">
+⬅ Swipe Left = Reject | Swipe Right = Accept ➡
+</div>
 
 </div>
 
-
-<h2>Saved XEKIEs</h2>
-
-<div class="xekie-card">
-Toyota Tacoma — Budget $18,000 — Columbus
-</div>
-
-
-<h2>Followed Categories</h2>
-
-<ul>
-
-<li>Electronics</li>
-<li>Vehicles</li>
-<li>Tools</li>
-<li>Services</li>
-<li>Trading Cards</li>
-
-</ul>
 
 </section>
+
 
 
 <footer class="xekie-footer">
@@ -102,6 +98,48 @@ Toyota Tacoma — Budget $18,000 — Columbus
 
 <script>
 
+const card = document.getElementById("card");
+
+let startX = 0;
+let currentX = 0;
+
+card.addEventListener("touchstart", function(e){
+
+startX = e.touches[0].clientX;
+
+});
+
+card.addEventListener("touchmove", function(e){
+
+currentX = e.touches[0].clientX;
+
+let move = currentX - startX;
+
+card.style.transform = "translateX(" + move + "px)";
+
+});
+
+card.addEventListener("touchend", function(){
+
+let move = currentX - startX;
+
+if(move > 120){
+
+acceptOffer();
+
+}
+
+else if(move < -120){
+
+rejectOffer();
+
+}
+
+card.style.transform = "translateX(0px)";
+
+});
+
+
 function acceptOffer(){
 
 confetti({
@@ -109,19 +147,18 @@ particleCount:200,
 spread:70
 });
 
-alert("🎉 Offer accepted!");
+alert("🎉 Offer Accepted!");
 
 }
 
 
 function rejectOffer(){
 
-alert("Offer rejected");
+alert("Offer Rejected");
 
 }
 
 </script>
-
 
 </body>
 </html>
