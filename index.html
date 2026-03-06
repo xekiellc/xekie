@@ -41,28 +41,29 @@ gtag('config', 'G-DPXVZVMJXX');
 <section class="hero">
 
 <h1>Need something?</h1>
-<h2>Post a XEKIE.</h2>
+<h2>Just XEKIE it.</h2>
 
 <a href="request.html" class="primary-btn">Post a XEKIE</a>
 
 </section>
 
 
+
+<section class="pulse">
+
+<h2>Live Demand Pulse</h2>
+
+<div id="pulse-feed"></div>
+
+</section>
+
+
+
 <section class="recent">
 
 <h2>Recent XEKIEs</h2>
 
-<div class="xekie-card">
-📱 <strong>iPhone 14 Pro</strong><br>
-Budget: $450<br>
-📍 Cleveland
-</div>
-
-<div class="xekie-card">
-🎨 <strong>Bedroom Painting</strong><br>
-Budget: $600<br>
-📍 Akron
-</div>
+<div id="xekie-feed"></div>
 
 </section>
 
@@ -85,6 +86,97 @@ Budget: $600<br>
 
 </footer>
 
+
+
+<script>
+
+/* ---------------- DEMAND PULSE ---------------- */
+
+const pulse = [
+
+"🔥 Someone just XEKIE'd an iPhone 15 Pro — Akron",
+"🔥 Bedroom painting requested — Cleveland",
+"🔥 Looking for Toyota Tacoma — Columbus",
+"🔥 Vintage Apple poster requested — Cincinnati"
+
+];
+
+function loadPulse(){
+
+const feed = document.getElementById("pulse-feed");
+
+pulse.forEach(p => {
+
+const item = document.createElement("div");
+item.className = "pulse-item";
+
+item.innerHTML = p;
+
+feed.appendChild(item);
+
+});
+
+}
+
+loadPulse();
+
+
+
+/* ---------------- RECENT XEKIES ---------------- */
+
+const xekies = [
+
+{
+title:"iPhone 15 Pro",
+budget:"$900",
+location:"Akron"
+},
+
+{
+title:"Toyota Tacoma",
+budget:"$18,000",
+location:"Cleveland"
+},
+
+{
+title:"Bedroom Painting",
+budget:"$600",
+location:"Cuyahoga Falls"
+},
+
+{
+title:"Vintage Apple Poster",
+budget:"$300",
+location:"Columbus"
+}
+
+];
+
+
+function loadXekies(){
+
+const feed = document.getElementById("xekie-feed");
+
+xekies.forEach(x => {
+
+const card = document.createElement("div");
+card.className = "xekie-card";
+
+card.innerHTML = `
+<strong>${x.title}</strong><br>
+Budget: ${x.budget}<br>
+📍 ${x.location}
+`;
+
+feed.appendChild(card);
+
+});
+
+}
+
+loadXekies();
+
+</script>
 
 </body>
 </html>
