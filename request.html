@@ -1,61 +1,114 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
+
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>XEKIE • Request</title>
-  <link rel="stylesheet" href="styles.css"/>
+
+<title>Post a XEKIE</title>
+
+<link rel="stylesheet" href="styles.css">
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 </head>
+
 <body>
-  <div class="container">
-  <div id="globalDemandStrip" class="demandStrip" aria-label="Live demand strip">
-    <div class="demandStripInner">
-      <div class="demandStripLeft">
-        <span class="liveDot" aria-hidden="true"></span>
-        <span class="demandStripLabel">LIVE DEMAND</span><span id="livePulseText" style="opacity:.85;font-weight:700;margin-left:6px">—</span>
-      </div>
-      <div class="demandStripMarquee" role="marquee" aria-label="Live demand ticker">
-        <div id="globalDemandTrack" class="demandStripTrack"></div>
-      </div>
-      <a class="demandStripCTA" href="index.html#quick-request">Post</a>
-    </div>
-  </div>
-<div class="nav">
-    <div class="brandWrap"><img class="brandLogo" src="xeke_logo.png" alt="XEKIE logo"/><div class="brandText">XEKIE</div></div>
-    <div class="navlinks">
-      <a href="index.html">Home</a>
-      <a href="radar.html">Demand Radar</a>
-      <a href="messages.html">Messages</a>
-      <a href="profile.html">Profile</a>
-      <!-- Investors tab removed for now -->
-      <a href="login.html">Join</a>
-    </div>
-  </div>
 
-  <div class="container">
-    <div class="hero">
-      <h1>XEKIE</h1>
-      <div class="tagline">Trade Different.</div>
-      <div class="sub">Public demand post (shareable). Sellers join to submit offers.</div>
-    </div>
+<header class="navbar">
+<div class="nav-inner">
 
-    <div id="request_detail"></div>
+<a href="index.html" class="nav-logo">XEKIE</a>
 
-  <script src="script.js"></script>
+<div class="nav-links">
+<a href="radar.html">Radar</a>
+<a href="request.html">Post a XEKIE</a>
+<a href="prohibited-items.html">Prohibited</a>
+<a href="terms.html">Terms</a>
+<a href="privacy.html">Privacy</a>
+<a href="guidelines.html">Guidelines</a>
 </div>
-  <footer class="xekie-footer">
-  <div class="footer-inner">
-    <strong>XEKIE — Trade Different</strong><br/>
-    <a href="index.html">Home</a> |
-    <a href="radar.html">XEKIE Radar</a> |
-    <a href="request.html">Post a XEKIE</a> |
-    <a href="prohibited-items.html">Prohibited Items</a> |
-    <a href="#">Terms of Service</a> |
-    <a href="#">Privacy Policy</a> |
-    <a href="#">Seller Guidelines</a> |
-    <a href="#">Contact</a>
-  </div>
+
+</div>
+</header>
+
+
+
+<section class="container">
+
+<h1>Post a XEKIE</h1>
+
+<form id="xekie-form">
+
+<input type="text" placeholder="What are you looking for?" required>
+
+<input type="text" placeholder="Budget">
+
+<input type="text" placeholder="Location">
+
+<button type="submit">Broadcast XEKIE</button>
+
+</form>
+
+</section>
+
+
+
+<footer class="xekie-footer">
+<div class="footer-inner">
+
+<strong>XEKIE — Trade Different</strong><br><br>
+
+<a href="index.html">Home</a> |
+<a href="radar.html">Radar</a> |
+<a href="request.html">Post</a> |
+<a href="prohibited-items.html">Prohibited</a> |
+<a href="terms.html">Terms</a> |
+<a href="privacy.html">Privacy</a> |
+<a href="guidelines.html">Guidelines</a>
+
+</div>
 </footer>
+
+
+
+<audio id="celebration-sound">
+<source src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3">
+</audio>
+
+
+
+<script>
+
+const form = document.getElementById("xekie-form");
+
+form.addEventListener("submit", function(e){
+
+e.preventDefault();
+
+/* CONFETTI */
+
+confetti({
+particleCount:200,
+spread:70,
+origin:{y:0.6}
+});
+
+/* FIREWORKS EFFECT */
+
+confetti({
+particleCount:100,
+spread:120,
+origin:{y:0.3}
+});
+
+/* SOUND */
+
+document.getElementById("celebration-sound").play();
+
+alert("🎉 Your XEKIE has been broadcast!");
+
+});
+
+</script>
 
 </body>
 </html>
