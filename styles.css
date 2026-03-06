@@ -174,3 +174,61 @@ body{
   font-size:42px;
   font-weight:700;
 }
+
+
+/* ============================= */
+/* XEKIE LISTING CARDS */
+/* ============================= */
+
+.xekie-card{
+  background:#12263d;
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 6px 14px rgba(0,0,0,0.35);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+
+.xekie-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 20px rgba(0,0,0,0.45);
+}
+
+.xekie-title{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.xekie-meta{
+  font-size:14px;
+  opacity:.8;
+  margin-bottom:10px;
+}
+
+.xekie-price{
+  font-size:18px;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+.xekie-stats{
+  font-size:13px;
+  opacity:.7;
+  margin-top:10px;
+}
+
+.xekie-button{
+  display:inline-block;
+  margin-top:12px;
+  padding:10px 16px;
+  border-radius:6px;
+  background:#2a7fff;
+  color:white;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.xekie-button:hover{
+  background:#1d66d1;
+}
