@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>My XEKIE Dashboard</title>
+<link rel="stylesheet" href="styles.css">
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+</head>
+
+<body>
+
+<header class="navbar">
+<div class="nav-inner">
+
+<a href="index.html" class="nav-logo">XEKIE</a>
+
+<div class="nav-links">
+<a href="radar.html">Radar</a>
+<a href="request.html">Post</a>
+<a href="dashboard.html">My XEKIE</a>
+<a href="prohibited-items.html">Prohibited</a>
+</div>
+
+</div>
+</header>
+
+
+<section class="container">
+
+<h1>My XEKIE Dashboard</h1>
+
+<h2>My XEKIEs</h2>
+
+<div class="xekie-card">
+<strong>iPhone 15 Pro</strong><br>
+Budget: $900<br>
+📍 Akron
+</div>
+
+<div class="xekie-card">
+<strong>Bedroom Painting</strong><br>
+Budget: $600<br>
+📍 Cuyahoga Falls
+</div>
+
+
+<h2>Offers Received</h2>
+
+<div class="offer-card">
+
+<strong>Offer: iPhone 15 Pro</strong>
+
+<p>Seller Price: $850</p>
+
+<p>Seller Rating ⭐⭐⭐⭐</p>
+
+<p>Location: Cleveland</p>
+
+<button onclick="rejectOffer()">Reject</button>
+
+<button onclick="acceptOffer()">Accept</button>
+
+</div>
+
+
+<h2>Saved XEKIEs</h2>
+
+<div class="xekie-card">
+Toyota Tacoma — Budget $18,000 — Columbus
+</div>
+
+
+<h2>Followed Categories</h2>
+
+<ul>
+
+<li>Electronics</li>
+<li>Vehicles</li>
+<li>Tools</li>
+<li>Services</li>
+<li>Trading Cards</li>
+
+</ul>
+
+</section>
+
+
+<footer class="xekie-footer">
+
+<div class="footer-inner">
+
+<strong>XEKIE — Trade Different</strong>
+
+</div>
+
+</footer>
+
+
+
+<script>
+
+function acceptOffer(){
+
+confetti({
+particleCount:200,
+spread:70
+});
+
+alert("🎉 Offer accepted!");
+
+}
+
+
+function rejectOffer(){
+
+alert("Offer rejected");
+
+}
+
+</script>
+
+
+</body>
+</html>
