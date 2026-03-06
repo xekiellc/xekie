@@ -4,7 +4,6 @@
 <head>
 
 <title>Post a XEKIE</title>
-
 <link rel="stylesheet" href="styles.css">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -31,18 +30,17 @@
 </header>
 
 
-
 <section class="container">
 
 <h1>Post a XEKIE</h1>
 
 <form id="xekie-form">
 
-<input type="text" placeholder="What are you looking for?" required>
+<input id="item" type="text" placeholder="What are you looking for?" required>
 
-<input type="text" placeholder="Budget">
+<input id="budget" type="text" placeholder="Budget">
 
-<input type="text" placeholder="Location">
+<input id="location" type="text" placeholder="Location">
 
 <button type="submit">Broadcast XEKIE</button>
 
@@ -51,29 +49,24 @@
 </section>
 
 
+<section id="share-section" style="display:none">
+
+<h2>Share your XEKIE</h2>
+
+<button onclick="shareTwitter()">Share on Twitter</button>
+<button onclick="shareLinkedIn()">Share on LinkedIn</button>
+<button onclick="copyLink()">Copy Link</button>
+
+</section>
+
 
 <footer class="xekie-footer">
 <div class="footer-inner">
 
-<strong>XEKIE — Trade Different</strong><br><br>
-
-<a href="index.html">Home</a> |
-<a href="radar.html">Radar</a> |
-<a href="request.html">Post</a> |
-<a href="prohibited-items.html">Prohibited</a> |
-<a href="terms.html">Terms</a> |
-<a href="privacy.html">Privacy</a> |
-<a href="guidelines.html">Guidelines</a>
+<strong>XEKIE — Trade Different</strong>
 
 </div>
 </footer>
-
-
-
-<audio id="celebration-sound">
-<source src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3">
-</audio>
-
 
 
 <script>
@@ -84,29 +77,51 @@ form.addEventListener("submit", function(e){
 
 e.preventDefault();
 
-/* CONFETTI */
+/* confetti */
 
 confetti({
 particleCount:200,
-spread:70,
-origin:{y:0.6}
+spread:70
 });
 
-/* FIREWORKS EFFECT */
-
-confetti({
-particleCount:100,
-spread:120,
-origin:{y:0.3}
-});
-
-/* SOUND */
-
-document.getElementById("celebration-sound").play();
-
-alert("🎉 Your XEKIE has been broadcast!");
+document.getElementById("share-section").style.display="block";
 
 });
+
+
+function shareTwitter(){
+
+const item = document.getElementById("item").value;
+
+const url =
+"https://twitter.com/intent/tweet?text=🚨 XEKIE REQUEST: Looking for "
++ item +
+" — respond on XEKIE.com";
+
+window.open(url);
+
+}
+
+
+function shareLinkedIn(){
+
+const item = document.getElementById("item").value;
+
+const url =
+"https://www.linkedin.com/sharing/share-offsite/?url=https://xekie.com";
+
+window.open(url);
+
+}
+
+
+function copyLink(){
+
+navigator.clipboard.writeText("https://xekie.com");
+
+alert("Link copied!");
+
+}
 
 </script>
 
