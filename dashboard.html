@@ -6,36 +6,6 @@
 <title>My XEKIE Dashboard</title>
 <link rel="stylesheet" href="styles.css">
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-<style>
-
-/* swipe card styling */
-
-.swipe-card{
-
-width:320px;
-padding:25px;
-background:white;
-border-radius:12px;
-box-shadow:0 6px 20px rgba(0,0,0,0.15);
-margin:auto;
-text-align:center;
-position:relative;
-touch-action:none;
-
-}
-
-.swipe-hint{
-
-margin-top:10px;
-font-size:12px;
-color:#777;
-
-}
-
-</style>
-
 </head>
 
 <body>
@@ -60,28 +30,11 @@ color:#777;
 
 <h1>My XEKIE Dashboard</h1>
 
-<h2>Swipe Offers</h2>
+<h2>Saved XEKIEs</h2>
 
-
-<div id="card" class="swipe-card">
-
-<h3>Offer: iPhone 15 Pro</h3>
-
-<p>Seller Price: $850</p>
-
-<p>Seller Rating ⭐⭐⭐⭐</p>
-
-<p>Location: Cleveland</p>
-
-<div class="swipe-hint">
-⬅ Swipe Left = Reject | Swipe Right = Accept ➡
-</div>
-
-</div>
-
+<div id="saved-feed"></div>
 
 </section>
-
 
 
 <footer class="xekie-footer">
@@ -98,65 +51,24 @@ color:#777;
 
 <script>
 
-const card = document.getElementById("card");
+const saved = JSON.parse(localStorage.getItem("savedXekies")) || [];
 
-let startX = 0;
-let currentX = 0;
+const feed = document.getElementById("saved-feed");
 
-card.addEventListener("touchstart", function(e){
+saved.forEach(x => {
 
-startX = e.touches[0].clientX;
+const card = document.createElement("div");
+card.className = "xekie-card";
 
-});
+card.innerHTML = `
+<strong>${x.title}</strong><br>
+Budget: ${x.budget}<br>
+📍 ${x.location}
+`;
 
-card.addEventListener("touchmove", function(e){
-
-currentX = e.touches[0].clientX;
-
-let move = currentX - startX;
-
-card.style.transform = "translateX(" + move + "px)";
+feed.appendChild(card);
 
 });
-
-card.addEventListener("touchend", function(){
-
-let move = currentX - startX;
-
-if(move > 120){
-
-acceptOffer();
-
-}
-
-else if(move < -120){
-
-rejectOffer();
-
-}
-
-card.style.transform = "translateX(0px)";
-
-});
-
-
-function acceptOffer(){
-
-confetti({
-particleCount:200,
-spread:70
-});
-
-alert("🎉 Offer Accepted!");
-
-}
-
-
-function rejectOffer(){
-
-alert("Offer Rejected");
-
-}
 
 </script>
 
