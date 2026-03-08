@@ -27,11 +27,9 @@ gtag('config', 'G-DPXVZVMJXX');
 
 <div class="nav-links">
 <a href="radar.html">Radar</a>
-<a href="request.html">Post a XEKIE</a>
+<a href="request.html">Post</a>
+<a href="dashboard.html">My XEKIE</a>
 <a href="prohibited-items.html">Prohibited</a>
-<a href="terms.html">Terms</a>
-<a href="privacy.html">Privacy</a>
-<a href="guidelines.html">Guidelines</a>
 </div>
 
 </div>
@@ -49,16 +47,6 @@ gtag('config', 'G-DPXVZVMJXX');
 
 
 
-<section class="pulse">
-
-<h2>Live Demand Pulse</h2>
-
-<div id="pulse-feed"></div>
-
-</section>
-
-
-
 <section class="recent">
 
 <h2>Recent XEKIEs</h2>
@@ -68,19 +56,12 @@ gtag('config', 'G-DPXVZVMJXX');
 </section>
 
 
+
 <footer class="xekie-footer">
 
 <div class="footer-inner">
 
-<strong>XEKIE — Trade Different</strong><br><br>
-
-<a href="index.html">Home</a> |
-<a href="radar.html">Radar</a> |
-<a href="request.html">Post</a> |
-<a href="prohibited-items.html">Prohibited</a> |
-<a href="terms.html">Terms of Service</a> |
-<a href="privacy.html">Privacy Policy</a> |
-<a href="guidelines.html">Seller Guidelines</a>
+<strong>XEKIE — Trade Different</strong>
 
 </div>
 
@@ -89,40 +70,6 @@ gtag('config', 'G-DPXVZVMJXX');
 
 
 <script>
-
-/* ---------------- DEMAND PULSE ---------------- */
-
-const pulse = [
-
-"🔥 Someone just XEKIE'd an iPhone 15 Pro — Akron",
-"🔥 Bedroom painting requested — Cleveland",
-"🔥 Looking for Toyota Tacoma — Columbus",
-"🔥 Vintage Apple poster requested — Cincinnati"
-
-];
-
-function loadPulse(){
-
-const feed = document.getElementById("pulse-feed");
-
-pulse.forEach(p => {
-
-const item = document.createElement("div");
-item.className = "pulse-item";
-
-item.innerHTML = p;
-
-feed.appendChild(item);
-
-});
-
-}
-
-loadPulse();
-
-
-
-/* ---------------- RECENT XEKIES ---------------- */
 
 const xekies = [
 
@@ -153,11 +100,18 @@ location:"Columbus"
 ];
 
 
+
+let savedXekies = [];
+
+
+
 function loadXekies(){
 
 const feed = document.getElementById("xekie-feed");
 
-xekies.forEach(x => {
+feed.innerHTML = "";
+
+xekies.forEach((x,index) => {
 
 const card = document.createElement("div");
 card.className = "xekie-card";
@@ -165,7 +119,9 @@ card.className = "xekie-card";
 card.innerHTML = `
 <strong>${x.title}</strong><br>
 Budget: ${x.budget}<br>
-📍 ${x.location}
+📍 ${x.location}<br><br>
+
+<button onclick="saveXekie(${index})">⭐ Save XEKIE</button>
 `;
 
 feed.appendChild(card);
@@ -173,6 +129,20 @@ feed.appendChild(card);
 });
 
 }
+
+
+
+function saveXekie(index){
+
+savedXekies.push(xekies[index]);
+
+localStorage.setItem("savedXekies", JSON.stringify(savedXekies));
+
+alert("⭐ XEKIE saved!");
+
+}
+
+
 
 loadXekies();
 
