@@ -158,7 +158,47 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 console.log("Supabase connected");
 
+
+async function loadXekies() {
+
+  const { data, error } = await supabase
+    .from('xekies')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error("Error loading XEKIEs:", error);
+    return;
+  }
+
+  const feed = document.getElementById("xekie-feed");
+  feed.innerHTML = "";
+
+  data.forEach(xekie => {
+
+    const card = document.createElement("div");
+    card.className = "xekie-card";
+
+    card.innerHTML = `
+      <h3>${xekie.title}</h3>
+      <p>${xekie.description}</p>
+      <p><strong>Budget:</strong> $${xekie.budget}</p>
+      <p><strong>Location:</strong> ${xekie.location}</p>
+      <hr>
+    `;
+
+    feed.appendChild(card);
+
+  });
+
+}
+
+loadXekies();
+
 </script>
 
+  
 </body>
 </html>
+
+
