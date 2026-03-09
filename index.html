@@ -6,6 +6,7 @@
 <title>XEKIE — Trade Different</title>
 
 <link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
@@ -145,6 +146,17 @@ alert("⭐ XEKIE saved!");
 
 
 loadXekies();
+
+</script>
+
+<script>
+
+const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+const SUPABASE_KEY = "sb_publishable_fCKM-ACI_E7K9-lflnwN-Q__Two4qgq";
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+console.log("Supabase connected");
 
 </script>
 
