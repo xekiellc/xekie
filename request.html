@@ -116,5 +116,52 @@ alert("🚀 Your XEKIE has been broadcast!");
 
 </script>
 
+  <script>
+
+const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co"
+const SUPABASE_KEY = "sb_publishable_fCKM-ACI_E7K9-1flnwN-Q__Two4qgq"
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+document.getElementById("xekie-form").addEventListener("submit", async (e) => {
+
+  e.preventDefault()
+
+  const title = document.getElementById("title").value
+  const budget = document.getElementById("budget").value
+  const location = document.getElementById("location").value
+
+  const { data, error } = await supabase
+    .from("xekies")
+    .insert([
+      {
+        title: title,
+        description: "",
+        budget: budget,
+        location: location
+      }
+    ])
+
+  if (error) {
+    console.log(error)
+    alert("Error posting XEKIE")
+  } else {
+
+    // fireworks celebration
+    confetti({
+      particleCount: 150,
+      spread: 70
+    })
+
+    setTimeout(() => {
+      window.location.href = "/"
+    }, 1200)
+
+  }
+
+})
+
+</script>
+
 </body>
 </html>
