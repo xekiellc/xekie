@@ -159,6 +159,28 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 console.log("Supabase connected");
 
 
+function timeAgo(timestamp) {
+
+  const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+
+  const intervals = [
+    { label: "year", seconds: 31536000 },
+    { label: "month", seconds: 2592000 },
+    { label: "day", seconds: 86400 },
+    { label: "hour", seconds: 3600 },
+    { label: "minute", seconds: 60 }
+  ];
+
+  for (const interval of intervals) {
+    const count = Math.floor(seconds / interval.seconds);
+    if (count >= 1) {
+      return count + " " + interval.label + (count > 1 ? "s" : "") + " ago";
+    }
+  }
+
+  return "just now";
+}
+  
 async function loadXekies() {
 
   const { data, error } = await supabase
@@ -179,12 +201,16 @@ async function loadXekies() {
     const card = document.createElement("div");
     card.className = "xekie-card";
 
-    card.innerHTML = `
-      <h3>${xekie.title}</h3>
-      <p>${xekie.description}</p>
-      <p><strong>Budget:</strong> $${xekie.budget}</p>
-      <p><strong>Location:</strong> ${xekie.location}</p>
-      <hr>
+    const postedTime = timeAgo(xekie.created_at);
+
+card.innerHTML = `
+<h3>${xekie.title}</h3>
+<p>${xekie.description}</p>
+<p><strong>Budget:</strong> $${xekie.budget}</p>
+<p><strong>Location:</strong> ${xekie.location}</p>
+<p>⏱ Posted ${postedTime}</p>
+<hr>
+`;
     `;
 
     feed.appendChild(card);
