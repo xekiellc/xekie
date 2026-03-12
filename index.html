@@ -10,7 +10,7 @@
 
 <link rel="stylesheet" href="styles.css">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
@@ -40,6 +40,7 @@ gtag('config', 'G-DPXVZVMJXX');
 </div>
 </header>
 
+
 <section class="hero">
 
 <h1>Need something?</h1>
@@ -49,6 +50,8 @@ gtag('config', 'G-DPXVZVMJXX');
 
 </section>
 
+
+
 <section class="recent">
 
 <h2>Recent XEKIEs</h2>
@@ -56,6 +59,8 @@ gtag('config', 'G-DPXVZVMJXX');
 <div id="xekie-feed"></div>
 
 </section>
+
+
 
 <footer class="xekie-footer">
 
@@ -65,7 +70,13 @@ gtag('config', 'G-DPXVZVMJXX');
 
 </footer>
 
+
+
 <script>
+
+/* ------------------------
+SUPABASE CONNECTION
+-------------------------*/
 
 const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
 const SUPABASE_KEY = "sb_publishable_fCKM-ACI_E7K9-lflnwN-Q__Two4qgq";
@@ -73,6 +84,11 @@ const SUPABASE_KEY = "sb_publishable_fCKM-ACI_E7K9-lflnwN-Q__Two4qgq";
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 console.log("Supabase connected");
+
+
+/* ------------------------
+TIME AGO FUNCTION
+-------------------------*/
 
 function timeAgo(timestamp) {
 
@@ -96,6 +112,11 @@ return count + " " + interval.label + (count > 1 ? "s" : "") + " ago";
 return "just now";
 
 }
+
+
+/* ------------------------
+LOAD XEKIES
+-------------------------*/
 
 async function loadXekies() {
 
@@ -134,20 +155,29 @@ feed.appendChild(card);
 
 }
 
-loadXekies();
 
+/* ------------------------
+LOAD + AUTO REFRESH
+-------------------------*/
+
+loadXekies();
 setInterval(loadXekies, 10000);
 
-</script>
 
-<script>
+/* ------------------------
+SERVICE WORKER
+-------------------------*/
 
 if ('serviceWorker' in navigator) {
-navigator.serviceWorker.register('/sw.js')
+
+navigator.serviceWorker
+.register('/sw.js')
 .then(() => console.log("Service Worker Registered"));
+
 }
 
 </script>
+
 
 </body>
 </html>
