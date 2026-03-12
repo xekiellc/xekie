@@ -9,6 +9,7 @@
 <meta name="theme-color" content="#0b1f33">
 
 <link rel="stylesheet" href="styles.css">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
 <!-- Google Analytics -->
@@ -39,7 +40,6 @@ gtag('config', 'G-DPXVZVMJXX');
 </div>
 </header>
 
-
 <section class="hero">
 
 <h1>Need something?</h1>
@@ -49,8 +49,6 @@ gtag('config', 'G-DPXVZVMJXX');
 
 </section>
 
-
-
 <section class="recent">
 
 <h2>Recent XEKIEs</h2>
@@ -59,72 +57,13 @@ gtag('config', 'G-DPXVZVMJXX');
 
 </section>
 
-
-
 <footer class="xekie-footer">
 
 <div class="footer-inner">
-
 <strong>XEKIE — Trade Different</strong>
-
 </div>
 
 </footer>
-
-
-
-<script>
-
-
-
-
-
-let savedXekies = [];
-
-
-
-function loadXekies(){
-
-const feed = document.getElementById("xekie-feed");
-
-feed.innerHTML = "";
-
-xekies.forEach((x,index) => {
-
-const card = document.createElement("div");
-card.className = "xekie-card";
-
-card.innerHTML = `
-<strong>${x.title}</strong><br>
-Budget: ${x.budget}<br>
-📍 ${x.location}<br><br>
-
-<button onclick="saveXekie(${index})">⭐ Save XEKIE</button>
-`;
-
-feed.appendChild(card);
-
-});
-
-}
-
-
-
-function saveXekie(index){
-
-savedXekies.push(xekies[index]);
-
-localStorage.setItem("savedXekies", JSON.stringify(savedXekies));
-
-alert("⭐ XEKIE saved!");
-
-}
-
-
-
-loadXekies();
-
-</script>
 
 <script>
 
@@ -135,50 +74,50 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 console.log("Supabase connected");
 
-
 function timeAgo(timestamp) {
 
-  const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
 
-  const intervals = [
-    { label: "year", seconds: 31536000 },
-    { label: "month", seconds: 2592000 },
-    { label: "day", seconds: 86400 },
-    { label: "hour", seconds: 3600 },
-    { label: "minute", seconds: 60 }
-  ];
+const intervals = [
+{ label: "year", seconds: 31536000 },
+{ label: "month", seconds: 2592000 },
+{ label: "day", seconds: 86400 },
+{ label: "hour", seconds: 3600 },
+{ label: "minute", seconds: 60 }
+];
 
-  for (const interval of intervals) {
-    const count = Math.floor(seconds / interval.seconds);
-    if (count >= 1) {
-      return count + " " + interval.label + (count > 1 ? "s" : "") + " ago";
-    }
-  }
-
-  return "just now";
+for (const interval of intervals) {
+const count = Math.floor(seconds / interval.seconds);
+if (count >= 1) {
+return count + " " + interval.label + (count > 1 ? "s" : "") + " ago";
 }
-  
+}
+
+return "just now";
+
+}
+
 async function loadXekies() {
 
-  const { data, error } = await supabase
-    .from('xekies')
-    .select('*')
-    .order('created_at', { ascending: false });
+const { data, error } = await supabase
+.from('xekies')
+.select('*')
+.order('created_at', { ascending: false });
 
-  if (error) {
-    console.error("Error loading XEKIEs:", error);
-    return;
-  }
+if (error) {
+console.error("Error loading XEKIEs:", error);
+return;
+}
 
-  const feed = document.getElementById("xekie-feed");
-  feed.innerHTML = "";
+const feed = document.getElementById("xekie-feed");
+feed.innerHTML = "";
 
-  data.forEach(xekie => {
+data.forEach(xekie => {
 
-    const card = document.createElement("div");
-    card.className = "xekie-card";
+const card = document.createElement("div");
+card.className = "xekie-card";
 
-    const postedTime = timeAgo(xekie.created_at);
+const postedTime = timeAgo(xekie.created_at);
 
 card.innerHTML = `
 <h3>${xekie.title}</h3>
@@ -187,29 +126,28 @@ card.innerHTML = `
 <p><strong>Location:</strong> ${xekie.location}</p>
 <p>⏱ Posted ${postedTime}</p>
 <hr>
-
-    
+`;
 
 feed.appendChild(card);
 
-  });
+});
 
 }
 
 loadXekies();
+
 setInterval(loadXekies, 10000);
 
 </script>
+
 <script>
+
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-  .then(() => console.log("Service Worker Registered"));
+navigator.serviceWorker.register('/sw.js')
+.then(() => console.log("Service Worker Registered"));
 }
-</script> 
 
+</script>
 
-  
 </body>
 </html>
-
-
