@@ -1,51 +1,142 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-<title>XEKIE Seller Guidelines</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Community Guidelines</title>
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
+    body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
+    nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; display: flex; flex-direction: column; line-height: 1; }
+    .nav-logo .xe { color: var(--accent); }
+    .nav-tagline { font-size: 8px; font-weight: 400; letter-spacing: 0.15em; color: var(--mid); text-transform: uppercase; }
+    .container { max-width: 720px; margin: 0 auto; padding: 60px 24px; flex: 1; }
+    .doc-label { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .doc-title { font-family: var(--font-display); font-size: 40px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .doc-date { font-size: 14px; color: var(--mid); margin-bottom: 48px; }
+    .doc-section { margin-bottom: 40px; }
+    .doc-section h2 { font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .doc-section p { font-size: 15px; font-weight: 300; color: #333; line-height: 1.8; margin-bottom: 14px; }
+    .doc-section ul { padding-left: 20px; margin-bottom: 14px; }
+    .doc-section ul li { font-size: 15px; font-weight: 300; color: #333; line-height: 1.8; margin-bottom: 6px; }
+    .do-card { background: #eaf3de; border: 1px solid #c0dd97; border-radius: 14px; padding: 24px; margin-bottom: 16px; }
+    .dont-card { background: #fcebeb; border: 1px solid #f7c1c1; border-radius: 14px; padding: 24px; margin-bottom: 16px; }
+    .card-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+    .do-card .card-title { color: #3b6d11; }
+    .dont-card .card-title { color: #a32d2d; }
+    .card-list { padding-left: 18px; }
+    .card-list li { font-size: 14px; font-weight: 300; line-height: 1.7; margin-bottom: 4px; }
+    .do-card .card-list li { color: #3b6d11; }
+    .dont-card .card-list li { color: #a32d2d; }
+    .contact-box { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-top: 48px; }
+    .contact-box h3 { font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .contact-box p { font-size: 15px; font-weight: 300; color: var(--mid); line-height: 1.6; }
+    .contact-box a { color: var(--accent); text-decoration: none; }
+    footer { background: var(--black); color: var(--white); padding: 32px 40px; margin-top: auto; }
+    .footer-inner { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-links a { font-size: 13px; color: #666; text-decoration: none; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-copy { font-size: 12px; color: #444; }
+    @media (max-width: 480px) { nav { padding: 0 20px; } }
+  </style>
 </head>
-
 <body>
-
-<header class="navbar">
-<div class="nav-inner">
-
-<a href="index.html" class="nav-logo">XEKIE</a>
-
-<div class="nav-links">
-<a href="radar.html">Radar</a>
-<a href="request.html">Post</a>
-<a href="prohibited-items.html">Prohibited</a>
-<a href="terms.html">Terms</a>
-<a href="privacy.html">Privacy</a>
-<a href="guidelines.html">Guidelines</a>
-</div>
-
-</div>
-</header>
-
-<div class="container">
-
-<h1>Seller Guidelines</h1>
-
-<ul>
-<li>Be honest about item condition.</li>
-<li>Provide accurate pricing.</li>
-<li>Communicate clearly with buyers.</li>
-<li>No scams or misleading listings.</li>
-<li>Follow all applicable laws.</li>
-</ul>
-
-</div>
-
-<footer class="xekie-footer">
-<div class="footer-inner">
-
-<strong>XEKIE — Trade Different</strong>
-
-</div>
-</footer>
-
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
+  </nav>
+  <div class="container">
+    <div class="doc-label">Community</div>
+    <h1 class="doc-title">Community Guidelines</h1>
+    <div class="doc-date">Effective date: March 1, 2025 &nbsp;·&nbsp; XEKIE LLC</div>
+    <div class="doc-section">
+      <h2>Our Community</h2>
+      <p>XEKIE is built on trust between buyers and sellers. These guidelines exist to make sure XEKIE is a safe, fair, and useful place for everyone. We're a small team building something new — we appreciate every user who treats others with respect and uses the platform with good intentions.</p>
+    </div>
+    <div class="doc-section">
+      <h2>For Buyers</h2>
+      <div class="do-card">
+        <div class="card-title">✅ Do</div>
+        <ul class="card-list">
+          <li>Be specific about what you want — good details get better responses</li>
+          <li>Set a realistic budget for what you're asking for</li>
+          <li>Respond to sellers who take the time to reach out</li>
+          <li>Be honest about your location and shipping preferences</li>
+          <li>Update or delete your XEKIE when you've found what you need</li>
+        </ul>
+      </div>
+      <div class="dont-card">
+        <div class="card-title">✕ Don't</div>
+        <ul class="card-list">
+          <li>Post XEKIEs with unrealistic or bad-faith budgets</li>
+          <li>Post for prohibited items</li>
+          <li>Ghost sellers who respond to your posts</li>
+          <li>Post the same XEKIE repeatedly to spam the feed</li>
+          <li>Use XEKIE for anything other than genuine purchasing intent</li>
+        </ul>
+      </div>
+    </div>
+    <div class="doc-section">
+      <h2>For Sellers</h2>
+      <div class="do-card">
+        <div class="card-title">✅ Do</div>
+        <ul class="card-list">
+          <li>Only respond if you genuinely have what the buyer is looking for</li>
+          <li>Be honest about the condition, history, and details of the item</li>
+          <li>Price fairly — buyers can see multiple responses</li>
+          <li>Be responsive once a buyer shows interest</li>
+          <li>Meet in safe, public locations for local transactions</li>
+        </ul>
+      </div>
+      <div class="dont-card">
+        <div class="card-title">✕ Don't</div>
+        <ul class="card-list">
+          <li>Misrepresent items or use misleading descriptions</li>
+          <li>Spam buyers with unsolicited offers outside their stated needs</li>
+          <li>Attempt to take transactions off-platform in a way that puts buyers at risk</li>
+          <li>Use XEKIE to solicit buyers for unrelated products or services</li>
+          <li>Respond to XEKIEs with intent to scam</li>
+        </ul>
+      </div>
+    </div>
+    <div class="doc-section">
+      <h2>Safety Tips</h2>
+      <p>XEKIE connects strangers. Here are some common-sense safety tips:</p>
+      <ul>
+        <li><strong>Local meetups:</strong> Always meet in a public place — a coffee shop, police station parking lot, or busy store. Never meet at your home or theirs.</li>
+        <li><strong>Payment:</strong> Use secure payment methods. Be wary of anyone asking for wire transfers, gift cards, or cryptocurrency. If it feels off, it probably is.</li>
+        <li><strong>Inspect before paying:</strong> Always inspect the item before completing payment for local transactions.</li>
+        <li><strong>Trust your gut:</strong> If something feels wrong about a transaction, walk away. No deal is worth your safety.</li>
+        <li><strong>Shipping:</strong> Use tracked shipping and insured carriers for high-value items. Get proof of shipment.</li>
+      </ul>
+    </div>
+    <div class="doc-section">
+      <h2>Reporting Violations</h2>
+      <p>If you see a XEKIE post, a seller response, or any user behavior that violates these guidelines, please report it to us at zach@xekie.com. Include as much detail as possible — what you saw, when, and any relevant context.</p>
+      <p>We take all reports seriously and will investigate promptly. Violations can result in content removal, account suspension, or permanent bans depending on severity.</p>
+    </div>
+    <div class="contact-box">
+      <h3>Questions or concerns?</h3>
+      <p>We're a small team that genuinely cares about this community. Reach us anytime at <a href="mailto:zach@xekie.com">zach@xekie.com</a>.</p>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Guidelines</a>
+      </div>
+      <div class="footer-copy">© 2025 XEKIE LLC</div>
+    </div>
+  </footer>
 </body>
 </html>
