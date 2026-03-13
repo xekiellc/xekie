@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Trade Different</title>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="XEKIE">
+  <meta property="og:title" content="XEKIE — Trade Different">
+  <meta property="og:description" content="Someone is looking to buy this on XEKIE. Respond with your best offer.">
+  <meta property="og:url" id="og-url" content="https://xekie.com">
+  <meta property="og:image" content="https://xekie.com/icon-180x180.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="XEKIE — Trade Different">
+  <meta name="twitter:description" content="Someone is looking to buy this on XEKIE.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff4d1c">
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
+    .nav-right{display:flex;align-items:center;gap:12px;}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-nav:hover{border-color:var(--black);color:var(--black);}
+    .btn-nav.primary{background:var(--black);color:var(--white);border-color:transparent;}
+    .btn-nav.primary:hover{background:var(--accent);}
+    .container{max-width:680px;margin:0 auto;padding:48px 20px;flex:1;}
+    .back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--mid);text-decoration:none;margin-bottom:28px;transition:color 0.2s;}
+    .back-link:hover{color:var(--black);}
+    .xekie-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:40px;margin-bottom:24px;}
+    .card-badge-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+    .early-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;}
+    .status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;}
+    .status-fulfilled{background:#EAF3DE;color:#3B6D11;}
+    .status-expired{background:#f4f2ec;color:#6b6b6b;}
+    .category-pill{display:inline-block;font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;background:var(--cream);color:var(--mid);border:1px solid var(--border);}
+    .xekie-title{font-family:var(--font-display);font-size:32px;font-weight:800;letter-spacing:-0.03em;margin-bottom:12px;line-height:1.15;}
+    .xekie-desc{font-size:16px;font-weight:300;color:#444;line-height:1.7;margin-bottom:24px;}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;}
+    .detail-item{background:var(--cream);border-radius:12px;padding:16px 18px;}
+    .detail-label{font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--mid);margin-bottom:4px;}
+    .detail-value{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--black);}
+    .detail-value.accent{color:var(--accent);}
+    .btn-respond-big{width:100%;padding:16px;background:var(--black);color:var(--white);border:none;border-radius:12px;font-family:var(--font-body);font-size:17px;font-weight:600;cursor:pointer;transition:background 0.2s,transform 0.15s;margin-bottom:12px;}
+    .btn-respond-big:hover{background:var(--accent);transform:translateY(-1px);}
+    .btn-share-big{width:100%;padding:14px;background:transparent;color:var(--black);border:1.5px solid var(--border);border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s;}
+    .btn-share-big:hover{border-color:var(--black);}
+    .meta-row{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mid);margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
+    .cta-band{background:var(--black);border-radius:16px;padding:32px;text-align:center;margin-top:16px;}
+    .cta-band h3{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--white);margin-bottom:8px;}
+    .cta-band p{font-size:15px;color:#888;margin-bottom:20px;}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--white);border-radius:20px;padding:36px;max-width:480px;width:100%;position:relative;}
+    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);}
+    .modal-title{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-0.02em;margin-bottom:20px;}
+    .modal label{display:block;font-size:13px;font-weight:500;margin-bottom:7px;color:var(--black);}
+    .modal input,.modal textarea{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;color:var(--black);background:var(--white);outline:none;margin-bottom:16px;transition:border-color 0.2s;}
+    .modal input:focus,.modal textarea:focus{border-color:var(--black);}
+    .modal textarea{min-height:100px;resize:vertical;}
+    .modal-budget-row{display:flex;gap:8px;margin-bottom:20px;}
+    .modal-prefix{width:44px;height:46px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:500;color:var(--mid);flex-shrink:0;}
+    .modal-prefix-input{flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;color:var(--black);background:var(--white);outline:none;}
+    .modal-msg{padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:16px;display:none;}
+    .modal-msg.error{background:#FCEBEB;color:#A32D2D;display:block;}
+    .modal-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
+    .btn-modal-submit{width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
+    .btn-modal-submit:hover{background:var(--accent);}
+    .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+    .share-toast.show{opacity:1;}
+    footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
+    .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+    .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
+    .footer-logo .xe{color:var(--accent);}
+    .footer-tagline{font-size:11px;letter-spacing:0.2em;color:#555;text-transform:uppercase;}
+    .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
+    .footer-links a:hover{color:var(--white);}
+    .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
+    .loading{text-align:center;padding:80px 20px;color:var(--mid);}
+    @media(max-width:600px){nav{padding:0 20px;}.xekie-card{padding:28px 20px;}.detail-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
+    <div class="nav-right">
+      <a href="radar.html" class="btn-nav">Radar</a>
+      <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <a href="radar.html" class="back-link">← Back to Radar</a>
+    <div id="content"><div class="loading">Loading XEKIE...</div></div>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2 class="modal-title">Send your offer</h2>
+      <label>Your message to the buyer</label>
+      <textarea id="modal-message" placeholder="Hi! I have exactly what you're looking for..."></textarea>
+      <label>Your asking price</label>
+      <div class="modal-budget-row">
+        <div class="modal-prefix">$</div>
+        <input type="number" id="modal-price" class="modal-prefix-input" placeholder="e.g. 650" />
+      </div>
+      <div class="modal-msg" id="modal-msg"></div>
+      <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send response</button>
+    </div>
+  </div>
+
+  <div class="share-toast" id="share-toast">Link copied! 🔗</div>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+        <div class="footer-tagline">Trade Different</div>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Community Guidelines</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const BETA_CUTOFF = new Date('2026-06-01');
+    let currentXekie = null, currentUser = null;
+
+    const params = new URLSearchParams(window.location.search);
+    const xekieId = params.get('id');
+
+    function formatBudget(x) {
+      if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
+      if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
+      if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
+      if (x.budget) return '$'+Number(x.budget).toLocaleString();
+      return '$—';
+    }
+
+    function timeAgo(ts) {
+      const s = Math.floor((new Date() - new Date(ts)) / 1000);
+      for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
+        const c = Math.floor(s/sec); if (c>=1) return c+" "+l+(c>1?"s":"")+" ago";
+      }
+      return "just now";
+    }
+
+    async function loadXekie() {
+      if (!xekieId) {
+        document.getElementById('content').innerHTML = '<div class="loading">No XEKIE specified.</div>';
+        return;
+      }
+      const { data: x, error } = await _sb.from('xekies').select('*').eq('id', xekieId).single();
+      if (error || !x) {
+        document.getElementById('content').innerHTML = '<div class="loading">XEKIE not found.</div>';
+        return;
+      }
+      currentXekie = x;
+      document.title = `XEKIE — ${x.title}`;
+      document.querySelector('meta[property="og:title"]').content = `${x.title} — XEKIE`;
+      document.querySelector('meta[property="og:description"]').content = x.description || `Budget: ${formatBudget(x)}. Respond with your best offer on XEKIE.`;
+      document.querySelector('meta[property="og:url"]').content = window.location.href;
+      document.querySelector('meta[name="twitter:title"]').content = `${x.title} — XEKIE`;
+      document.querySelector('meta[name="twitter:description"]').content = x.description || `Budget: ${formatBudget(x)}`;
+
+      const isExpired = x.expires_at && new Date(x.expires_at) < new Date();
+      const isFulfilled = x.is_fulfilled;
+      const isEarly = new Date(x.created_at) < BETA_CUTOFF;
+      const canRespond = !isFulfilled && !isExpired;
+
+      let statusBadge = '';
+      if (isFulfilled) statusBadge = '<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
+      else if (isExpired) statusBadge = '<span class="status-badge status-expired">⏰ Expired</span>';
+
+      let expiryDisplay = '';
+      if (x.expires_at && !isExpired && !isFulfilled) {
+        const hoursLeft = Math.floor((new Date(x.expires_at) - new Date()) / 3600000);
+        if (hoursLeft < 24) expiryDisplay = `<span>⚠️ Expires in ${hoursLeft}h</span>`;
+        else expiryDisplay = `<span>⏱ ${Math.floor(hoursLeft/24)} days left</span>`;
+      }
+
+      document.getElementById('content').innerHTML = `
+        <div class="xekie-card">
+          <div class="card-badge-row">
+            ${isEarly ? '<span class="early-badge">⚡ Early Adopter</span>' : ''}
+            ${statusBadge}
+            ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
+          </div>
+          <div class="xekie-title">${x.title}</div>
+          ${x.description ? `<div class="xekie-desc">${x.description}</div>` : ''}
+          <div class="detail-grid">
+            <div class="detail-item">
+              <div class="detail-label">Budget</div>
+              <div class="detail-value accent">${formatBudget(x)}${x.is_flexible ? ' <span style="font-size:12px;color:var(--mid);font-weight:400;">(flexible)</span>' : ''}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Location</div>
+              <div class="detail-value">${x.location || 'Not specified'}</div>
+            </div>
+          </div>
+          ${canRespond ? `
+            <button class="btn-respond-big" onclick="openModal()">Respond with an offer →</button>
+          ` : `
+            <div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">
+              ${isFulfilled ? '✓ This XEKIE has been fulfilled.' : '⏰ This XEKIE has expired.'}
+            </div>
+          `}
+          <button class="btn-share-big" onclick="shareThis()">🔗 Share this XEKIE</button>
+          <div class="meta-row">
+            <span>👁 ${x.view_count||0} views</span>
+            <span>⏱ Posted ${timeAgo(x.created_at)}</span>
+            ${expiryDisplay}
+          </div>
+        </div>
+
+        <div class="cta-band">
+          <h3>Want deals to come to you?</h3>
+          <p>Post your own XEKIE — tell sellers what you want and let offers roll in.</p>
+          <a href="request.html" class="btn-nav primary" style="display:inline-block;font-size:15px;padding:12px 28px;">Post a XEKIE →</a>
+        </div>`;
+
+      _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', xekieId).then(() => {});
+    }
+
+    function openModal() {
+      if (!currentUser) { window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href); return; }
+      document.getElementById('modal-message').value = '';
+      document.getElementById('modal-price').value = '';
+      document.getElementById('modal-msg').className = 'modal-msg';
+      document.getElementById('modal-msg').style.display = 'none';
+      document.getElementById('modal-submit').disabled = false;
+      document.getElementById('modal-submit').textContent = 'Send response';
+      document.getElementById('modal-overlay').classList.add('open');
+    }
+
+    function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+    async function submitResponse() {
+      const message = document.getElementById('modal-message').value.trim();
+      const price = document.getElementById('modal-price').value;
+      const btn = document.getElementById('modal-submit');
+      const msgEl = document.getElementById('modal-msg');
+      if (!message) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Please write a message to the buyer.'; return; }
+      btn.disabled = true; btn.textContent = 'Sending...';
+      const { error } = await _sb.from('offers').insert({
+        xekie_id: xekieId, seller_id: currentUser.id,
+        message, price: price ? parseInt(price) : null
+      });
+      if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send response'; }
+      else { msgEl.className='modal-msg success'; msgEl.style.display='block'; msgEl.textContent='Response sent! The buyer will be notified. ✓'; btn.textContent='Sent ✓'; setTimeout(closeModal, 2000); }
+    }
+
+    function shareThis() {
+      const url = window.location.href;
+      const title = currentXekie?.title || 'Check this XEKIE';
+      if (navigator.share) {
+        navigator.share({ title: `XEKIE — ${title}`, url }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          const t = document.getElementById('share-toast');
+          t.classList.add('show');
+          setTimeout(() => t.classList.remove('show'), 2500);
+        });
+      }
+    }
+
+    document.getElementById('modal-overlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('modal-overlay')) closeModal();
+    });
+
+    _sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) currentUser = session.user;
+      loadXekie();
+    });
+  </script>
+</body>
+</html>
