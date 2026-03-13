@@ -1,96 +1,197 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>XEKIE • Profile</title>
-  <link rel="stylesheet" href="styles.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Profile</title>
+  <meta name="description" content="View XEKIE user profile and their active XEKIEs.">
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff4d1c">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-nav:hover{border-color:var(--black);color:var(--black);}
+    .btn-nav.primary{background:var(--black);color:var(--white);border-color:transparent;}
+    .btn-nav.primary:hover{background:var(--accent);}
+    .container{max-width:720px;margin:0 auto;padding:48px 20px;flex:1;}
+    .profile-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:40px;margin-bottom:32px;display:flex;align-items:center;gap:28px;}
+    .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#ff4d1c,#ff8c00);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:28px;font-weight:800;color:white;flex-shrink:0;}
+    .profile-info{flex:1;}
+    .profile-username{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px;}
+    .profile-meta{font-size:14px;color:var(--mid);margin-bottom:12px;}
+    .profile-badges{display:flex;gap:8px;flex-wrap:wrap;}
+    .early-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;}
+    .stat-row{display:flex;gap:24px;margin-top:16px;}
+    .stat-item{text-align:center;}
+    .stat-num{font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--accent);}
+    .stat-label{font-size:12px;color:var(--mid);margin-top:2px;}
+    .section-title{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-0.02em;margin-bottom:16px;}
+    .xekie-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:10px;transition:transform 0.15s,box-shadow 0.15s;}
+    .xekie-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.07);}
+    .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
+    .card-title{font-family:var(--font-display);font-size:17px;font-weight:700;letter-spacing:-0.02em;}
+    .card-budget{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);white-space:nowrap;}
+    .card-desc{font-size:14px;font-weight:300;color:var(--mid);line-height:1.5;margin-bottom:10px;}
+    .card-meta{font-size:12px;color:var(--mid);display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+    .category-pill{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:100px;background:var(--cream);color:var(--mid);border:1px solid var(--border);}
+    .btn-respond{font-size:13px;font-weight:500;padding:8px 18px;border-radius:100px;background:var(--black);color:var(--white);border:none;cursor:pointer;transition:background 0.2s;text-decoration:none;display:inline-block;}
+    .btn-respond:hover{background:var(--accent);}
+    .empty-state{text-align:center;padding:60px 20px;color:var(--mid);}
+    .loading{text-align:center;padding:60px;color:var(--mid);}
+    footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
+    .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+    .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
+    .footer-logo .xe{color:var(--accent);}
+    .footer-tagline{font-size:11px;letter-spacing:0.2em;color:#555;text-transform:uppercase;}
+    .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
+    .footer-links a:hover{color:var(--white);}
+    .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
+    @media(max-width:600px){nav{padding:0 20px;}.profile-card{flex-direction:column;text-align:center;}.stat-row{justify-content:center;}}
+  </style>
 </head>
 <body>
-  
-  <div id="globalDemandStrip" class="demandStrip" aria-label="Live demand strip">
-    <div class="demandStripInner">
-      <div class="demandStripLeft">
-        <span class="liveDot" aria-hidden="true"></span>
-        <span class="demandStripLabel">LIVE DEMAND</span><span id="livePulseText" style="opacity:.85;font-weight:700;margin-left:6px">—</span>
-      </div>
-      <div class="demandStripMarquee" role="marquee" aria-label="Live demand ticker">
-        <div id="globalDemandTrack" class="demandStripTrack"></div>
-      </div>
-      <a class="demandStripCTA" href="index.html#quick-request">Post</a>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <a href="radar.html" class="btn-nav">Radar</a>
+      <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
     </div>
-  </div>
-<div class="nav">
-    <div class="brandWrap"><img class="brandLogo" src="assets/logo.png" alt="XEKIE logo"/><div class="brandText">XEKIE</div></div>
-    <div class="navlinks">
-      <a href="index.html">Home</a>
-      <a href="radar.html">Demand Radar</a>
-      <a href="messages.html">Messages</a>
-      <a href="profile.html">Profile</a>
-      <!-- Investors tab removed for now -->
-      <a href="login.html">Join</a>
-    </div>
-  </div>
+  </nav>
 
   <div class="container">
-    <div class="hero">
-      <h1>XEKIE</h1>
-      <div class="tagline">Profile (prototype)</div>
-      <div class="sub">This is placeholder UI. In the real build, it loads your stats, offers, and transactions.</div>
-    </div>
+    <div id="profile-section"><div class="loading">Loading profile...</div></div>
+    <div id="xekies-section"></div>
+  </div>
 
-    <div class="card">
-      <div class="cardPad">
-        <div style="display:flex;gap:12px;align-items:center">
-          <div class="ico" style="width:54px;height:54px;border-radius:18px">ZM</div>
-          <div>
-            <div style="font-weight:950;font-size:18px">Zach Myers</div>
-            <div class="mini">Akron / Cuyahoga Falls area</div>
-          </div>
-        </div>
-
-        <hr class="sep"/>
-
-        <div class="formRow">
-          <div class="badge" style="justify-content:center">Requests posted: <b style="margin-left:6px">3</b></div>
-          <div class="badge" style="justify-content:center">Offers submitted: <b style="margin-left:6px">5</b></div>
-        </div>
-
-        <hr class="sep"/>
-
-        <h3 style="margin:0 0 10px">Recent activity (sample)</h3>
-        <div class="req" style="cursor:default">
-          <div class="ico">E</div>
-          <div class="main">
-            <div class="title">Posted: iPhone 15 Pro Max</div>
-            <div class="meta"><span>Range: <b>$900–$1100</b></span><span>⏳ 36h left</span></div>
-          </div>
-          <div class="right"><div class="smallCaps">Offers</div><div class="kpi">3</div></div>
-        </div>
-
-        <div class="notice" style="margin-top:12px">
-          Next step: connect accounts + database so this becomes real.
-        </div>
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+        <div class="footer-tagline">Trade Different</div>
       </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Community Guidelines</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
     </div>
+  </footer>
 
-    <div class="footer">XEKIE • Trade Different.</div>
-  </div>
-  <script src="script.js"></script>
+  <script>
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const BETA_CUTOFF = new Date('2026-06-01');
 
-<footer class="xekie-footer">
-  <div class="footer-inner">
-    <strong>XEKIE — Trade Different</strong><br/>
-    <a href="index.html">Home</a> |
-    <a href="radar.html">Market Pulse</a> |
-    <a href="request.html">XEKIE IT</a> |
-    <a href="prohibited-items.html">Prohibited Items</a> |
-    <a href="#">Terms of Service</a> |
-    <a href="#">Privacy Policy</a> |
-    <a href="#">Seller Guidelines</a> |
-    <a href="#">Contact</a>
-  </div>
-</footer>
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get('id');
 
+    function formatBudget(x) {
+      if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
+      if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
+      if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
+      if (x.budget) return '$'+Number(x.budget).toLocaleString();
+      return '$—';
+    }
+
+    function timeAgo(ts) {
+      const s = Math.floor((new Date() - new Date(ts)) / 1000);
+      for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
+        const c = Math.floor(s/sec); if (c>=1) return c+" "+l+(c>1?"s":"")+" ago";
+      }
+      return "just now";
+    }
+
+    async function loadProfile() {
+      if (!userId) {
+        const { data: { session } } = await _sb.auth.getSession();
+        if (session) {
+          window.location.href = 'profile.html?id=' + session.user.id;
+        } else {
+          document.getElementById('profile-section').innerHTML = '<div class="empty-state">No user specified.</div>';
+        }
+        return;
+      }
+
+      const { data: xekies } = await _sb.from('xekies')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      const list = xekies || [];
+      const activeXekies = list.filter(x => !x.is_fulfilled && (!x.expires_at || new Date(x.expires_at) > new Date()));
+      const joinedDate = list.length ? new Date(list[list.length - 1].created_at) : new Date();
+      const isEarly = joinedDate < BETA_CUTOFF;
+
+      const { data: { session } } = await _sb.auth.getSession();
+      let displayName = 'XEKIE Member';
+      if (session && session.user.id === userId) {
+        displayName = session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'XEKIE Member';
+      }
+
+      const avatarInitial = displayName.charAt(0).toUpperCase();
+
+      document.getElementById('profile-section').innerHTML = `
+        <div class="profile-card">
+          <div class="avatar">${avatarInitial}</div>
+          <div class="profile-info">
+            <div class="profile-username">${displayName}</div>
+            <div class="profile-meta">Member since ${joinedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
+            <div class="profile-badges">
+              ${isEarly ? '<span class="early-badge">⚡ Early Adopter</span>' : ''}
+            </div>
+            <div class="stat-row">
+              <div class="stat-item"><div class="stat-num">${list.length}</div><div class="stat-label">XEKIEs posted</div></div>
+              <div class="stat-item"><div class="stat-num">${activeXekies.length}</div><div class="stat-label">Active</div></div>
+              <div class="stat-item"><div class="stat-num">${list.reduce((a,x)=>a+(x.view_count||0),0)}</div><div class="stat-label">Total views</div></div>
+            </div>
+          </div>
+        </div>`;
+
+      const xekiesSection = document.getElementById('xekies-section');
+      if (!activeXekies.length) {
+        xekiesSection.innerHTML = `
+          <div class="section-title">Active XEKIEs</div>
+          <div class="empty-state">No active XEKIEs right now.</div>`;
+        return;
+      }
+
+      xekiesSection.innerHTML = `
+        <div class="section-title">Active XEKIEs (${activeXekies.length})</div>
+        ${activeXekies.map(x => `
+          <div class="xekie-card">
+            <div class="card-top">
+              <div class="card-title">${x.title}</div>
+              <div class="card-budget">${formatBudget(x)}</div>
+            </div>
+            ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
+            <div class="card-meta">
+              ${x.location ? `<span>📍 ${x.location}</span>` : ''}
+              <span>⏱ ${timeAgo(x.created_at)}</span>
+              ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
+            </div>
+            <a href="xekie.html?id=${x.id}" class="btn-respond">View XEKIE →</a>
+          </div>`).join('')}`;
+    }
+
+    loadProfile();
+  </script>
 </body>
 </html>
