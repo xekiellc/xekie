@@ -59,7 +59,7 @@
     .status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin-bottom:8px;}
     .status-fulfilled{background:#EAF3DE;color:#3B6D11;}
     .status-expired{background:#f4f2ec;color:#6b6b6b;}
-    .promoted-label{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;margin-bottom:8px;display:inline-flex;}
+    .promoted-label{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;margin-bottom:8px;}
     .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px;}
     .card-title{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-0.02em;color:var(--black);}
     .card-budget{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--accent);white-space:nowrap;text-align:right;}
@@ -124,14 +124,15 @@
     <div class="nav-right">
       <span class="nav-user" id="nav-user"></span>
       <a href="notifications.html" class="btn-nav">🔔 Get Alerts</a>
+      <a href="categories.html" class="btn-nav">Categories</a>
       <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
       <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
     </div>
   </nav>
 
   <div class="container">
-    <h1 class="page-title">Radar</h1>
-    <p class="page-sub">Browse what buyers want. Find your next sale.</p>
+    <h1 class="page-title" id="page-title">Radar</h1>
+    <p class="page-sub" id="page-sub">Browse what buyers want. Find your next sale.</p>
     <p class="swipe-tip">💡 Swipe right to save, swipe left to skip</p>
     <input type="text" class="search-bar" id="search" placeholder="Search XEKIEs by keyword, location..." oninput="filterXekies()" />
     <div class="filter-row">
@@ -210,6 +211,15 @@
     let offerCounts = {};
     const BETA_CUTOFF = new Date('2026-06-01');
 
+    // Pre-select category from URL param
+    const radarParams = new URLSearchParams(window.location.search);
+    const urlCategory = radarParams.get('category');
+    if (urlCategory) {
+      activeCategory = urlCategory;
+      document.getElementById('page-title').textContent = urlCategory + ' Radar';
+      document.getElementById('page-sub').textContent = 'Browse ' + urlCategory + ' XEKIEs. Find your next sale.';
+    }
+
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
@@ -240,6 +250,13 @@
         const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
         offerCounts = {};
         (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
+      }
+      // Highlight active category button from URL
+      if (urlCategory) {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          const btnCat = btn.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || '';
+          btn.classList.toggle('active', btnCat === urlCategory);
+        });
       }
       filterXekies();
     }
@@ -277,14 +294,8 @@
         (x.description||'').toLowerCase().includes(search) ||
         (x.location||'').toLowerCase().includes(search)
       );
-      if (filterMin > 0) filtered = filtered.filter(x => {
-        const bud = x.budget_max || x.budget || x.budget_min || 0;
-        return bud >= filterMin;
-      });
-      if (filterMax < Infinity) filtered = filtered.filter(x => {
-        const bud = x.budget_min || x.budget || 0;
-        return bud <= filterMax;
-      });
+      if (filterMin > 0) filtered = filtered.filter(x => { const bud = x.budget_max || x.budget || x.budget_min || 0; return bud >= filterMin; });
+      if (filterMax < Infinity) filtered = filtered.filter(x => { const bud = x.budget_min || x.budget || 0; return bud <= filterMax; });
       if (filterLoc) filtered = filtered.filter(x => (x.location||'').toLowerCase().includes(filterLoc));
       renderXekies(filtered);
     }
@@ -316,8 +327,7 @@
         <div class="xekie-card ${cardClass}" id="card-${x.id}" data-id="${x.id}">
           <div class="swipe-hint-right">SAVE ✓</div>
           <div class="swipe-hint-left">SKIP ✕</div>
-          ${promotedLabel}
-          ${statusBadge}
+          ${promotedLabel}${statusBadge}
           <div class="card-top">
             <div>
               <div class="card-title">${x.title}</div>
@@ -341,10 +351,7 @@
           </div>
         </div>`;
       }).join('');
-
-      xekies.forEach(x => {
-        _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {});
-      });
+      xekies.forEach(x => { _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {}); });
       document.querySelectorAll('.xekie-card').forEach(card => addSwipe(card));
     }
 
@@ -402,14 +409,9 @@
       const msgEl = document.getElementById('modal-msg');
       if (!message) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Please write a message to the buyer.'; return; }
       btn.disabled = true; btn.textContent = 'Sending...';
-      const { error } = await _sb.from('offers').insert({
-        xekie_id: activeXekieId, seller_id: currentUser.id,
-        message, price: price ? parseInt(price) : null
-      });
-      if (error) {
-        msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message;
-        btn.disabled=false; btn.textContent='Send response';
-      } else {
+      const { error } = await _sb.from('offers').insert({ xekie_id: activeXekieId, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
+      if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send response'; }
+      else {
         if (activeXekieOwner) {
           const xekie = allXekies.find(x => x.id === activeXekieId);
           notifyBuyer(activeXekieOwner, xekie?.title || 'Your XEKIE', message, price);
@@ -426,23 +428,14 @@
         const { data: profile } = await _sb.from('profiles').select('email').eq('id', buyerId).single();
         const buyerEmail = profile?.email;
         if (!buyerEmail) return;
-        await fetch('/.netlify/functions/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'offer', to: buyerEmail, data: { xekieTitle, offerMessage, offerPrice } })
-        });
+        await fetch('/.netlify/functions/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'offer', to: buyerEmail, data: { xekieTitle, offerMessage, offerPrice } }) });
       } catch(e) { /* silent */ }
     }
 
-    document.getElementById('modal-overlay').addEventListener('click', e => {
-      if (e.target === document.getElementById('modal-overlay')) closeModal();
-    });
+    document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
 
     _sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        currentUser = session.user;
-        document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
-      }
+      if (session) { currentUser = session.user; document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email; }
       loadXekies();
     });
   </script>
