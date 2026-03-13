@@ -9,6 +9,14 @@
   <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-DPXVZVMJXX');
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
@@ -62,7 +70,7 @@
   <div id="toast-overlay">
     <div class="toast-emoji">🥂</div>
     <div class="toast-text">Welcome to XEKIE!</div>
-    <div class="toast-sub">Check your email to confirm your account.</div>
+    <div class="toast-sub">You're in. Let's trade different.</div>
   </div>
   <nav>
     <a href="index.html" class="nav-logo">
@@ -144,7 +152,7 @@
           o.stop(actx.currentTime + i * 0.1 + 1.5);
         });
       } catch(e) {}
-      setTimeout(() => document.getElementById('toast-overlay').classList.remove('show'), 4000);
+      setTimeout(() => { document.getElementById('toast-overlay').classList.remove('show'); window.location.href = 'dashboard.html'; }, 3000);
     }
     async function signIn() {
       const email = document.getElementById('signin-email').value.trim();
@@ -166,7 +174,7 @@
       btn.disabled = true; btn.textContent = 'Creating account...';
       const { error } = await _sb.auth.signUp({ email, password, options: { data: { full_name: name } } });
       if (error) { showMessage(error.message, 'error'); btn.disabled = false; btn.textContent = 'Create account'; }
-      else { showToast(); btn.textContent = 'Check your email ✓'; }
+      else showToast();
     }
     async function signInWithGoogle() {
       const { error } = await _sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/dashboard.html' } });
