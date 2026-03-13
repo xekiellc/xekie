@@ -5,57 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XEKIE — Radar</title>
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0b1f33">
+  <meta name="theme-color" content="#ff4d1c">
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
-    body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; }
+    body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
     nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 10; }
-    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; }
-    .nav-logo span { color: var(--accent); }
-    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; display: flex; flex-direction: column; line-height: 1; }
+    .nav-logo .xe { color: var(--accent); }
+    .nav-tagline { font-size: 8px; font-weight: 400; letter-spacing: 0.15em; color: var(--mid); font-family: var(--font-body); text-transform: uppercase; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
     .nav-user { font-size: 14px; color: var(--mid); }
     .btn-nav { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: transparent; color: var(--mid); cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
     .btn-nav:hover { border-color: var(--black); color: var(--black); }
     .btn-nav.primary { background: var(--black); color: var(--white); border-color: transparent; }
     .btn-nav.primary:hover { background: var(--accent); }
-    .container { max-width: 900px; margin: 0 auto; padding: 48px 20px; }
+    .container { max-width: 900px; margin: 0 auto; padding: 48px 20px; flex: 1; }
     .page-title { font-family: var(--font-display); font-weight: 800; font-size: 36px; letter-spacing: -0.03em; margin-bottom: 6px; }
     .page-sub { font-size: 15px; font-weight: 300; color: var(--mid); margin-bottom: 32px; }
-    .search-bar { width: 100%; padding: 12px 18px; border: 1.5px solid var(--border); border-radius: 100px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; margin-bottom: 24px; transition: border-color 0.2s; }
+    .search-bar { width: 100%; padding: 12px 18px; border: 1.5px solid var(--border); border-radius: 100px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; margin-bottom: 20px; transition: border-color 0.2s; }
     .search-bar:focus { border-color: var(--black); }
-    .search-bar::placeholder { color: #bbb; }
     .filters { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
     .filter-btn { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: var(--white); color: var(--mid); cursor: pointer; transition: all 0.2s; }
     .filter-btn:hover { border-color: var(--black); color: var(--black); }
     .filter-btn.active { background: var(--black); color: var(--white); border-color: transparent; }
     .results-count { font-size: 13px; color: var(--mid); margin-bottom: 16px; }
-    .xekie-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 12px; transition: transform 0.15s, box-shadow 0.15s; }
+    .xekie-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 12px; transition: transform 0.15s, box-shadow 0.15s; position: relative; touch-action: pan-y; user-select: none; }
     .xekie-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
+    .xekie-card.swiping { transition: transform 0.1s; }
+    .xekie-card.swipe-right { transform: translateX(120%) rotate(8deg) !important; opacity: 0; transition: all 0.4s ease; }
+    .xekie-card.swipe-left { transform: translateX(-120%) rotate(-8deg) !important; opacity: 0; transition: all 0.4s ease; }
+    .swipe-hint-right { position: absolute; top: 20px; left: 20px; background: #22c55e; color: white; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 100px; opacity: 0; transition: opacity 0.2s; letter-spacing: 0.05em; }
+    .swipe-hint-left { position: absolute; top: 20px; right: 20px; background: #ef4444; color: white; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 100px; opacity: 0; transition: opacity 0.2s; letter-spacing: 0.05em; }
     .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
     .card-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: var(--black); }
-    .card-budget { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+    .card-budget { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--accent); white-space: nowrap; text-align: right; }
+    .card-budget-flex { font-size: 11px; font-weight: 400; color: var(--mid); display: block; }
     .card-desc { font-size: 15px; font-weight: 300; color: var(--mid); line-height: 1.5; margin-bottom: 14px; }
     .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-    .card-meta { font-size: 13px; color: var(--mid); display: flex; gap: 12px; flex-wrap: wrap; }
+    .card-meta { font-size: 13px; color: var(--mid); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
     .category-pill { display: inline-block; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 100px; background: var(--cream); color: var(--mid); border: 1px solid var(--border); }
+    .card-actions { display: flex; gap: 8px; align-items: center; }
     .btn-respond { font-size: 13px; font-weight: 500; padding: 9px 18px; border-radius: 100px; background: var(--black); color: var(--white); border: none; cursor: pointer; transition: background 0.2s, transform 0.15s; }
     .btn-respond:hover { background: var(--accent); transform: translateY(-1px); }
+    .btn-share { font-size: 13px; font-weight: 500; padding: 9px 14px; border-radius: 100px; background: transparent; color: var(--mid); border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; }
+    .btn-share:hover { border-color: var(--black); color: var(--black); }
+    .view-count { font-size: 12px; color: var(--mid); }
+    .early-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 100px; background: linear-gradient(135deg, #ff4d1c, #ff8c00); color: white; letter-spacing: 0.03em; }
     .empty-state { text-align: center; padding: 80px 20px; }
     .empty-icon { font-size: 48px; margin-bottom: 16px; }
     .empty-title { font-family: var(--font-display); font-size: 24px; font-weight: 700; margin-bottom: 8px; }
     .empty-sub { font-size: 15px; font-weight: 300; color: var(--mid); }
     .loading { text-align: center; padding: 60px; color: var(--mid); font-size: 15px; }
+    .swipe-tip { text-align: center; font-size: 12px; color: var(--mid); margin-bottom: 16px; display: none; }
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.open { display: flex; }
-    .modal { background: var(--white); border-radius: 20px; padding: 36px; max-width: 480px; width: 100%; position: relative; }
+    .modal { background: var(--white); border-radius: 20px; padding: 36px; max-width: 480px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; }
     .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--mid); }
     .modal-title { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
     .modal-sub { font-size: 14px; color: var(--mid); margin-bottom: 24px; }
-    .modal label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 7px; }
-    .modal input, .modal textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; margin-bottom: 16px; }
+    .modal label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 7px; color: var(--black); }
+    .modal input, .modal textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; margin-bottom: 16px; transition: border-color 0.2s; }
+    .modal input:focus, .modal textarea:focus { border-color: var(--black); }
     .modal textarea { min-height: 100px; resize: vertical; }
     .modal-budget-row { display: flex; gap: 8px; margin-bottom: 24px; }
     .modal-prefix { width: 44px; height: 46px; background: var(--cream); border: 1.5px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 500; color: var(--mid); flex-shrink: 0; }
@@ -65,12 +79,26 @@
     .modal-msg.success { background: #EAF3DE; color: #3B6D11; display: block; }
     .btn-modal-submit { width: 100%; padding: 14px; background: var(--black); color: var(--white); border: none; border-radius: 10px; font-family: var(--font-body); font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
     .btn-modal-submit:hover { background: var(--accent); }
-    @media (max-width: 600px) { nav { padding: 0 20px; } .card-top { flex-direction: column; } }
+    .share-toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: var(--black); color: var(--white); padding: 12px 24px; border-radius: 100px; font-size: 14px; font-weight: 500; z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .share-toast.show { opacity: 1; }
+    footer { background: var(--black); color: var(--white); padding: 40px; margin-top: auto; }
+    .footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    .footer-logo { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
+    .footer-logo .xe { color: var(--accent); }
+    .footer-tagline { font-size: 11px; letter-spacing: 0.2em; color: #555; text-transform: uppercase; }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+    .footer-links a { font-size: 13px; color: #666; text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-bottom { font-size: 12px; color: #444; border-top: 1px solid #1a1a1a; padding-top: 20px; }
+    @media (max-width: 600px) { nav { padding: 0 20px; } .card-top { flex-direction: column; } .swipe-tip { display: block; } }
   </style>
 </head>
 <body>
   <nav>
-    <a href="index.html" class="nav-logo">XEK<span>IE</span></a>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
     <div class="nav-right">
       <span class="nav-user" id="nav-user"></span>
       <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
@@ -80,20 +108,20 @@
   <div class="container">
     <h1 class="page-title">Radar</h1>
     <p class="page-sub">Browse what buyers want. Find your next sale.</p>
-    <input type="text" class="search-bar" id="search" placeholder="Search XEKIEs — try 'MacBook', 'vintage', 'Chicago'..." oninput="filterXekies()" />
+    <p class="swipe-tip">💡 Swipe right to save, swipe left to skip</p>
+    <input type="text" class="search-bar" id="search" placeholder="Search XEKIEs..." oninput="filterXekies()" />
     <div class="filters">
       <button class="filter-btn active" onclick="setCategory('', this)">All</button>
       <button class="filter-btn" onclick="setCategory('Electronics', this)">Electronics</button>
+      <button class="filter-btn" onclick="setCategory('Trading Cards', this)">Trading Cards</button>
       <button class="filter-btn" onclick="setCategory('Vehicles', this)">Vehicles</button>
-      <button class="filter-btn" onclick="setCategory('Furniture & Home', this)">Furniture</button>
-      <button class="filter-btn" onclick="setCategory('Clothing & Accessories', this)">Clothing</button>
-      <button class="filter-btn" onclick="setCategory('Collectibles & Antiques', this)">Collectibles</button>
-      <button class="filter-btn" onclick="setCategory('Other', this)">Other</button>
+      <button class="filter-btn" onclick="setCategory('Tools', this)">Tools</button>
+      <button class="filter-btn" onclick="setCategory('Services', this)">Services</button>
+      <button class="filter-btn" onclick="setCategory('Household Items', this)">Household</button>
     </div>
     <div class="results-count" id="results-count"></div>
     <div id="xekie-feed"><div class="loading">Loading XEKIEs...</div></div>
   </div>
-
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <button class="modal-close" onclick="closeModal()">✕</button>
@@ -104,26 +132,51 @@
       <label>Your asking price</label>
       <div class="modal-budget-row">
         <div class="modal-prefix">$</div>
-        <input type="number" id="modal-price" class="modal-prefix-input" placeholder="1200" />
+        <input type="number" id="modal-price" class="modal-prefix-input" placeholder="e.g. 650" />
       </div>
       <div class="modal-msg" id="modal-msg"></div>
       <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send response</button>
     </div>
   </div>
-
+  <div class="share-toast" id="share-toast">Link copied to clipboard!</div>
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+        <div class="footer-tagline">Trade Different</div>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Community Guidelines</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved. XEKIE is a platform connecting buyers and sellers. We are not responsible for transactions conducted between users.</div>
+    </div>
+  </footer>
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let allXekies = [], activeCategory = '', currentUser = null, activeXekieId = null;
+    const BETA_CUTOFF = new Date('2026-06-01');
 
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
-        const c = Math.floor(s / sec); if (c >= 1) return c + " " + l + (c > 1 ? "s" : "") + " ago";
+        const c = Math.floor(s/sec); if (c>=1) return c+" "+l+(c>1?"s":"")+" ago";
       }
       return "just now";
     }
+    function formatBudget(x) {
+      if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
+      if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
+      if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
+      if (x.budget) return '$'+Number(x.budget).toLocaleString();
+      return '$—';
+    }
+    function isEarlyAdopter(createdAt) { return new Date(createdAt) < BETA_CUTOFF; }
+
     async function loadXekies() {
       const { data, error } = await _sb.from('xekies').select('*').order('created_at', { ascending: false });
       if (error) { document.getElementById('xekie-feed').innerHTML = '<div class="loading">Error loading. Please refresh.</div>'; return; }
@@ -140,18 +193,35 @@
       const search = document.getElementById('search').value.toLowerCase();
       let filtered = allXekies;
       if (activeCategory) filtered = filtered.filter(x => x.category === activeCategory);
-      if (search) filtered = filtered.filter(x => (x.title||'').toLowerCase().includes(search) || (x.description||'').toLowerCase().includes(search) || (x.location||'').toLowerCase().includes(search));
+      if (search) filtered = filtered.filter(x =>
+        (x.title||'').toLowerCase().includes(search) ||
+        (x.description||'').toLowerCase().includes(search) ||
+        (x.location||'').toLowerCase().includes(search)
+      );
       renderXekies(filtered);
     }
     function renderXekies(xekies) {
       const feed = document.getElementById('xekie-feed');
-      document.getElementById('results-count').textContent = xekies.length ? xekies.length + ' XEKIE' + (xekies.length !== 1 ? 's' : '') + ' found' : '';
-      if (!xekies.length) { feed.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No XEKIEs found</div><p class="empty-sub">Try a different search or category.</p></div>`; return; }
-      feed.innerHTML = xekies.map(x => `
-        <div class="xekie-card">
+      document.getElementById('results-count').textContent = xekies.length ? xekies.length+' XEKIE'+(xekies.length!==1?'s':'')+' found' : '';
+      if (!xekies.length) {
+        feed.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No XEKIEs found</div><p class="empty-sub">Try a different search or category.</p></div>`;
+        return;
+      }
+      feed.innerHTML = xekies.map(x => {
+        const budget = formatBudget(x);
+        const flexTag = x.is_flexible ? '<span class="card-budget-flex">flexible</span>' : '';
+        const earlyBadge = isEarlyAdopter(x.created_at) ? '<span class="early-badge">⚡ Early Adopter</span>' : '';
+        const views = x.view_count || 0;
+        return `
+        <div class="xekie-card" id="card-${x.id}" data-id="${x.id}">
+          <div class="swipe-hint-right">SAVE ✓</div>
+          <div class="swipe-hint-left">SKIP ✕</div>
           <div class="card-top">
-            <div class="card-title">${x.title}</div>
-            <div class="card-budget">$${Number(x.budget).toLocaleString()}</div>
+            <div>
+              <div class="card-title">${x.title}</div>
+              ${earlyBadge}
+            </div>
+            <div class="card-budget">${budget}${flexTag}</div>
           </div>
           ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
           <div class="card-footer">
@@ -159,10 +229,58 @@
               ${x.location ? `<span>📍 ${x.location}</span>` : ''}
               <span>⏱ ${timeAgo(x.created_at)}</span>
               ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
+              <span class="view-count">👁 ${views} views</span>
             </div>
-            <button class="btn-respond" onclick="openModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Respond</button>
+            <div class="card-actions">
+              <button class="btn-share" onclick="shareXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
+              <button class="btn-respond" onclick="openModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Respond</button>
+            </div>
           </div>
-        </div>`).join('');
+        </div>`;
+      }).join('');
+      xekies.forEach(x => {
+        _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {});
+      });
+      document.querySelectorAll('.xekie-card').forEach(card => addSwipe(card));
+    }
+    function addSwipe(card) {
+      let startX = 0, startY = 0, isDragging = false;
+      const onStart = (x, y) => { startX = x; startY = y; isDragging = true; card.classList.add('swiping'); };
+      const onMove = (x, y) => {
+        if (!isDragging) return;
+        const dx = x - startX, dy = y - startY;
+        if (Math.abs(dy) > Math.abs(dx) * 1.5) return;
+        card.style.transform = `translateX(${dx}px) rotate(${dx * 0.03}deg)`;
+        card.querySelector('.swipe-hint-right').style.opacity = dx > 40 ? Math.min(1,(dx-40)/60) : 0;
+        card.querySelector('.swipe-hint-left').style.opacity = dx < -40 ? Math.min(1,(-dx-40)/60) : 0;
+      };
+      const onEnd = (x) => {
+        if (!isDragging) return;
+        isDragging = false;
+        card.classList.remove('swiping');
+        const dx = x - startX;
+        if (dx > 80) { card.classList.add('swipe-right'); setTimeout(() => card.remove(), 400); }
+        else if (dx < -80) { card.classList.add('swipe-left'); setTimeout(() => card.remove(), 400); }
+        else { card.style.transform = ''; card.querySelector('.swipe-hint-right').style.opacity=0; card.querySelector('.swipe-hint-left').style.opacity=0; }
+      };
+      card.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
+      window.addEventListener('mousemove', e => { if (isDragging) onMove(e.clientX, e.clientY); });
+      window.addEventListener('mouseup', e => { if (isDragging) onEnd(e.clientX); });
+      card.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive:true});
+      card.addEventListener('touchmove', e => onMove(e.touches[0].clientX, e.touches[0].clientY), {passive:true});
+      card.addEventListener('touchend', e => onEnd(e.changedTouches[0].clientX));
+    }
+    function shareXekie(id, title) {
+      const url = `${window.location.origin}/radar.html?xekie=${id}`;
+      if (navigator.share) {
+        navigator.share({ title: 'XEKIE — ' + title, url }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          const toast = document.getElementById('share-toast');
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 2500);
+        });
+      }
     }
     function openModal(xekieId, title) {
       if (!currentUser) { window.location.href = 'login.html'; return; }
@@ -181,13 +299,13 @@
       const price = document.getElementById('modal-price').value;
       const btn = document.getElementById('modal-submit');
       const msgEl = document.getElementById('modal-msg');
-      if (!message) { msgEl.className = 'modal-msg error'; msgEl.textContent = 'Please write a message to the buyer.'; return; }
+      if (!message) { msgEl.className='modal-msg error'; msgEl.textContent='Please write a message to the buyer.'; return; }
       btn.disabled = true; btn.textContent = 'Sending...';
       const { error } = await _sb.from('offers').insert({ xekie_id: activeXekieId, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
-      if (error) { msgEl.className = 'modal-msg error'; msgEl.textContent = 'Error: ' + error.message; btn.disabled = false; btn.textContent = 'Send response'; }
-      else { msgEl.className = 'modal-msg success'; msgEl.textContent = 'Response sent! The buyer will be notified.'; btn.textContent = 'Sent ✓'; setTimeout(closeModal, 1800); }
+      if (error) { msgEl.className='modal-msg error'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send response'; }
+      else { msgEl.className='modal-msg success'; msgEl.textContent='Response sent! The buyer will be notified.'; btn.textContent='Sent ✓'; setTimeout(closeModal, 1800); }
     }
-    document.getElementById('modal-overlay').addEventListener('click', (e) => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
+    document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (session) { currentUser = session.user; document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email; }
       loadXekies();
