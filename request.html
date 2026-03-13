@@ -7,14 +7,10 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0b1f33">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec;
-      --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12);
-      --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
-    }
+    :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
     body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; }
     nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 10; }
     .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; }
@@ -60,26 +56,21 @@
       <button class="btn-signout" onclick="signOut()">Sign out</button>
     </div>
   </nav>
-
   <div class="container">
     <h1 class="page-title">Post a XEKIE</h1>
     <p class="page-sub">Tell sellers exactly what you want. Be specific — better details get better responses.</p>
-
     <div class="form-card">
       <div id="message" class="message"></div>
-
       <div class="form-group">
         <label>What do you want to buy? <span class="label-hint">Be specific</span></label>
         <input type="text" id="title" placeholder="e.g. MacBook Pro M3, 16-inch, Space Black" maxlength="100" oninput="updatePreview()" />
         <div class="char-count"><span id="title-count">0</span>/100</div>
       </div>
-
       <div class="form-group">
         <label>Describe exactly what you're looking for <span class="label-hint">Condition, specs, preferences</span></label>
-        <textarea id="description" placeholder="e.g. Looking for a used or refurbished model in good condition. No cracks or major scratches. Happy to consider AppleCare transfer." maxlength="500" oninput="updatePreview()"></textarea>
+        <textarea id="description" placeholder="e.g. Looking for a used or refurbished model in good condition. No cracks or major scratches." maxlength="500" oninput="updatePreview()"></textarea>
         <div class="char-count"><span id="desc-count">0</span>/500</div>
       </div>
-
       <div class="form-group">
         <label>Your budget</label>
         <div class="budget-row">
@@ -87,12 +78,10 @@
           <input type="number" id="budget" placeholder="1500" min="1" max="999999" />
         </div>
       </div>
-
       <div class="form-group">
-        <label>Location <span class="label-hint">City, state or "Anywhere / Ships OK"</span></label>
+        <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
         <input type="text" id="location" placeholder="e.g. Chicago, IL or Ships anywhere" />
       </div>
-
       <div class="form-group">
         <label>Category</label>
         <select id="category">
@@ -110,35 +99,26 @@
           <option>Other</option>
         </select>
       </div>
-
       <div class="preview-box">
         <div class="preview-label">Live preview</div>
         <div class="preview-title" id="preview-title">Your XEKIE title will appear here</div>
         <div class="preview-desc" id="preview-desc">Your description will appear here...</div>
         <div class="preview-budget" id="preview-budget">$—</div>
       </div>
-
       <br>
-      <button class="btn-submit" id="btn-submit" onclick="postXekie()">
-        Post my XEKIE
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+      <button class="btn-submit" id="btn-submit" onclick="postXekie()">Post my XEKIE →</button>
     </div>
   </div>
-
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_fCKM-ACI_E7K9-lflnwN-Q__Two4qgq";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null;
-
-    // Auth gate
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    _sb.auth.getSession().then(({ data: { session } }) => {
       if (!session) { window.location.href = 'login.html'; return; }
       currentUser = session.user;
       document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
     });
-
     function updatePreview() {
       const title = document.getElementById('title').value;
       const desc = document.getElementById('description').value;
@@ -149,13 +129,11 @@
       document.getElementById('preview-desc').textContent = desc || 'Your description will appear here...';
       document.getElementById('preview-budget').textContent = budget ? '$' + Number(budget).toLocaleString() : '$—';
     }
-
     function showMessage(text, type) {
       const el = document.getElementById('message');
       el.textContent = text; el.className = 'message ' + type;
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
     async function postXekie() {
       const title = document.getElementById('title').value.trim();
       const description = document.getElementById('description').value.trim();
@@ -163,37 +141,20 @@
       const location = document.getElementById('location').value.trim();
       const category = document.getElementById('category').value;
       const btn = document.getElementById('btn-submit');
-
       if (!title) return showMessage('Please add a title — what do you want to buy?', 'error');
       if (!budget || budget < 1) return showMessage('Please enter your budget.', 'error');
       if (!location) return showMessage('Please add a location or write "Ships anywhere".', 'error');
-
-      btn.disabled = true;
-      btn.innerHTML = 'Posting... <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-
-      const { error } = await supabase.from('xekies').insert({
-        title,
-        description,
-        budget: parseInt(budget),
-        location,
-        category,
-        user_id: currentUser.id
-      });
-
+      btn.disabled = true; btn.textContent = 'Posting...';
+      const { error } = await _sb.from('xekies').insert({ title, description, budget: parseInt(budget), location, category, user_id: currentUser.id });
       if (error) {
         showMessage('Something went wrong: ' + error.message, 'error');
-        btn.disabled = false;
-        btn.innerHTML = 'Post my XEKIE <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        btn.disabled = false; btn.textContent = 'Post my XEKIE →';
       } else {
-        showMessage('Your XEKIE is live! Redirecting to your dashboard...', 'success');
+        showMessage('Your XEKIE is live! Redirecting...', 'success');
         setTimeout(() => window.location.href = 'dashboard.html', 1500);
       }
     }
-
-    async function signOut() {
-      await supabase.auth.signOut();
-      window.location.href = 'login.html';
-    }
+    async function signOut() { await _sb.auth.signOut(); window.location.href = 'login.html'; }
   </script>
 </body>
 </html>
