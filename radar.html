@@ -9,6 +9,14 @@
   <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-DPXVZVMJXX');
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
@@ -160,7 +168,6 @@
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let allXekies = [], activeCategory = '', currentUser = null, activeXekieId = null;
     const BETA_CUTOFF = new Date('2026-06-01');
-
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
@@ -176,7 +183,6 @@
       return '$—';
     }
     function isEarlyAdopter(createdAt) { return new Date(createdAt) < BETA_CUTOFF; }
-
     async function loadXekies() {
       const { data, error } = await _sb.from('xekies').select('*').order('created_at', { ascending: false });
       if (error) { document.getElementById('xekie-feed').innerHTML = '<div class="loading">Error loading. Please refresh.</div>'; return; }
@@ -212,15 +218,11 @@
         const flexTag = x.is_flexible ? '<span class="card-budget-flex">flexible</span>' : '';
         const earlyBadge = isEarlyAdopter(x.created_at) ? '<span class="early-badge">⚡ Early Adopter</span>' : '';
         const views = x.view_count || 0;
-        return `
-        <div class="xekie-card" id="card-${x.id}" data-id="${x.id}">
+        return `<div class="xekie-card" id="card-${x.id}" data-id="${x.id}">
           <div class="swipe-hint-right">SAVE ✓</div>
           <div class="swipe-hint-left">SKIP ✕</div>
           <div class="card-top">
-            <div>
-              <div class="card-title">${x.title}</div>
-              ${earlyBadge}
-            </div>
+            <div><div class="card-title">${x.title}</div>${earlyBadge}</div>
             <div class="card-budget">${budget}${flexTag}</div>
           </div>
           ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
@@ -232,15 +234,13 @@
               <span class="view-count">👁 ${views} views</span>
             </div>
             <div class="card-actions">
-              <button class="btn-share" onclick="shareXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
-              <button class="btn-respond" onclick="openModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Respond</button>
+              <button class="btn-share" onclick="shareXekie('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
+              <button class="btn-respond" onclick="openModal('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Respond</button>
             </div>
           </div>
         </div>`;
       }).join('');
-      xekies.forEach(x => {
-        _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {});
-      });
+      xekies.forEach(x => { _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {}); });
       document.querySelectorAll('.xekie-card').forEach(card => addSwipe(card));
     }
     function addSwipe(card) {
@@ -272,8 +272,9 @@
     }
     function shareXekie(id, title) {
       const url = `${window.location.origin}/radar.html?xekie=${id}`;
+      const text = `Check out this XEKIE: "${title}" — ${url}`;
       if (navigator.share) {
-        navigator.share({ title: 'XEKIE — ' + title, url }).catch(() => {});
+        navigator.share({ title: 'XEKIE — ' + title, text, url }).catch(() => {});
       } else {
         navigator.clipboard.writeText(url).then(() => {
           const toast = document.getElementById('share-toast');
