@@ -7,14 +7,10 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0b1f33">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec;
-      --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12);
-      --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
-    }
+    :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
     body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; }
     nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 10; }
     .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; }
@@ -62,21 +58,18 @@
   </div>
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_fCKM-ACI_E7K9-lflnwN-Q__Two4qgq";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null;
-
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
-        const c = Math.floor(s / sec);
-        if (c >= 1) return c + " " + l + (c > 1 ? "s" : "") + " ago";
+        const c = Math.floor(s / sec); if (c >= 1) return c + " " + l + (c > 1 ? "s" : "") + " ago";
       }
       return "just now";
     }
-
     async function loadMyXekies(userId) {
-      const { data, error } = await supabase.from('xekies').select('*').eq('user_id', userId).order('created_at', { ascending: false });
+      const { data, error } = await _sb.from('xekies').select('*').eq('user_id', userId).order('created_at', { ascending: false });
       const container = document.getElementById('my-xekies');
       if (error || !data || data.length === 0) {
         container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No XEKIEs yet</div><p class="empty-sub">Post your first XEKIE and let sellers come to you.</p><a href="request.html" class="btn-primary" style="display:inline-flex;">Post your first XEKIE</a></div>`;
@@ -88,26 +81,20 @@
           <div class="card-desc">${x.description || ''}</div>
           <div class="card-footer">
             <div>
-              <div class="card-budget">$${x.budget}</div>
+              <div class="card-budget">$${Number(x.budget).toLocaleString()}</div>
               <div class="card-meta">Posted ${timeAgo(x.created_at)}${x.location ? ' · ' + x.location : ''}</div>
             </div>
             <button class="btn-delete" onclick="deleteXekie('${x.id}')">Delete</button>
           </div>
         </div>`).join('');
     }
-
     async function deleteXekie(id) {
       if (!confirm('Delete this XEKIE?')) return;
-      const { error } = await supabase.from('xekies').delete().eq('id', id).eq('user_id', currentUser.id);
+      const { error } = await _sb.from('xekies').delete().eq('id', id).eq('user_id', currentUser.id);
       if (!error) document.getElementById('card-' + id)?.remove();
     }
-
-    async function signOut() {
-      await supabase.auth.signOut();
-      window.location.href = 'login.html';
-    }
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    async function signOut() { await _sb.auth.signOut(); window.location.href = 'login.html'; }
+    _sb.auth.getSession().then(({ data: { session } }) => {
       if (!session) { window.location.href = 'login.html'; return; }
       currentUser = session.user;
       document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
