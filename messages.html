@@ -9,6 +9,14 @@
   <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-DPXVZVMJXX');
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
@@ -60,9 +68,9 @@
     .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--mid); }
     .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em; }
     .modal-sub { font-size: 14px; color: var(--mid); margin-bottom: 24px; line-height: 1.5; }
-    .modal-info { background: var(--cream); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .modal-info { background: var(--cream); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
     .modal-info-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
-    .modal-info-value { font-size: 15px; color: var(--black); line-height: 1.5; }
+    .modal-info-value { font-size: 15px; font-weight: 400; color: var(--black); line-height: 1.5; }
     .modal-note { font-size: 13px; color: var(--mid); line-height: 1.6; padding: 14px 16px; background: rgba(255,77,28,0.06); border-radius: 10px; border-left: 3px solid var(--accent); }
     footer { background: var(--black); color: var(--white); padding: 40px; margin-top: auto; }
     .footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
@@ -106,7 +114,9 @@
         <div class="modal-info-label">Their message</div>
         <div class="modal-info-value" id="contact-offer-msg"></div>
       </div>
-      <div class="modal-note">💡 XEKIE connects buyers and sellers. To proceed, reach out directly — exchange contact info, agree on terms, and complete the transaction safely. Always meet in a public place for local transactions.</div>
+      <div class="modal-note">
+        💡 XEKIE connects buyers and sellers. To proceed, reach out directly — exchange contact info, agree on terms, and complete the transaction safely. Always meet in a public place for local transactions.
+      </div>
     </div>
   </div>
   <footer>
@@ -151,7 +161,13 @@
     async function loadMessages() {
       const { data: xekies } = await _sb.from('xekies').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
       if (!xekies || !xekies.length) {
-        document.getElementById('messages-feed').innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No XEKIEs yet</div><p class="empty-sub">Post what you want to buy and sellers will respond here.</p><a href="request.html" class="btn-nav primary" style="display:inline-block;">Post your first XEKIE →</a></div>`;
+        document.getElementById('messages-feed').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-title">No XEKIEs yet</div>
+            <p class="empty-sub">Post what you want to buy and sellers will respond here.</p>
+            <a href="request.html" class="btn-nav primary" style="display:inline-block;">Post your first XEKIE →</a>
+          </div>`;
         return;
       }
       const ids = xekies.map(x => x.id);
@@ -160,10 +176,17 @@
       (offers || []).forEach(o => { if (!offerMap[o.xekie_id]) offerMap[o.xekie_id] = []; offerMap[o.xekie_id].push(o); });
       const xekiesWithOffers = xekies.filter(x => offerMap[x.id]?.length);
       if (!xekiesWithOffers.length) {
-        document.getElementById('messages-feed').innerHTML = `<div class="empty-state"><div class="empty-icon">📬</div><div class="empty-title">No responses yet</div><p class="empty-sub">You have ${xekies.length} active XEKIE${xekies.length !== 1 ? 's' : ''}. Sellers will respond here when they have what you're looking for.</p><a href="radar.html" class="btn-nav" style="display:inline-block;">Browse Radar</a></div>`;
+        document.getElementById('messages-feed').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📬</div>
+            <div class="empty-title">No responses yet</div>
+            <p class="empty-sub">You have ${xekies.length} active XEKIE${xekies.length !== 1 ? 's' : ''}. Sellers will respond here when they have what you're looking for.</p>
+            <a href="radar.html" class="btn-nav" style="display:inline-block;">Browse Radar</a>
+          </div>`;
         return;
       }
-      document.getElementById('messages-feed').innerHTML = xekiesWithOffers.map(x => {
+      const feed = document.getElementById('messages-feed');
+      feed.innerHTML = xekiesWithOffers.map(x => {
         const xOffers = offerMap[x.id] || [];
         return `<div class="xekie-group">
           <div class="xekie-header">
@@ -178,17 +201,21 @@
             <div class="response-count"><div class="response-count-dot"></div>${xOffers.length} response${xOffers.length !== 1 ? 's' : ''}</div>
           </div>
           <div class="responses">
-            ${xOffers.map(o => `<div class="response-item" id="resp-${o.id}">
-              <div class="response-top">
-                <div>${o.price ? `<div class="response-price">$${Number(o.price).toLocaleString()}</div>` : '<div class="response-no-price">No price listed</div>'}<div class="response-time">${timeAgo(o.created_at)}</div></div>
-                <span class="seller-tag">🏪 Seller</span>
-              </div>
-              <div class="response-msg">${o.message}</div>
-              <div class="response-actions">
-                <button class="btn-contact" onclick="openContact('${x.title.replace(/'/g,"\\'")}','${o.price||''}','${o.message.replace(/'/g,"\\'").replace(/\n/g,' ')}')">View details</button>
-                <button class="btn-dismiss" onclick="dismissResponse('${o.id}')">Dismiss</button>
-              </div>
-            </div>`).join('')}
+            ${xOffers.map(o => `
+              <div class="response-item" id="resp-${o.id}">
+                <div class="response-top">
+                  <div>
+                    ${o.price ? `<div class="response-price">$${Number(o.price).toLocaleString()}</div>` : '<div class="response-no-price">No price listed</div>'}
+                    <div class="response-time">${timeAgo(o.created_at)}</div>
+                  </div>
+                  <span class="seller-tag">🏪 Seller</span>
+                </div>
+                <div class="response-msg">${o.message}</div>
+                <div class="response-actions">
+                  <button class="btn-contact" onclick="openContact('${x.title.replace(/'/g,"\\'")}','${o.price||''}','${o.message.replace(/'/g,"\\'").replace(/\n/g,' ')}')">View details</button>
+                  <button class="btn-dismiss" onclick="dismissResponse('${o.id}')">Dismiss</button>
+                </div>
+              </div>`).join('')}
           </div>
         </div>`;
       }).join('');
@@ -203,7 +230,7 @@
     document.getElementById('contact-modal').addEventListener('click', e => { if (e.target === document.getElementById('contact-modal')) closeContact(); });
     function dismissResponse(id) {
       const el = document.getElementById('resp-' + id);
-      if (el) { el.style.opacity = '0'; el.style.transform = 'translateX(-20px)'; el.style.transition = 'all 0.3s'; setTimeout(() => el.remove(), 300); }
+      if (el) { el.style.opacity='0'; el.style.transform='translateX(-20px)'; el.style.transition='all 0.3s'; setTimeout(() => el.remove(), 300); }
     }
     async function signOut() { await _sb.auth.signOut(); window.location.href = 'login.html'; }
   </script>
