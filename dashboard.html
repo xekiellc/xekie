@@ -78,6 +78,14 @@
     .offer-msg{font-size:14px;color:var(--black);line-height:1.5;}
     .offer-time{font-size:12px;color:var(--mid);margin-top:6px;}
     .no-offers{text-align:center;padding:32px;color:var(--mid);font-size:15px;}
+    .rating-stars{display:flex;gap:8px;justify-content:center;margin:20px 0;}
+    .star-btn{font-size:32px;background:none;border:none;cursor:pointer;transition:transform 0.1s;opacity:0.3;}
+    .star-btn:hover,.star-btn.active{opacity:1;transform:scale(1.2);}
+    .modal-msg{padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:16px;display:none;}
+    .modal-msg.error{background:#FCEBEB;color:#A32D2D;display:block;}
+    .modal-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
+    .btn-modal-submit{width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
+    .btn-modal-submit:hover{background:var(--accent);}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
@@ -115,13 +123,11 @@
       </div>
       <a href="request.html" class="btn-nav primary" style="align-self:flex-start;">+ Post a XEKIE</a>
     </div>
-
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num" id="stat-xekies">—</div><div class="stat-label">XEKIEs posted</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-offers">—</div><div class="stat-label">Responses received</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-views">—</div><div class="stat-label">Total views</div></div>
     </div>
-
     <div class="section-title">Your XEKIEs</div>
     <div id="xekie-list"><div style="text-align:center;padding:40px;color:var(--mid);">Loading...</div></div>
   </div>
@@ -131,6 +137,25 @@
       <button class="modal-close" onclick="closeOffersModal()">✕</button>
       <h2 class="modal-title" id="offers-modal-title">Responses</h2>
       <div id="offers-list"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="rating-modal">
+    <div class="modal" style="text-align:center;">
+      <button class="modal-close" onclick="closeRatingModal()">✕</button>
+      <h2 class="modal-title">Rate your seller</h2>
+      <p style="font-size:14px;color:var(--mid);margin-bottom:8px;">How was your experience?</p>
+      <div class="rating-stars">
+        <button class="star-btn" onclick="setStar(1)">⭐</button>
+        <button class="star-btn" onclick="setStar(2)">⭐</button>
+        <button class="star-btn" onclick="setStar(3)">⭐</button>
+        <button class="star-btn" onclick="setStar(4)">⭐</button>
+        <button class="star-btn" onclick="setStar(5)">⭐</button>
+      </div>
+      <textarea id="rating-comment" placeholder="Optional: leave a comment for the seller..." style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:14px;resize:vertical;min-height:80px;outline:none;margin-bottom:16px;"></textarea>
+      <div class="modal-msg" id="rating-msg"></div>
+      <button class="btn-modal-submit" id="rating-submit" onclick="submitRating()">Submit rating</button>
+      <button onclick="closeRatingModal()" style="width:100%;padding:12px;background:transparent;border:none;color:var(--mid);font-family:var(--font-body);font-size:14px;cursor:pointer;margin-top:8px;">Skip for now</button>
     </div>
   </div>
 
@@ -255,11 +280,62 @@
       }).join('');
     }
 
+    let pendingFulfillId = null, selectedStar = 0, ratingXekieId = null;
+
     async function markFulfilled(id) {
       if (!confirm('Mark this XEKIE as fulfilled? It will stay visible but sellers can no longer respond.')) return;
       const { error } = await _sb.from('xekies').update({ is_fulfilled: true }).eq('id', id).eq('user_id', currentUser.id);
-      if (!error) loadDashboard();
+      if (!error) {
+        loadDashboard();
+        const { data: offers } = await _sb.from('offers').select('seller_id').eq('xekie_id', id).limit(1);
+        if (offers && offers.length) {
+          ratingXekieId = id;
+          pendingFulfillId = offers[0].seller_id;
+          selectedStar = 0;
+          document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('active'));
+          document.getElementById('rating-comment').value = '';
+          document.getElementById('rating-msg').className = 'modal-msg';
+          document.getElementById('rating-msg').style.display = 'none';
+          document.getElementById('rating-submit').disabled = false;
+          document.getElementById('rating-submit').textContent = 'Submit rating';
+          setTimeout(() => document.getElementById('rating-modal').classList.add('open'), 600);
+        }
+      }
     }
+
+    function setStar(n) {
+      selectedStar = n;
+      document.querySelectorAll('.star-btn').forEach((b, i) => b.classList.toggle('active', i < n));
+    }
+
+    async function submitRating() {
+      if (!selectedStar) {
+        const m = document.getElementById('rating-msg');
+        m.className = 'modal-msg error'; m.style.display = 'block';
+        m.textContent = 'Please select a star rating.'; return;
+      }
+      const comment = document.getElementById('rating-comment').value.trim();
+      const btn = document.getElementById('rating-submit');
+      btn.disabled = true; btn.textContent = 'Submitting...';
+      const { error } = await _sb.from('ratings').insert({
+        xekie_id: ratingXekieId, buyer_id: currentUser.id,
+        seller_id: pendingFulfillId, stars: selectedStar, comment: comment || null
+      });
+      if (error) {
+        const m = document.getElementById('rating-msg');
+        m.className = 'modal-msg error'; m.style.display = 'block';
+        m.textContent = 'Error: ' + error.message;
+        btn.disabled = false; btn.textContent = 'Submit rating';
+      } else {
+        const m = document.getElementById('rating-msg');
+        m.className = 'modal-msg success'; m.style.display = 'block';
+        m.textContent = 'Rating submitted! Thank you. ✓';
+        btn.textContent = 'Submitted ✓';
+        setTimeout(closeRatingModal, 1500);
+      }
+    }
+
+    function closeRatingModal() { document.getElementById('rating-modal').classList.remove('open'); }
 
     async function deleteXekie(id) {
       if (!confirm('Delete this XEKIE? This cannot be undone.')) return;
@@ -269,15 +345,8 @@
 
     function shareXekie(id) {
       const url = `${window.location.origin}/xekie.html?id=${id}`;
-      if (navigator.share) {
-        navigator.share({ url }).catch(() => {});
-      } else {
-        navigator.clipboard.writeText(url).then(() => {
-          const t = document.getElementById('share-toast');
-          t.classList.add('show');
-          setTimeout(() => t.classList.remove('show'), 2500);
-        });
-      }
+      if (navigator.share) { navigator.share({ url }).catch(() => {}); }
+      else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
     }
 
     async function viewOffers(xekieId, title) {
@@ -285,10 +354,7 @@
       document.getElementById('offers-list').innerHTML = '<div class="no-offers">Loading...</div>';
       document.getElementById('offers-modal').classList.add('open');
       const { data: offers } = await _sb.from('offers').select('*').eq('xekie_id', xekieId).order('created_at', { ascending: false });
-      if (!offers || !offers.length) {
-        document.getElementById('offers-list').innerHTML = '<div class="no-offers">No responses yet. Share your XEKIE to get more visibility!</div>';
-        return;
-      }
+      if (!offers || !offers.length) { document.getElementById('offers-list').innerHTML = '<div class="no-offers">No responses yet. Share your XEKIE to get more visibility!</div>'; return; }
       document.getElementById('offers-list').innerHTML = offers.map(o => `
         <div class="offer-item">
           ${o.price ? `<div class="offer-price">$${Number(o.price).toLocaleString()}</div>` : ''}
@@ -299,6 +365,7 @@
 
     function closeOffersModal() { document.getElementById('offers-modal').classList.remove('open'); }
     document.getElementById('offers-modal').addEventListener('click', e => { if (e.target === document.getElementById('offers-modal')) closeOffersModal(); });
+    document.getElementById('rating-modal').addEventListener('click', e => { if (e.target === document.getElementById('rating-modal')) closeRatingModal(); });
 
     async function signOut() { await _sb.auth.signOut(); window.location.href = 'login.html'; }
   </script>
