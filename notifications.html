@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Seller Alerts</title>
+  <meta name="description" content="Get notified when buyers post XEKIEs that match what you sell.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff4d1c">
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-nav:hover{border-color:var(--black);color:var(--black);}
+    .btn-nav.primary{background:var(--black);color:var(--white);border-color:transparent;}
+    .btn-nav.primary:hover{background:var(--accent);}
+    .hero{background:var(--black);padding:64px 40px;text-align:center;}
+    .hero-eyebrow{font-size:11px;letter-spacing:3px;color:#ff4d1c;text-transform:uppercase;margin-bottom:12px;}
+    .hero-title{font-family:var(--font-display);font-size:42px;font-weight:800;color:var(--white);letter-spacing:-0.03em;line-height:1.1;margin-bottom:16px;}
+    .hero-title span{color:var(--accent);}
+    .hero-sub{font-size:17px;font-weight:300;color:#888;max-width:500px;margin:0 auto;}
+    .container{max-width:600px;margin:0 auto;padding:56px 20px;flex:1;}
+    .card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:40px;}
+    .card-title{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+    .card-sub{font-size:14px;color:var(--mid);margin-bottom:28px;}
+    .form-group{margin-bottom:20px;}
+    .form-group label{display:block;font-size:13px;font-weight:500;margin-bottom:7px;color:var(--black);}
+    .form-group input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;color:var(--black);background:var(--cream);outline:none;transition:border-color 0.2s;}
+    .form-group input:focus{border-color:var(--black);}
+    .category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;}
+    .cat-btn{padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--mid);cursor:pointer;transition:all 0.2s;text-align:center;}
+    .cat-btn:hover{border-color:var(--black);color:var(--black);}
+    .cat-btn.selected{background:var(--black);color:var(--white);border-color:transparent;}
+    .cat-btn.all-btn.selected{background:linear-gradient(135deg,#ff4d1c,#ff8c00);border-color:transparent;}
+    .hint{font-size:12px;color:var(--mid);margin-top:6px;}
+    .btn-submit{width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;margin-top:8px;}
+    .btn-submit:hover{background:var(--accent);}
+    .btn-submit:disabled{background:#ccc;cursor:not-allowed;}
+    .msg{padding:12px 16px;border-radius:10px;font-size:14px;margin-top:16px;display:none;}
+    .msg.error{background:#FCEBEB;color:#A32D2D;display:block;}
+    .msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
+    .existing-subs{margin-top:40px;}
+    .existing-title{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:16px;}
+    .sub-item{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .sub-info{flex:1;}
+    .sub-cats{font-size:14px;font-weight:500;color:var(--black);margin-bottom:3px;}
+    .sub-loc{font-size:13px;color:var(--mid);}
+    .btn-delete-sub{font-size:12px;padding:5px 12px;border-radius:100px;border:1.5px solid rgba(163,45,45,0.2);background:transparent;color:#A32D2D;cursor:pointer;transition:all 0.2s;}
+    .btn-delete-sub:hover{background:#FCEBEB;}
+    .how-it-works{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:28px;margin-top:32px;}
+    .how-title{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:16px;}
+    .how-step{display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;}
+    .how-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:white;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .how-text{font-size:14px;color:var(--mid);line-height:1.5;padding-top:4px;}
+    footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
+    .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+    .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
+    .footer-logo .xe{color:var(--accent);}
+    .footer-tagline{font-size:11px;letter-spacing:0.2em;color:#555;text-transform:uppercase;}
+    .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
+    .footer-links a:hover{color:var(--white);}
+    .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
+    @media(max-width:600px){nav{padding:0 20px;}.hero{padding:48px 20px;}.hero-title{font-size:30px;}.category-grid{grid-template-columns:repeat(2,1fr);}.card{padding:28px 20px;}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
+    <div style="display:flex;gap:12px;">
+      <a href="radar.html" class="btn-nav">Radar</a>
+      <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">For Sellers</div>
+    <h1 class="hero-title">Never miss a <span>sale</span> again.</h1>
+    <p class="hero-sub">Get emailed the moment a buyer posts a XEKIE that matches what you sell.</p>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="card-title">Set up your alert</div>
+      <div class="card-sub">We'll email you when a matching XEKIE is posted. Free, forever.</div>
+
+      <div class="form-group">
+        <label>Your first name</label>
+        <input type="text" id="sub-name" placeholder="e.g. Zach" autocomplete="given-name" />
+      </div>
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" id="sub-email" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Categories to watch</label>
+        <div class="category-grid">
+          <button class="cat-btn all-btn" onclick="toggleCat('All', this)">🔶 All</button>
+          <button class="cat-btn" onclick="toggleCat('Electronics', this)">Electronics</button>
+          <button class="cat-btn" onclick="toggleCat('Trading Cards', this)">Trading Cards</button>
+          <button class="cat-btn" onclick="toggleCat('Vehicles', this)">Vehicles</button>
+          <button class="cat-btn" onclick="toggleCat('Tools', this)">Tools</button>
+          <button class="cat-btn" onclick="toggleCat('Services', this)">Services</button>
+          <button class="cat-btn" onclick="toggleCat('Household Items', this)">Household</button>
+          <button class="cat-btn" onclick="toggleCat('Collectibles', this)">Collectibles</button>
+          <button class="cat-btn" onclick="toggleCat('Other', this)">Other</button>
+        </div>
+        <div class="hint">Select one or more — or All for everything</div>
+      </div>
+      <div class="form-group">
+        <label>Location filter <span style="font-weight:300;color:var(--mid);">(optional)</span></label>
+        <input type="text" id="sub-location" placeholder="e.g. Ohio, Columbus, Midwest..." />
+        <div class="hint">Leave blank to get alerts nationwide</div>
+      </div>
+
+      <button class="btn-submit" id="btn-subscribe" onclick="subscribe()">Set up my alert →</button>
+      <div class="msg" id="sub-msg"></div>
+    </div>
+
+    <div class="how-it-works">
+      <div class="how-title">How it works</div>
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <div class="how-text">A buyer posts a XEKIE in your category and location.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <div class="how-text">You get an email instantly with the title, budget, and a direct link.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <div class="how-text">You click, respond with your offer, and close the deal.</div>
+      </div>
+    </div>
+
+    <div class="existing-subs" id="existing-subs" style="display:none;">
+      <div class="existing-title">Your active alerts</div>
+      <div id="subs-list"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+        <div class="footer-tagline">Trade Different</div>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Community Guidelines</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let selectedCats = [];
+    let currentUser = null;
+
+    _sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        currentUser = session.user;
+        document.getElementById('sub-email').value = session.user.email;
+        const name = session.user.user_metadata?.full_name || '';
+        if (name) document.getElementById('sub-name').value = name;
+        loadExisting();
+      }
+    });
+
+    function toggleCat(cat, btn) {
+      if (cat === 'All') {
+        selectedCats = selectedCats.includes('All') ? [] : ['All'];
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+        if (selectedCats.includes('All')) btn.classList.add('selected');
+        return;
+      }
+      selectedCats = selectedCats.filter(c => c !== 'All');
+      document.querySelector('.all-btn').classList.remove('selected');
+      if (selectedCats.includes(cat)) {
+        selectedCats = selectedCats.filter(c => c !== cat);
+        btn.classList.remove('selected');
+      } else {
+        selectedCats.push(cat);
+        btn.classList.add('selected');
+      }
+    }
+
+    async function subscribe() {
+      const name = document.getElementById('sub-name').value.trim();
+      const email = document.getElementById('sub-email').value.trim();
+      const location = document.getElementById('sub-location').value.trim();
+      const btn = document.getElementById('btn-subscribe');
+      if (!email) { showMsg('Please enter your email address.', 'error'); return; }
+      if (!selectedCats.length) { showMsg('Please select at least one category.', 'error'); return; }
+      btn.disabled = true; btn.textContent = 'Setting up...';
+      const { error } = await _sb.from('subscriptions').insert({
+        email, name: name || null, categories: selectedCats,
+        location: location || null, user_id: currentUser?.id || null
+      });
+      if (error) {
+        showMsg('Something went wrong: ' + error.message, 'error');
+        btn.disabled = false; btn.textContent = 'Set up my alert →';
+      } else {
+        showMsg('🎉 Alert set up! You\'ll be emailed when a matching XEKIE is posted.', 'success');
+        btn.textContent = 'Alert active ✓';
+        loadExisting();
+      }
+    }
+
+    function showMsg(text, type) {
+      const el = document.getElementById('sub-msg');
+      el.className = 'msg ' + type;
+      el.textContent = text;
+    }
+
+    async function loadExisting() {
+      if (!currentUser) return;
+      const { data } = await _sb.from('subscriptions').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+      if (!data || !data.length) return;
+      document.getElementById('existing-subs').style.display = 'block';
+      document.getElementById('subs-list').innerHTML = data.map(s => `
+        <div class="sub-item" id="sub-${s.id}">
+          <div class="sub-info">
+            <div class="sub-cats">${(s.categories || []).join(', ')}</div>
+            <div class="sub-loc">${s.location ? '📍 ' + s.location : '🌎 Nationwide'}</div>
+          </div>
+          <button class="btn-delete-sub" onclick="deleteSub('${s.id}')">Remove</button>
+        </div>`).join('');
+    }
+
+    async function deleteSub(id) {
+      await _sb.from('subscriptions').delete().eq('id', id);
+      document.getElementById('sub-' + id)?.remove();
+    }
+  </script>
+</body>
+</html>
