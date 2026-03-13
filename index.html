@@ -10,14 +10,6 @@
   <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-DPXVZVMJXX');
-  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -28,7 +20,13 @@
     }
     html { scroll-behavior: smooth; }
     body { font-family: var(--font-body); background: var(--cream); color: var(--black); overflow-x: hidden; }
-    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px; height: 64px; display: flex; align-items: center; justify-content: space-between; background: rgba(244,242,236,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 48px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(244,242,236,0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
     .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; display: flex; flex-direction: column; line-height: 1; }
     .nav-logo .xe { color: var(--accent); }
     .nav-tagline { font-size: 8px; font-weight: 400; letter-spacing: 0.18em; color: var(--mid); text-transform: uppercase; }
@@ -39,7 +37,11 @@
     .btn-primary:hover { background: var(--accent) !important; }
     .btn-accent { background: var(--accent); color: var(--white) !important; border-color: transparent !important; }
     .btn-accent:hover { background: #e03a0a !important; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,77,28,0.3); }
-    .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 120px 24px 80px; position: relative; overflow: hidden; text-align: center; }
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 120px 24px 80px; position: relative; overflow: hidden; text-align: center;
+    }
     .hero-bg { position: absolute; inset: 0; z-index: 0; background: var(--cream); }
     .hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; }
     .hero-orb-1 { width: 600px; height: 600px; background: rgba(255,77,28,0.15); top: -100px; right: -100px; }
@@ -111,8 +113,19 @@
     .footer-bottom { border-top: 1px solid #1a1a1a; padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .footer-legal { font-size: 12px; color: #333; line-height: 1.6; max-width: 560px; }
     .footer-copy { font-size: 12px; color: #333; }
-    @media (max-width: 768px) { nav { padding: 0 20px; } .steps { grid-template-columns: 1fr; gap: 2px; } .step:first-child { border-radius: 20px 20px 0 0; } .step:last-child { border-radius: 0 0 20px 20px; } .why-grid { grid-template-columns: 1fr; } footer { padding: 48px 24px 32px; } .footer-top { flex-direction: column; } }
-    @media (max-width: 480px) { .hero-cta { flex-direction: column; align-items: center; } .nav-links .btn:not(.btn-primary) { display: none; } }
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .steps { grid-template-columns: 1fr; gap: 2px; }
+      .step:first-child { border-radius: 20px 20px 0 0; }
+      .step:last-child { border-radius: 0 0 20px 20px; }
+      .why-grid { grid-template-columns: 1fr; }
+      footer { padding: 48px 24px 32px; }
+      .footer-top { flex-direction: column; }
+    }
+    @media (max-width: 480px) {
+      .hero-cta { flex-direction: column; align-items: center; }
+      .nav-links .btn:not(.btn-primary) { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -127,64 +140,117 @@
       <a href="request.html" class="btn btn-primary" id="nav-post">Post a XEKIE</a>
     </div>
   </nav>
+
   <section class="hero">
     <div class="hero-bg">
       <div class="hero-orb hero-orb-1"></div>
       <div class="hero-orb hero-orb-2"></div>
     </div>
     <div class="hero-content">
-      <div class="hero-eyebrow"><div class="hero-eyebrow-dot"></div>Beta — now live</div>
-      <h1 class="hero-title"><span class="xe">XE</span>KIE<span class="line2">Trade Different</span></h1>
-      <p class="hero-sub">The marketplace <strong>flipped on its head.</strong><br>Post what you want to buy. Let sellers come to you.</p>
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-dot"></div>
+        Beta — now live
+      </div>
+      <h1 class="hero-title">
+        <span class="xe">XE</span>KIE
+        <span class="line2">Trade Different</span>
+      </h1>
+      <p class="hero-sub">
+        The marketplace <strong>flipped on its head.</strong><br>
+        Post what you want to buy. Let sellers come to you.
+      </p>
       <div class="hero-cta">
         <a href="request.html" class="btn btn-accent">Post what you want →</a>
         <a href="radar.html" class="btn">Browse XEKIEs</a>
       </div>
     </div>
-    <div class="hero-scroll"><div class="hero-scroll-line"></div>Scroll</div>
+    <div class="hero-scroll">
+      <div class="hero-scroll-line"></div>
+      Scroll
+    </div>
   </section>
+
   <section class="section">
     <div class="section-inner">
       <div class="section-label">How it works</div>
       <h2 class="section-title">Buying, reinvented.</h2>
       <p class="section-sub">Stop searching endlessly. Tell the market what you need and let it respond.</p>
       <div class="steps">
-        <div class="step"><div class="step-num">01</div><div class="step-title">Post your XEKIE</div><div class="step-desc">Tell sellers exactly what you want — item, condition, budget, location. Be as specific as you like.</div><div class="step-accent">📝</div></div>
-        <div class="step"><div class="step-num">02</div><div class="step-title">Sellers respond</div><div class="step-desc">Sellers browse the Radar and respond directly to your post with their price and offer.</div><div class="step-accent">📡</div></div>
-        <div class="step"><div class="step-num">03</div><div class="step-title">You pick the best deal</div><div class="step-desc">Review responses, compare offers, and choose the seller that works best for you.</div><div class="step-accent">✅</div></div>
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-title">Post your XEKIE</div>
+          <div class="step-desc">Tell sellers exactly what you want — item, condition, budget, location. Be as specific as you like.</div>
+          <div class="step-accent">📝</div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-title">Sellers respond</div>
+          <div class="step-desc">Sellers browse the Radar and respond directly to your post with their price and offer.</div>
+          <div class="step-accent">📡</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-title">You pick the best deal</div>
+          <div class="step-desc">Review responses, compare offers, and choose the seller that works best for you.</div>
+          <div class="step-accent">✅</div>
+        </div>
       </div>
     </div>
   </section>
+
   <section class="section why">
     <div class="section-inner">
       <div class="section-label">Why XEKIE</div>
       <h2 class="section-title">The market works for you.</h2>
       <p class="section-sub">Traditional marketplaces put buyers at a disadvantage. XEKIE flips the power dynamic.</p>
       <div class="why-grid">
-        <div class="why-item"><div class="why-icon">🎯</div><div class="why-title">You set the terms</div><div class="why-desc">Post your budget, location, and exact specs. No more overpaying for things you didn't quite want.</div></div>
-        <div class="why-item"><div class="why-icon">⚡</div><div class="why-title">Sellers compete for you</div><div class="why-desc">Instead of fighting other buyers, sellers compete to win your business. The power shifts to you.</div></div>
-        <div class="why-item"><div class="why-icon">🔍</div><div class="why-title">Find the unfindable</div><div class="why-desc">Post for rare, specific, or hard-to-find items. If someone has it, they'll find your XEKIE.</div></div>
-        <div class="why-item"><div class="why-icon">🤝</div><div class="why-title">Local or anywhere</div><div class="why-desc">Buy local in your city or open it up to sellers everywhere. Your XEKIE, your rules.</div></div>
+        <div class="why-item">
+          <div class="why-icon">🎯</div>
+          <div class="why-title">You set the terms</div>
+          <div class="why-desc">Post your budget, location, and exact specs. No more overpaying for things you didn't quite want.</div>
+        </div>
+        <div class="why-item">
+          <div class="why-icon">⚡</div>
+          <div class="why-title">Sellers compete for you</div>
+          <div class="why-desc">Instead of fighting other buyers, sellers compete to win your business. The power shifts to you.</div>
+        </div>
+        <div class="why-item">
+          <div class="why-icon">🔍</div>
+          <div class="why-title">Find the unfindable</div>
+          <div class="why-desc">Post for rare, specific, or hard-to-find items. If someone has it, they'll find your XEKIE.</div>
+        </div>
+        <div class="why-item">
+          <div class="why-icon">🤝</div>
+          <div class="why-title">Local or anywhere</div>
+          <div class="why-desc">Buy local in your city or open it up to sellers everywhere. Your XEKIE, your rules.</div>
+        </div>
       </div>
     </div>
   </section>
+
   <section class="contrast">
     <div class="contrast-title">Ready to trade different?</div>
     <p class="contrast-sub">Join the beta. Post your first XEKIE in under 2 minutes.</p>
     <a href="request.html" class="btn">Post a XEKIE — it's free →</a>
   </section>
+
   <section class="section recent">
     <div class="section-inner">
       <div class="section-label">Live on Radar</div>
       <h2 class="section-title">Recent XEKIEs</h2>
       <p class="section-sub">Real buyers, real requests — right now.</p>
-      <div class="xekie-grid" id="recent-feed"><div class="feed-loading">Loading XEKIEs...</div></div>
-      <div class="view-all"><a href="radar.html" class="btn btn-primary">View all XEKIEs on Radar →</a></div>
+      <div class="xekie-grid" id="recent-feed">
+        <div class="feed-loading">Loading XEKIEs...</div>
+      </div>
+      <div class="view-all">
+        <a href="radar.html" class="btn btn-primary">View all XEKIEs on Radar →</a>
+      </div>
     </div>
   </section>
+
   <footer>
     <div class="footer-top">
-      <div>
+      <div class="footer-brand">
         <div class="footer-logo"><span class="xe">XE</span>KIE</div>
         <div class="footer-slogan">Trade Different</div>
       </div>
@@ -192,7 +258,9 @@
         <div class="footer-col">
           <div class="footer-col-title">Platform</div>
           <a href="radar.html">Radar</a>
+          <a href="categories.html">Categories</a>
           <a href="request.html">Post a XEKIE</a>
+          <a href="notifications.html">Seller Alerts</a>
           <a href="login.html">Sign in</a>
           <a href="dashboard.html">Dashboard</a>
         </div>
@@ -214,13 +282,16 @@
       <div class="footer-copy">Akron, OH 🔶</div>
     </div>
   </footer>
+
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (session) document.getElementById('nav-signin').style.display = 'none';
     });
+
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
@@ -228,6 +299,7 @@
       }
       return "just now";
     }
+
     function formatBudget(x) {
       if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
       if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
@@ -235,24 +307,48 @@
       if (x.budget) return '$'+Number(x.budget).toLocaleString();
       return '$—';
     }
+
     async function loadRecent() {
-      const { data } = await _sb.from('xekies').select('*').order('created_at', { ascending: false }).limit(6);
+      const { data } = await _sb.from('xekies')
+        .select('*').eq('is_fulfilled', false)
+        .order('created_at', { ascending: false }).limit(6);
       const feed = document.getElementById('recent-feed');
-      if (!data || !data.length) { feed.innerHTML = '<div class="feed-loading">No XEKIEs yet — be the first to post!</div>'; return; }
-      feed.innerHTML = data.map(x => `
-        <a href="radar.html" style="text-decoration:none;color:inherit;">
-          <div class="xekie-card">
-            ${x.category ? `<div class="xcard-cat">${x.category}</div>` : ''}
+      if (!data || !data.length) {
+        feed.innerHTML = '<div class="feed-loading">No XEKIEs yet — be the first to post!</div>';
+        return;
+      }
+      const ids = data.map(x => x.id);
+      const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
+      const offerCounts = {};
+      (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
+      const BETA_CUTOFF = new Date('2026-06-01');
+      feed.innerHTML = data.map(x => {
+        const cnt = offerCounts[x.id] || 0;
+        const isPromoted = x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date();
+        const isEarly = new Date(x.created_at) < BETA_CUTOFF;
+        return `
+        <a href="xekie.html?id=${x.id}" style="text-decoration:none;color:inherit;">
+          <div class="xekie-card" style="${isPromoted ? 'border:2px solid #7c3aed;background:linear-gradient(135deg,#faf5ff,#fff);' : ''}">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+              ${isPromoted ? '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;">⚡ Promoted</span>' : ''}
+              ${isEarly ? '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;">⚡ Early Adopter</span>' : ''}
+              ${x.category ? `<div class="xcard-cat" style="margin-bottom:0;">${x.category}</div>` : ''}
+            </div>
             <div class="xcard-title">${x.title}</div>
             ${x.description ? `<div class="xcard-desc">${x.description}</div>` : ''}
             <div class="xcard-footer">
               <div class="xcard-budget">${formatBudget(x)}</div>
               <div class="xcard-meta">${timeAgo(x.created_at)}</div>
             </div>
-            ${x.location ? `<div class="xcard-location">📍 ${x.location}</div>` : ''}
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+              ${x.location ? `<div class="xcard-location">📍 ${x.location}</div>` : '<div></div>'}
+              ${cnt > 0 ? `<div style="font-size:11px;font-weight:600;color:#3B6D11;background:#EAF3DE;padding:2px 8px;border-radius:100px;">💬 ${cnt} response${cnt!==1?'s':''}</div>` : '<div style="font-size:11px;color:#bbb;">Be first to respond →</div>'}
+            </div>
           </div>
-        </a>`).join('');
+        </a>`;
+      }).join('');
     }
+
     loadRecent();
   </script>
 </body>
