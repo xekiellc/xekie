@@ -50,6 +50,7 @@
     .xekie-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.07);}
     .xekie-card.fulfilled{opacity:0.6;background:#f8f8f6;}
     .xekie-card.expired{opacity:0.5;background:#f8f8f6;}
+    .xekie-card.promoted-card{border:2px solid #7c3aed !important;background:linear-gradient(135deg,#faf5ff,#fff) !important;}
     .xekie-card.swiping{transition:transform 0.1s;}
     .xekie-card.swipe-right{transform:translateX(120%) rotate(8deg) !important;opacity:0;transition:all 0.4s ease;}
     .xekie-card.swipe-left{transform:translateX(-120%) rotate(-8deg) !important;opacity:0;transition:all 0.4s ease;}
@@ -58,6 +59,7 @@
     .status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin-bottom:8px;}
     .status-fulfilled{background:#EAF3DE;color:#3B6D11;}
     .status-expired{background:#f4f2ec;color:#6b6b6b;}
+    .promoted-label{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;margin-bottom:8px;display:inline-flex;}
     .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px;}
     .card-title{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-0.02em;color:var(--black);}
     .card-budget{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--accent);white-space:nowrap;text-align:right;}
@@ -288,6 +290,7 @@
     }
 
     function renderXekies(xekies) {
+      xekies = [...xekies.filter(x => x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date()), ...xekies.filter(x => !x.is_promoted || !x.promoted_until || new Date(x.promoted_until) <= new Date())];
       const feed = document.getElementById('xekie-feed');
       document.getElementById('results-count').textContent = xekies.length ? xekies.length+' XEKIE'+(xekies.length!==1?'s':'')+' found' : '';
       if (!xekies.length) {
@@ -300,10 +303,12 @@
         const earlyBadge = new Date(x.created_at) < BETA_CUTOFF ? '<span class="early-badge">⚡ Early Adopter</span>' : '';
         const expired = isExpired(x);
         const fulfilled = x.is_fulfilled;
+        const isPromoted = x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date();
         let statusBadge = '';
         if (fulfilled) statusBadge = '<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
         else if (expired) statusBadge = '<span class="status-badge status-expired">⏰ Expired</span>';
-        const cardClass = fulfilled ? 'fulfilled' : expired ? 'expired' : '';
+        const cardClass = fulfilled ? 'fulfilled' : expired ? 'expired' : isPromoted ? 'promoted-card' : '';
+        const promotedLabel = isPromoted ? '<div class="promoted-label">⚡ Promoted</div>' : '';
         const canRespond = !fulfilled && !expired;
         const cnt = offerCounts[x.id] || 0;
         const responseBadge = cnt > 0 ? `<span class="response-badge ${cnt >= 5 ? 'hot-badge' : ''}">${cnt >= 5 ? '🔥' : '💬'} ${cnt} response${cnt!==1?'s':''}</span>` : '';
@@ -311,6 +316,7 @@
         <div class="xekie-card ${cardClass}" id="card-${x.id}" data-id="${x.id}">
           <div class="swipe-hint-right">SAVE ✓</div>
           <div class="swipe-hint-left">SKIP ✕</div>
+          ${promotedLabel}
           ${statusBadge}
           <div class="card-top">
             <div>
@@ -370,21 +376,13 @@
 
     function shareXekie(id, title) {
       const url = `${window.location.origin}/xekie.html?id=${id}`;
-      if (navigator.share) {
-        navigator.share({ title: 'XEKIE — ' + title, url }).catch(() => {});
-      } else {
-        navigator.clipboard.writeText(url).then(() => {
-          const toast = document.getElementById('share-toast');
-          toast.classList.add('show');
-          setTimeout(() => toast.classList.remove('show'), 2500);
-        });
-      }
+      if (navigator.share) { navigator.share({ title: 'XEKIE — ' + title, url }).catch(() => {}); }
+      else { navigator.clipboard.writeText(url).then(() => { const toast = document.getElementById('share-toast'); toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500); }); }
     }
 
     function openModal(xekieId, title, ownerId) {
       if (!currentUser) { window.location.href = 'login.html'; return; }
-      activeXekieId = xekieId;
-      activeXekieOwner = ownerId;
+      activeXekieId = xekieId; activeXekieOwner = ownerId;
       document.getElementById('modal-xekie-title').textContent = 'Re: ' + title;
       document.getElementById('modal-message').value = '';
       document.getElementById('modal-price').value = '';
