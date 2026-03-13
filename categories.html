@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Browse by Category</title>
+  <meta name="description" content="Browse XEKIEs by category. Find buyers looking for Electronics, Vehicles, Trading Cards and more.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff4d1c">
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-nav:hover{border-color:var(--black);color:var(--black);}
+    .btn-nav.primary{background:var(--black);color:var(--white);border-color:transparent;}
+    .btn-nav.primary:hover{background:var(--accent);}
+    .hero{background:var(--black);padding:64px 40px;text-align:center;}
+    .hero-title{font-family:var(--font-display);font-size:48px;font-weight:800;color:var(--white);letter-spacing:-0.03em;line-height:1.1;margin-bottom:16px;}
+    .hero-title span{color:var(--accent);}
+    .hero-sub{font-size:18px;font-weight:300;color:#888;max-width:500px;margin:0 auto;}
+    .container{max-width:900px;margin:0 auto;padding:56px 20px;flex:1;}
+    .section-title{font-family:var(--font-display);font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:24px;}
+    .categories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px;}
+    .cat-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:28px 24px;text-decoration:none;color:var(--black);transition:transform 0.15s,box-shadow 0.15s;display:flex;flex-direction:column;gap:12px;}
+    .cat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:var(--accent);}
+    .cat-icon{font-size:36px;}
+    .cat-name{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-0.02em;}
+    .cat-count{font-size:13px;color:var(--mid);}
+    .cat-arrow{font-size:18px;color:var(--accent);margin-top:auto;}
+    footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
+    .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+    .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
+    .footer-logo .xe{color:var(--accent);}
+    .footer-tagline{font-size:11px;letter-spacing:0.2em;color:#555;text-transform:uppercase;}
+    .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
+    .footer-links a:hover{color:var(--white);}
+    .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
+    @media(max-width:600px){nav{padding:0 20px;}.hero{padding:48px 20px;}.hero-title{font-size:32px;}.categories-grid{grid-template-columns:repeat(2,1fr);}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
+    <div style="display:flex;gap:12px;">
+      <a href="radar.html" class="btn-nav">All Radar</a>
+      <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <h1 class="hero-title">Browse by <span>Category</span></h1>
+    <p class="hero-sub">Find buyers in your niche. Respond to XEKIEs that match what you sell.</p>
+  </div>
+
+  <div class="container">
+    <div class="section-title">All Categories</div>
+    <div class="categories-grid">
+      <a href="radar.html?category=Electronics" class="cat-card">
+        <div class="cat-icon">📱</div>
+        <div class="cat-name">Electronics</div>
+        <div class="cat-count" id="count-Electronics">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html?category=Trading Cards" class="cat-card">
+        <div class="cat-icon">🃏</div>
+        <div class="cat-name">Trading Cards</div>
+        <div class="cat-count" id="count-Trading Cards">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html?category=Vehicles" class="cat-card">
+        <div class="cat-icon">🚗</div>
+        <div class="cat-name">Vehicles</div>
+        <div class="cat-count" id="count-Vehicles">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html?category=Tools" class="cat-card">
+        <div class="cat-icon">🔧</div>
+        <div class="cat-name">Tools</div>
+        <div class="cat-count" id="count-Tools">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html?category=Services" class="cat-card">
+        <div class="cat-icon">🤝</div>
+        <div class="cat-name">Services</div>
+        <div class="cat-count" id="count-Services">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html?category=Household Items" class="cat-card">
+        <div class="cat-icon">🏠</div>
+        <div class="cat-name">Household Items</div>
+        <div class="cat-count" id="count-Household Items">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html?category=Collectibles" class="cat-card">
+        <div class="cat-icon">🏆</div>
+        <div class="cat-name">Collectibles</div>
+        <div class="cat-count" id="count-Collectibles">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html?category=Other" class="cat-card">
+        <div class="cat-icon">📦</div>
+        <div class="cat-name">Other</div>
+        <div class="cat-count" id="count-Other">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html" class="cat-card" style="border:2px dashed var(--border);background:transparent;">
+        <div class="cat-icon">🔍</div>
+        <div class="cat-name">All XEKIEs</div>
+        <div class="cat-count">Browse everything</div>
+        <div class="cat-arrow">→</div>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+        <div class="footer-tagline">Trade Different</div>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Community Guidelines</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const cats = ['Electronics','Trading Cards','Vehicles','Tools','Services','Household Items','Collectibles','Other'];
+
+    async function loadCounts() {
+      const { data } = await _sb.from('xekies').select('category').eq('is_fulfilled', false);
+      const counts = {};
+      (data || []).forEach(x => { if (x.category) counts[x.category] = (counts[x.category] || 0) + 1; });
+      cats.forEach(cat => {
+        const el = document.getElementById('count-' + cat);
+        if (el) {
+          const n = counts[cat] || 0;
+          el.textContent = n + ' active XEKIE' + (n !== 1 ? 's' : '');
+        }
+      });
+    }
+    loadCounts();
+  </script>
+</body>
+</html>
