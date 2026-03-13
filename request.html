@@ -312,6 +312,14 @@
       showMessage('🎆 Your XEKIE is live!', 'success');
       launchFireworks();
       btn.textContent = 'Posted! ✓';
+      const { data: posted } = await _sb.from('xekies').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(1);
+      if (posted && posted[0]) {
+        fetch('/.netlify/functions/notify-sellers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(posted[0])
+        }).catch(() => {});
+      }
       setTimeout(() => window.location.href = 'dashboard.html', 2500);
     }
   </script>
