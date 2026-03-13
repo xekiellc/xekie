@@ -4,85 +4,92 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XEKIE — Dashboard</title>
+  <meta name="description" content="Manage your XEKIEs — see responses, mark as fulfilled, and track your activity.">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-DPXVZVMJXX');
-  </script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
-    body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
-    nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 10; }
-    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; display: flex; flex-direction: column; line-height: 1; }
-    .nav-logo .xe { color: var(--accent); }
-    .nav-tagline { font-size: 8px; font-weight: 400; letter-spacing: 0.15em; color: var(--mid); font-family: var(--font-body); text-transform: uppercase; }
-    .nav-right { display: flex; align-items: center; gap: 12px; }
-    .btn-nav { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: transparent; color: var(--mid); cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
-    .btn-nav:hover { border-color: var(--black); color: var(--black); }
-    .btn-nav.primary { background: var(--black); color: var(--white); border-color: transparent; }
-    .btn-nav.primary:hover { background: var(--accent); }
-    .btn-nav.danger { color: #A32D2D; border-color: rgba(163,45,45,0.2); }
-    .btn-nav.danger:hover { background: #FCEBEB; border-color: #A32D2D; }
-    .container { max-width: 760px; margin: 0 auto; padding: 48px 20px; flex: 1; }
-    .welcome-greeting { font-size: 13px; font-weight: 500; color: var(--mid); margin-bottom: 4px; }
-    .welcome-name { font-family: var(--font-display); font-size: 36px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
-    .early-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 100px; background: linear-gradient(135deg, #ff4d1c, #ff8c00); color: white; letter-spacing: 0.03em; margin-top: 10px; }
-    .welcome-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 40px; flex-wrap: wrap; }
-    .stats-row { display: flex; gap: 16px; margin-bottom: 40px; flex-wrap: wrap; }
-    .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; flex: 1; min-width: 120px; }
-    .stat-num { font-family: var(--font-display); font-size: 32px; font-weight: 800; }
-    .stat-label { font-size: 13px; color: var(--mid); margin-top: 2px; }
-    .section-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px; }
-    .xekie-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 12px; }
-    .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 10px; }
-    .card-title { font-family: var(--font-display); font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
-    .card-budget { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--accent); white-space: nowrap; text-align: right; }
-    .card-budget-flex { font-size: 11px; font-weight: 400; color: var(--mid); display: block; }
-    .card-desc { font-size: 14px; font-weight: 300; color: var(--mid); line-height: 1.5; margin-bottom: 14px; }
-    .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-    .card-meta { font-size: 13px; color: var(--mid); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-    .category-pill { display: inline-block; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 100px; background: var(--cream); color: var(--mid); border: 1px solid var(--border); }
-    .card-actions { display: flex; gap: 8px; }
-    .btn-delete { font-size: 13px; font-weight: 500; padding: 7px 14px; border-radius: 100px; background: transparent; color: #A32D2D; border: 1.5px solid rgba(163,45,45,0.2); cursor: pointer; transition: all 0.2s; }
-    .btn-delete:hover { background: #FCEBEB; border-color: #A32D2D; }
-    .btn-view-offers { font-size: 13px; font-weight: 500; padding: 7px 14px; border-radius: 100px; background: transparent; color: var(--black); border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; }
-    .btn-view-offers:hover { border-color: var(--black); }
-    .offers-badge { display: inline-block; background: var(--accent); color: white; border-radius: 100px; padding: 1px 7px; font-size: 11px; font-weight: 700; margin-left: 4px; }
-    .view-count { font-size: 12px; color: var(--mid); }
-    .empty-state { text-align: center; padding: 64px 20px; }
-    .empty-icon { font-size: 48px; margin-bottom: 16px; }
-    .empty-title { font-family: var(--font-display); font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-    .empty-sub { font-size: 15px; font-weight: 300; color: var(--mid); margin-bottom: 24px; }
-    .loading { text-align: center; padding: 60px; color: var(--mid); }
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: var(--white); border-radius: 20px; padding: 36px; max-width: 520px; width: 100%; position: relative; max-height: 85vh; overflow-y: auto; }
-    .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--mid); }
-    .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; margin-bottom: 20px; letter-spacing: -0.02em; }
-    .offer-item { background: var(--cream); border-radius: 12px; padding: 16px 18px; margin-bottom: 10px; }
-    .offer-price { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
-    .offer-msg { font-size: 14px; color: var(--black); line-height: 1.5; }
-    .offer-time { font-size: 12px; color: var(--mid); margin-top: 6px; }
-    .no-offers { text-align: center; padding: 32px; color: var(--mid); font-size: 15px; }
-    footer { background: var(--black); color: var(--white); padding: 40px; margin-top: auto; }
-    .footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-    .footer-logo { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
-    .footer-logo .xe { color: var(--accent); }
-    .footer-tagline { font-size: 11px; letter-spacing: 0.2em; color: #555; text-transform: uppercase; }
-    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
-    .footer-links a { font-size: 13px; color: #666; text-decoration: none; transition: color 0.2s; }
-    .footer-links a:hover { color: var(--white); }
-    .footer-bottom { font-size: 12px; color: #444; border-top: 1px solid #1a1a1a; padding-top: 20px; }
-    @media (max-width: 480px) { nav { padding: 0 20px; } .welcome-name { font-size: 28px; } .btn-nav.hide-mobile { display: none; } }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
+    .nav-right{display:flex;align-items:center;gap:12px;}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-nav:hover{border-color:var(--black);color:var(--black);}
+    .btn-nav.primary{background:var(--black);color:var(--white);border-color:transparent;}
+    .btn-nav.primary:hover{background:var(--accent);}
+    .container{max-width:860px;margin:0 auto;padding:48px 20px;flex:1;}
+    .page-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:36px;}
+    .user-info{display:flex;flex-direction:column;gap:6px;}
+    .user-name{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-0.02em;}
+    .user-meta{font-size:14px;color:var(--mid);}
+    .early-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;}
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px;}
+    .stat-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 24px;}
+    .stat-num{font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--accent);}
+    .stat-label{font-size:13px;color:var(--mid);margin-top:4px;}
+    .section-title{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:16px;}
+    .xekie-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:22px 26px;margin-bottom:12px;transition:box-shadow 0.2s;}
+    .xekie-card.fulfilled{border-color:#c0dd97;background:#f9fdf5;}
+    .xekie-card.expired{opacity:0.65;}
+    .xekie-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06);}
+    .card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
+    .card-title{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.02em;}
+    .card-budget{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);white-space:nowrap;}
+    .card-budget-flex{font-size:11px;color:var(--mid);font-weight:400;display:block;}
+    .card-desc{font-size:14px;font-weight:300;color:var(--mid);line-height:1.5;margin-bottom:12px;}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+    .card-meta{font-size:12px;color:var(--mid);display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .category-pill{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:100px;background:var(--cream);color:var(--mid);border:1px solid var(--border);}
+    .view-count{font-size:12px;color:var(--mid);}
+    .status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;}
+    .status-fulfilled{background:#EAF3DE;color:#3B6D11;}
+    .status-expired{background:#f4f2ec;color:#6b6b6b;}
+    .expiry-info{font-size:12px;color:var(--mid);}
+    .expiry-info.urgent{color:#ff4d1c;}
+    .card-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .btn-view-offers{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:var(--black);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;}
+    .btn-view-offers:hover{border-color:var(--black);}
+    .offers-badge{display:inline-block;background:var(--accent);color:white;border-radius:100px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px;}
+    .btn-share-xekie{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:var(--mid);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;}
+    .btn-share-xekie:hover{border-color:var(--black);color:var(--black);}
+    .btn-fulfill{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:#3B6D11;border:1.5px solid #c0dd97;cursor:pointer;transition:all 0.2s;}
+    .btn-fulfill:hover{background:#EAF3DE;}
+    .btn-delete{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:#A32D2D;border:1.5px solid rgba(163,45,45,0.2);cursor:pointer;transition:all 0.2s;}
+    .btn-delete:hover{background:#FCEBEB;border-color:#A32D2D;}
+    .empty-state{text-align:center;padding:80px 20px;}
+    .empty-icon{font-size:48px;margin-bottom:16px;}
+    .empty-title{font-family:var(--font-display);font-size:24px;font-weight:700;margin-bottom:8px;}
+    .empty-sub{font-size:15px;font-weight:300;color:var(--mid);margin-bottom:24px;}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--white);border-radius:20px;padding:36px;max-width:520px;width:100%;position:relative;max-height:85vh;overflow-y:auto;}
+    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);}
+    .modal-title{font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:20px;letter-spacing:-0.02em;}
+    .offer-item{background:var(--cream);border-radius:12px;padding:16px 18px;margin-bottom:10px;}
+    .offer-price{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+    .offer-msg{font-size:14px;color:var(--black);line-height:1.5;}
+    .offer-time{font-size:12px;color:var(--mid);margin-top:6px;}
+    .no-offers{text-align:center;padding:32px;color:var(--mid);font-size:15px;}
+    .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+    .share-toast.show{opacity:1;}
+    footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
+    .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+    .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
+    .footer-logo .xe{color:var(--accent);}
+    .footer-tagline{font-size:11px;letter-spacing:0.2em;color:#555;text-transform:uppercase;}
+    .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
+    .footer-links a:hover{color:var(--white);}
+    .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
+    @media(max-width:600px){nav{padding:0 20px;}.stats-row{grid-template-columns:1fr 1fr;}}
   </style>
 </head>
 <body>
@@ -92,28 +99,33 @@
       <span class="nav-tagline">Trade Different</span>
     </a>
     <div class="nav-right">
-      <a href="radar.html" class="btn-nav hide-mobile">Radar</a>
+      <a href="radar.html" class="btn-nav">Radar</a>
       <a href="messages.html" class="btn-nav">Messages</a>
-      <a href="request.html" class="btn-nav primary">+ New XEKIE</a>
-      <button class="btn-nav danger" onclick="signOut()">Sign out</button>
+      <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
+      <button class="btn-nav" onclick="signOut()">Sign out</button>
     </div>
   </nav>
+
   <div class="container">
-    <div class="welcome-row">
-      <div>
-        <div class="welcome-greeting">Welcome back,</div>
-        <div class="welcome-name" id="user-name">—</div>
+    <div class="page-header">
+      <div class="user-info">
+        <div class="user-name" id="user-name">Loading...</div>
+        <div class="user-meta" id="user-meta"></div>
         <div id="early-badge-container"></div>
       </div>
+      <a href="request.html" class="btn-nav primary" style="align-self:flex-start;">+ Post a XEKIE</a>
     </div>
+
     <div class="stats-row">
-      <div class="stat-card"><div class="stat-num" id="stat-xekies">—</div><div class="stat-label">Active XEKIEs</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-xekies">—</div><div class="stat-label">XEKIEs posted</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-offers">—</div><div class="stat-label">Responses received</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-views">—</div><div class="stat-label">Total views</div></div>
     </div>
-    <h2 class="section-title">Your XEKIEs</h2>
-    <div id="xekie-list"><div class="loading">Loading your XEKIEs...</div></div>
+
+    <div class="section-title">Your XEKIEs</div>
+    <div id="xekie-list"><div style="text-align:center;padding:40px;color:var(--mid);">Loading...</div></div>
   </div>
+
   <div class="modal-overlay" id="offers-modal">
     <div class="modal">
       <button class="modal-close" onclick="closeOffersModal()">✕</button>
@@ -121,6 +133,9 @@
       <div id="offers-list"></div>
     </div>
   </div>
+
+  <div class="share-toast" id="share-toast">Link copied! 🔗</div>
+
   <footer>
     <div class="footer-inner">
       <div>
@@ -133,15 +148,17 @@
         <a href="guidelines.html">Community Guidelines</a>
         <a href="terms.html">Terms of Service</a>
       </div>
-      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved. XEKIE is a platform connecting buyers and sellers. We are not responsible for transactions conducted between users.</div>
+      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
     </div>
   </footer>
+
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null;
     const BETA_CUTOFF = new Date('2026-06-01');
+
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
@@ -149,6 +166,7 @@
       }
       return "just now";
     }
+
     function formatBudget(x) {
       if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
       if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
@@ -156,15 +174,32 @@
       if (x.budget) return '$'+Number(x.budget).toLocaleString();
       return '$—';
     }
+
+    function getExpiryDisplay(x) {
+      if (x.is_fulfilled) return '';
+      if (!x.expires_at) return '<span class="expiry-info">♾️ No expiry</span>';
+      const exp = new Date(x.expires_at);
+      const now = new Date();
+      if (exp < now) return '<span class="status-badge status-expired">⏰ Expired</span>';
+      const hoursLeft = Math.floor((exp - now) / 3600000);
+      if (hoursLeft < 24) return `<span class="expiry-info urgent">⚠️ Expires in ${hoursLeft}h</span>`;
+      const daysLeft = Math.floor(hoursLeft / 24);
+      return `<span class="expiry-info">⏱ ${daysLeft} day${daysLeft!==1?'s':''} left</span>`;
+    }
+
     _sb.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { window.location.href = 'login.html'; return; }
       currentUser = session.user;
-      document.getElementById('user-name').textContent = session.user.user_metadata?.full_name || session.user.email;
-      if (new Date(session.user.created_at) < BETA_CUTOFF) {
+      const name = session.user.user_metadata?.full_name || session.user.email;
+      document.getElementById('user-name').textContent = name;
+      const joined = new Date(session.user.created_at);
+      document.getElementById('user-meta').textContent = 'Member since ' + joined.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      if (joined < BETA_CUTOFF) {
         document.getElementById('early-badge-container').innerHTML = '<div class="early-badge">⚡ Early Adopter</div>';
       }
       loadDashboard();
     });
+
     async function loadDashboard() {
       const { data: xekies } = await _sb.from('xekies').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
       const list = xekies || [];
@@ -174,11 +209,10 @@
         const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
         (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
       }
-      const totalOffers = Object.values(offerCounts).reduce((a,b)=>a+b,0);
-      const totalViews = list.reduce((a,x)=>a+(x.view_count||0),0);
       document.getElementById('stat-xekies').textContent = list.length;
-      document.getElementById('stat-offers').textContent = totalOffers;
-      document.getElementById('stat-views').textContent = totalViews;
+      document.getElementById('stat-offers').textContent = Object.values(offerCounts).reduce((a,b)=>a+b,0);
+      document.getElementById('stat-views').textContent = list.reduce((a,x)=>a+(x.view_count||0),0);
+
       const container = document.getElementById('xekie-list');
       if (!list.length) {
         container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No XEKIEs yet</div><p class="empty-sub">Post what you want to buy and let sellers come to you.</p><a href="request.html" class="btn-nav primary" style="display:inline-block;">Post your first XEKIE →</a></div>`;
@@ -188,9 +222,15 @@
         const budget = formatBudget(x);
         const flexTag = x.is_flexible ? '<span class="card-budget-flex">flexible</span>' : '';
         const offerCount = offerCounts[x.id] || 0;
-        return `<div class="xekie-card" id="card-${x.id}">
+        const isFulfilled = x.is_fulfilled;
+        const expiryDisplay = getExpiryDisplay(x);
+        const cardClass = isFulfilled ? 'fulfilled' : (!x.expires_at ? '' : new Date(x.expires_at) < new Date() ? 'expired' : '');
+        return `<div class="xekie-card ${cardClass}" id="card-${x.id}">
           <div class="card-header">
-            <div class="card-title">${x.title}</div>
+            <div>
+              ${isFulfilled ? '<span class="status-badge status-fulfilled">✓ Fulfilled</span>' : ''}
+              <div class="card-title">${x.title}</div>
+            </div>
             <div class="card-budget">${budget}${flexTag}</div>
           </div>
           ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
@@ -200,22 +240,46 @@
               <span>⏱ ${timeAgo(x.created_at)}</span>
               ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
               <span class="view-count">👁 ${x.view_count||0} views</span>
+              ${expiryDisplay}
             </div>
             <div class="card-actions">
               <button class="btn-view-offers" onclick="viewOffers('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">
                 Responses${offerCount?`<span class="offers-badge">${offerCount}</span>`:''}
               </button>
+              <button class="btn-share-xekie" onclick="shareXekie('${x.id}')">Share</button>
+              ${!isFulfilled ? `<button class="btn-fulfill" onclick="markFulfilled('${x.id}')">✓ Mark Fulfilled</button>` : ''}
               <button class="btn-delete" onclick="deleteXekie('${x.id}')">Delete</button>
             </div>
           </div>
         </div>`;
       }).join('');
     }
+
+    async function markFulfilled(id) {
+      if (!confirm('Mark this XEKIE as fulfilled? It will stay visible but sellers can no longer respond.')) return;
+      const { error } = await _sb.from('xekies').update({ is_fulfilled: true }).eq('id', id).eq('user_id', currentUser.id);
+      if (!error) loadDashboard();
+    }
+
     async function deleteXekie(id) {
       if (!confirm('Delete this XEKIE? This cannot be undone.')) return;
       await _sb.from('xekies').delete().eq('id', id).eq('user_id', currentUser.id);
       loadDashboard();
     }
+
+    function shareXekie(id) {
+      const url = `${window.location.origin}/xekie.html?id=${id}`;
+      if (navigator.share) {
+        navigator.share({ url }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          const t = document.getElementById('share-toast');
+          t.classList.add('show');
+          setTimeout(() => t.classList.remove('show'), 2500);
+        });
+      }
+    }
+
     async function viewOffers(xekieId, title) {
       document.getElementById('offers-modal-title').textContent = 'Responses: ' + title;
       document.getElementById('offers-list').innerHTML = '<div class="no-offers">Loading...</div>';
@@ -232,8 +296,10 @@
           <div class="offer-time">${timeAgo(o.created_at)}</div>
         </div>`).join('');
     }
+
     function closeOffersModal() { document.getElementById('offers-modal').classList.remove('open'); }
     document.getElementById('offers-modal').addEventListener('click', e => { if (e.target === document.getElementById('offers-modal')) closeOffersModal(); });
+
     async function signOut() { await _sb.auth.signOut(); window.location.href = 'login.html'; }
   </script>
 </body>
