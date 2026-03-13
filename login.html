@@ -5,24 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XEKIE — Sign In</title>
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0b1f33">
+  <meta name="theme-color" content="#ff4d1c">
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec;
-      --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12);
-      --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
-    }
+    :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
     body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
     nav { padding: 0 40px; height: 64px; display: flex; align-items: center; border-bottom: 1px solid var(--border); }
-    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; }
-    .nav-logo span { color: var(--accent); }
+    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; display: flex; flex-direction: column; line-height: 1; }
+    .nav-logo .xe { color: var(--accent); }
+    .nav-tagline { font-size: 8px; font-weight: 400; letter-spacing: 0.15em; color: var(--mid); font-family: var(--font-body); text-transform: uppercase; }
     main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
     .auth-card { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 48px 44px; width: 100%; max-width: 420px; }
-    .auth-title { font-family: var(--font-display); font-weight: 800; font-size: 32px; letter-spacing: -0.03em; color: var(--black); margin-bottom: 6px; }
-    .auth-title span { color: var(--accent); }
+    .auth-tagline { font-size: 11px; letter-spacing: 0.2em; color: var(--mid); text-transform: uppercase; margin-bottom: 8px; }
+    .auth-title { font-family: var(--font-display); font-weight: 800; font-size: 32px; letter-spacing: -0.03em; color: var(--black); margin-bottom: 4px; }
+    .auth-title .xe { color: var(--accent); }
     .auth-sub { font-size: 15px; font-weight: 300; color: var(--mid); margin-bottom: 32px; line-height: 1.5; }
     .tabs { display: flex; background: var(--cream); border-radius: 10px; padding: 4px; margin-bottom: 28px; }
     .tab { flex: 1; padding: 9px; border: none; background: transparent; border-radius: 7px; font-family: var(--font-body); font-size: 14px; font-weight: 500; color: var(--mid); cursor: pointer; transition: all 0.2s; }
@@ -44,14 +43,37 @@
     .message.success { background: #EAF3DE; color: #3B6D11; border: 1px solid #C0DD97; display: block; }
     .forgot-link { display: block; text-align: right; font-size: 13px; color: var(--mid); text-decoration: none; margin-top: -8px; margin-bottom: 16px; }
     .forgot-link:hover { color: var(--black); }
-    @media (max-width: 480px) { .auth-card { padding: 32px 24px; } }
+    #toast-overlay { position: fixed; inset: 0; background: rgba(10,10,10,0.88); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+    #toast-overlay.show { display: flex; }
+    .toast-emoji { font-size: 88px; animation: clink 0.5s cubic-bezier(.36,.07,.19,.97); }
+    .toast-text { font-family: var(--font-display); font-size: 30px; font-weight: 800; color: var(--white); text-align: center; letter-spacing: -0.02em; }
+    .toast-sub { font-size: 15px; color: #888; text-align: center; font-weight: 300; }
+    @keyframes clink { 0%{transform:rotate(-25deg) scale(0.4);opacity:0} 60%{transform:rotate(12deg) scale(1.15)} 100%{transform:rotate(0deg) scale(1);opacity:1} }
+    footer { background: var(--black); color: var(--white); padding: 32px 40px; margin-top: auto; }
+    .footer-inner { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-links a { font-size: 13px; color: #666; text-decoration: none; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-copy { font-size: 12px; color: #444; }
+    @media (max-width: 480px) { .auth-card { padding: 32px 24px; } nav { padding: 0 20px; } }
   </style>
 </head>
 <body>
-  <nav><a href="index.html" class="nav-logo">XEK<span>IE</span></a></nav>
+  <div id="toast-overlay">
+    <div class="toast-emoji">🥂</div>
+    <div class="toast-text">Welcome to XEKIE!</div>
+    <div class="toast-sub">Check your email to confirm your account.</div>
+  </div>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
+  </nav>
   <main>
     <div class="auth-card">
-      <h1 class="auth-title">Welcome to <span>XEKIE</span></h1>
+      <div class="auth-tagline">Trade Different</div>
+      <h1 class="auth-title">Welcome to <span class="xe">XEKIE</span></h1>
       <p class="auth-sub">Sign in or create an account to post and browse XEKIEs.</p>
       <div class="tabs">
         <button class="tab active" id="tab-signin" onclick="switchTab('signin')">Sign in</button>
@@ -82,6 +104,17 @@
       </div>
     </div>
   </main>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="guidelines.html">Guidelines</a>
+      </div>
+      <div class="footer-copy">© 2025 XEKIE LLC</div>
+    </div>
+  </footer>
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
@@ -96,6 +129,23 @@
     }
     function showMessage(text, type) { const el = document.getElementById('message'); el.textContent = text; el.className = 'message ' + type; }
     function clearMessage() { const el = document.getElementById('message'); el.className = 'message'; el.textContent = ''; }
+    function showToast() {
+      document.getElementById('toast-overlay').classList.add('show');
+      try {
+        const actx = new (window.AudioContext || window.webkitAudioContext)();
+        [783.99, 987.77].forEach((freq, i) => {
+          const o = actx.createOscillator(), g = actx.createGain();
+          o.connect(g); g.connect(actx.destination);
+          o.frequency.value = freq; o.type = 'sine';
+          g.gain.setValueAtTime(0, actx.currentTime + i * 0.1);
+          g.gain.linearRampToValueAtTime(0.3, actx.currentTime + i * 0.1 + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + i * 0.1 + 1.5);
+          o.start(actx.currentTime + i * 0.1);
+          o.stop(actx.currentTime + i * 0.1 + 1.5);
+        });
+      } catch(e) {}
+      setTimeout(() => document.getElementById('toast-overlay').classList.remove('show'), 4000);
+    }
     async function signIn() {
       const email = document.getElementById('signin-email').value.trim();
       const password = document.getElementById('signin-password').value;
@@ -104,7 +154,7 @@
       btn.disabled = true; btn.textContent = 'Signing in...';
       const { error } = await _sb.auth.signInWithPassword({ email, password });
       if (error) { showMessage(error.message, 'error'); btn.disabled = false; btn.textContent = 'Sign in'; }
-      else { showMessage('Signed in! Redirecting...', 'success'); setTimeout(() => window.location.href = 'dashboard.html', 800); }
+      else window.location.href = 'dashboard.html';
     }
     async function signUp() {
       const name = document.getElementById('signup-name').value.trim();
@@ -116,7 +166,7 @@
       btn.disabled = true; btn.textContent = 'Creating account...';
       const { error } = await _sb.auth.signUp({ email, password, options: { data: { full_name: name } } });
       if (error) { showMessage(error.message, 'error'); btn.disabled = false; btn.textContent = 'Create account'; }
-      else { showMessage('Account created! Check your email to confirm, then sign in.', 'success'); btn.textContent = 'Check your email ✓'; }
+      else { showToast(); btn.textContent = 'Check your email ✓'; }
     }
     async function signInWithGoogle() {
       const { error } = await _sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/dashboard.html' } });
@@ -127,12 +177,12 @@
       if (!email) return showMessage('Enter your email above first.', 'error');
       const { error } = await _sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/login.html' });
       if (error) showMessage(error.message, 'error');
-      else showMessage('Password reset email sent! Check your inbox.', 'success');
+      else showMessage('Password reset email sent!', 'success');
     }
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
-        if (document.getElementById('form-signin').style.display !== 'none') signIn();
-        else signUp();
+        const onSignin = document.getElementById('form-signin').style.display !== 'none';
+        onSignin ? signIn() : signUp();
       }
     });
   </script>
