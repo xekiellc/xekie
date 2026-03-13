@@ -5,21 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XEKIE — Post a XEKIE</title>
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0b1f33">
+  <meta name="theme-color" content="#ff4d1c">
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
-    body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; }
+    body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
     nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 10; }
-    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; }
-    .nav-logo span { color: var(--accent); }
+    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; display: flex; flex-direction: column; line-height: 1; }
+    .nav-logo-text .xe { color: var(--accent); }
+    .nav-tagline { font-size: 8px; font-weight: 400; letter-spacing: 0.15em; color: var(--mid); font-family: var(--font-body); text-transform: uppercase; }
     .nav-right { display: flex; align-items: center; gap: 16px; }
     .nav-user { font-size: 14px; color: var(--mid); }
-    .btn-signout { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: transparent; color: var(--mid); cursor: pointer; transition: all 0.2s; }
-    .btn-signout:hover { border-color: var(--black); color: var(--black); }
-    .container { max-width: 640px; margin: 0 auto; padding: 48px 20px; }
+    .btn-nav { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: transparent; color: var(--mid); cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .btn-nav:hover { border-color: var(--black); color: var(--black); }
+    .container { max-width: 640px; margin: 0 auto; padding: 48px 20px; flex: 1; }
     .page-title { font-family: var(--font-display); font-weight: 800; font-size: 36px; letter-spacing: -0.03em; margin-bottom: 6px; }
     .page-sub { font-size: 15px; font-weight: 300; color: var(--mid); margin-bottom: 40px; line-height: 1.5; }
     .form-card { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 40px; }
@@ -30,11 +32,17 @@
     input:focus, textarea:focus, select:focus { border-color: var(--black); }
     input::placeholder, textarea::placeholder { color: #bbb; }
     textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
-    .budget-row { display: flex; gap: 10px; }
-    .budget-row input { flex: 1; }
-    .budget-prefix { display: flex; align-items: center; justify-content: center; width: 44px; height: 46px; background: var(--cream); border: 1.5px solid var(--border); border-radius: 10px; font-size: 16px; font-weight: 500; color: var(--mid); flex-shrink: 0; }
+    .budget-section { background: var(--cream); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .budget-section-title { font-size: 13px; font-weight: 500; margin-bottom: 14px; }
+    .budget-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+    .budget-prefix { display: flex; align-items: center; justify-content: center; width: 44px; height: 46px; background: var(--white); border: 1.5px solid var(--border); border-radius: 10px; font-size: 16px; font-weight: 500; color: var(--mid); flex-shrink: 0; }
+    .budget-row input { flex: 1; margin: 0; }
+    .budget-separator { font-size: 14px; color: var(--mid); font-weight: 500; padding: 0 4px; }
+    .flexible-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+    .flexible-row input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--black); }
+    .flexible-row label { font-size: 13px; color: var(--mid); margin: 0; cursor: pointer; }
     .char-count { font-size: 12px; color: var(--mid); text-align: right; margin-top: 5px; }
-    .btn-submit { width: 100%; padding: 15px; background: var(--black); color: var(--white); border: none; border-radius: 10px; font-family: var(--font-body); font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 8px; transition: background 0.2s, transform 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-submit { width: 100%; padding: 15px; background: var(--black); color: var(--white); border: none; border-radius: 10px; font-family: var(--font-body); font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 8px; transition: background 0.2s, transform 0.15s; }
     .btn-submit:hover { background: var(--accent); transform: translateY(-1px); }
     .btn-submit:disabled { background: #ccc; cursor: not-allowed; transform: none; }
     .message { padding: 14px 18px; border-radius: 10px; font-size: 14px; margin-bottom: 20px; display: none; }
@@ -45,15 +53,29 @@
     .preview-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--black); margin-bottom: 4px; min-height: 24px; }
     .preview-desc { font-size: 14px; color: var(--mid); font-weight: 300; line-height: 1.5; min-height: 20px; }
     .preview-budget { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--accent); margin-top: 10px; }
+    #fireworks-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; display: none; }
+    footer { background: var(--black); color: var(--white); padding: 40px; margin-top: auto; }
+    .footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    .footer-logo { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
+    .footer-logo .xe { color: var(--accent); }
+    .footer-tagline { font-size: 11px; letter-spacing: 0.2em; color: #555; text-transform: uppercase; }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+    .footer-links a { font-size: 13px; color: #666; text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-bottom { font-size: 12px; color: #444; border-top: 1px solid #1a1a1a; padding-top: 20px; }
     @media (max-width: 480px) { .form-card { padding: 28px 20px; } nav { padding: 0 20px; } }
   </style>
 </head>
 <body>
+  <canvas id="fireworks-canvas"></canvas>
   <nav>
-    <a href="index.html" class="nav-logo">XEK<span>IE</span></a>
+    <a href="index.html" class="nav-logo">
+      <span class="nav-logo-text"><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
     <div class="nav-right">
       <span class="nav-user" id="nav-user"></span>
-      <button class="btn-signout" onclick="signOut()">Sign out</button>
+      <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
     </div>
   </nav>
   <div class="container">
@@ -71,32 +93,34 @@
         <textarea id="description" placeholder="e.g. Looking for a used or refurbished model in good condition. No cracks or major scratches." maxlength="500" oninput="updatePreview()"></textarea>
         <div class="char-count"><span id="desc-count">0</span>/500</div>
       </div>
-      <div class="form-group">
-        <label>Your budget</label>
+      <div class="budget-section">
+        <div class="budget-section-title">Your budget</div>
         <div class="budget-row">
           <div class="budget-prefix">$</div>
-          <input type="number" id="budget" placeholder="1500" min="1" max="999999" />
+          <input type="number" id="budget-min" placeholder="Min (e.g. 400)" min="1" oninput="updatePreview()" />
+          <span class="budget-separator">—</span>
+          <div class="budget-prefix">$</div>
+          <input type="number" id="budget-max" placeholder="Max (e.g. 700)" min="1" oninput="updatePreview()" />
+        </div>
+        <div class="flexible-row">
+          <input type="checkbox" id="is-flexible" onchange="updatePreview()" />
+          <label for="is-flexible">I'm flexible on price if the right item comes along</label>
         </div>
       </div>
       <div class="form-group">
         <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
-        <input type="text" id="location" placeholder="e.g. Chicago, IL or Ships anywhere" />
+        <input type="text" id="location" placeholder="e.g. Cuyahoga Falls, OH or Ships anywhere" />
       </div>
       <div class="form-group">
         <label>Category</label>
         <select id="category">
           <option value="">Select a category...</option>
           <option>Electronics</option>
+          <option>Trading Cards</option>
           <option>Vehicles</option>
-          <option>Furniture & Home</option>
-          <option>Clothing & Accessories</option>
-          <option>Collectibles & Antiques</option>
-          <option>Sports & Outdoors</option>
-          <option>Musical Instruments</option>
-          <option>Books & Media</option>
-          <option>Jewelry & Watches</option>
-          <option>Tools & Equipment</option>
-          <option>Other</option>
+          <option>Tools</option>
+          <option>Services</option>
+          <option>Household Items</option>
         </select>
       </div>
       <div class="preview-box">
@@ -109,6 +133,21 @@
       <button class="btn-submit" id="btn-submit" onclick="postXekie()">Post my XEKIE →</button>
     </div>
   </div>
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+        <div class="footer-tagline">Trade Different</div>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Community Guidelines</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved. XEKIE is a platform connecting buyers and sellers. We are not responsible for transactions conducted between users. Use at your own discretion.</div>
+    </div>
+  </footer>
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
@@ -117,44 +156,110 @@
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (!session) { window.location.href = 'login.html'; return; }
       currentUser = session.user;
-      document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
+      const name = session.user.user_metadata?.full_name || session.user.email;
+      document.getElementById('nav-user').textContent = name;
     });
     function updatePreview() {
       const title = document.getElementById('title').value;
       const desc = document.getElementById('description').value;
-      const budget = document.getElementById('budget').value;
+      const min = document.getElementById('budget-min').value;
+      const max = document.getElementById('budget-max').value;
+      const flexible = document.getElementById('is-flexible').checked;
       document.getElementById('title-count').textContent = title.length;
       document.getElementById('desc-count').textContent = desc.length;
       document.getElementById('preview-title').textContent = title || 'Your XEKIE title will appear here';
       document.getElementById('preview-desc').textContent = desc || 'Your description will appear here...';
-      document.getElementById('preview-budget').textContent = budget ? '$' + Number(budget).toLocaleString() : '$—';
+      let budgetStr = '$—';
+      if (min && max) budgetStr = '$' + Number(min).toLocaleString() + ' – $' + Number(max).toLocaleString();
+      else if (min) budgetStr = '$' + Number(min).toLocaleString() + '+';
+      else if (max) budgetStr = 'Up to $' + Number(max).toLocaleString();
+      if (flexible && (min || max)) budgetStr += ' (flexible)';
+      document.getElementById('preview-budget').textContent = budgetStr;
     }
     function showMessage(text, type) {
       const el = document.getElementById('message');
       el.textContent = text; el.className = 'message ' + type;
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
+    function launchFireworks() {
+      const canvas = document.getElementById('fireworks-canvas');
+      canvas.style.display = 'block';
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const particles = [];
+      for (let i = 0; i < 8; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height * 0.6;
+        const colors = ['#ff4d1c','#ffd700','#ff69b4','#00cfff','#7fff00','#ff4500'];
+        const color = colors[Math.floor(Math.random()*colors.length)];
+        for (let j = 0; j < 40; j++) {
+          const angle = (j / 40) * Math.PI * 2;
+          const speed = 2 + Math.random() * 4;
+          particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, color, alpha: 1, size: 2+Math.random()*3 });
+        }
+      }
+      let frame = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.alpha -= 0.012;
+          ctx.globalAlpha = Math.max(0, p.alpha);
+          ctx.fillStyle = p.color;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+        });
+        frame++;
+        if (frame < 120) requestAnimationFrame(animate);
+        else { canvas.style.display = 'none'; ctx.clearRect(0,0,canvas.width,canvas.height); }
+      }
+      animate();
+      try {
+        const actx = new (window.AudioContext || window.webkitAudioContext)();
+        for(let i=0; i<6; i++) {
+          const o = actx.createOscillator(), g = actx.createGain();
+          o.connect(g); g.connect(actx.destination);
+          o.frequency.value = 200 + Math.random()*800; o.type = 'square';
+          g.gain.setValueAtTime(0, actx.currentTime + i*0.08);
+          g.gain.linearRampToValueAtTime(0.15, actx.currentTime + i*0.08 + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + i*0.08 + 0.35);
+          o.start(actx.currentTime + i*0.08); o.stop(actx.currentTime + i*0.08 + 0.35);
+        }
+      } catch(e) {}
+    }
     async function postXekie() {
       const title = document.getElementById('title').value.trim();
       const description = document.getElementById('description').value.trim();
-      const budget = document.getElementById('budget').value;
+      const budget_min = document.getElementById('budget-min').value;
+      const budget_max = document.getElementById('budget-max').value;
+      const is_flexible = document.getElementById('is-flexible').checked;
       const location = document.getElementById('location').value.trim();
       const category = document.getElementById('category').value;
       const btn = document.getElementById('btn-submit');
       if (!title) return showMessage('Please add a title — what do you want to buy?', 'error');
-      if (!budget || budget < 1) return showMessage('Please enter your budget.', 'error');
+      if (!budget_min && !budget_max) return showMessage('Please enter at least a minimum or maximum budget.', 'error');
       if (!location) return showMessage('Please add a location or write "Ships anywhere".', 'error');
+      if (!category) return showMessage('Please select a category.', 'error');
       btn.disabled = true; btn.textContent = 'Posting...';
-      const { error } = await _sb.from('xekies').insert({ title, description, budget: parseInt(budget), location, category, user_id: currentUser.id });
+      const { error } = await _sb.from('xekies').insert({
+        title, description,
+        budget: budget_max ? parseInt(budget_max) : parseInt(budget_min),
+        budget_min: budget_min ? parseInt(budget_min) : null,
+        budget_max: budget_max ? parseInt(budget_max) : null,
+        is_flexible,
+        location, category,
+        user_id: currentUser.id,
+        view_count: 0
+      });
       if (error) {
         showMessage('Something went wrong: ' + error.message, 'error');
         btn.disabled = false; btn.textContent = 'Post my XEKIE →';
       } else {
-        showMessage('Your XEKIE is live! Redirecting...', 'success');
-        setTimeout(() => window.location.href = 'dashboard.html', 1500);
+        showMessage('🎆 Your XEKIE is live!', 'success');
+        launchFireworks();
+        btn.textContent = 'Posted! ✓';
+        setTimeout(() => window.location.href = 'dashboard.html', 2500);
       }
     }
-    async function signOut() { await _sb.auth.signOut(); window.location.href = 'login.html'; }
   </script>
 </body>
 </html>
