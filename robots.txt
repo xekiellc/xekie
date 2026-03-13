@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard.html
+Disallow: /messages.html
+
+Sitemap: https://xekie.com/sitemap.xml
