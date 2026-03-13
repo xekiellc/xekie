@@ -1,26 +1,145 @@
-
-<!DOCTYPE html><html><body style='background:#0b0b0b;color:white;font-family:Arial;padding:40px'>
-<h1>Prohibited Items</h1>
-<ul>
-<li>Illegal drugs</li>
-<li>Stolen goods</li>
-<li>Counterfeit items</li>
-<li>Weapons</li>
-<li>Fraudulent financial instruments</li>
-</ul>
-
-<footer class="xekie-footer">
-  <div class="footer-inner">
-    <strong>XEKIE — Trade Different</strong><br/>
-    <a href="index.html">Home</a> |
-    <a href="radar.html">Market Pulse</a> |
-    <a href="request.html">XEKIE IT</a> |
-    <a href="prohibited-items.html">Prohibited Items</a> |
-    <a href="#">Terms of Service</a> |
-    <a href="#">Privacy Policy</a> |
-    <a href="#">Seller Guidelines</a> |
-    <a href="#">Contact</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Prohibited Items</title>
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
+    body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
+    nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; display: flex; flex-direction: column; line-height: 1; }
+    .nav-logo .xe { color: var(--accent); }
+    .nav-tagline { font-size: 8px; font-weight: 400; letter-spacing: 0.15em; color: var(--mid); text-transform: uppercase; }
+    .container { max-width: 720px; margin: 0 auto; padding: 60px 24px; flex: 1; }
+    .doc-label { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .doc-title { font-family: var(--font-display); font-size: 40px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .doc-date { font-size: 14px; color: var(--mid); margin-bottom: 48px; }
+    .warning-box { background: #fff3f0; border: 1px solid rgba(255,77,28,0.2); border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 40px; }
+    .warning-box p { font-size: 15px; font-weight: 400; color: #333; line-height: 1.6; }
+    .category { margin-bottom: 32px; }
+    .category-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .category-icon { font-size: 24px; }
+    .category-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+    .item-list { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .item { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 15px; font-weight: 300; color: #333; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px; }
+    .item:last-child { border-bottom: none; }
+    .item::before { content: '✕'; color: var(--accent); font-size: 12px; font-weight: 700; margin-top: 3px; flex-shrink: 0; }
+    .doc-section { margin-bottom: 40px; }
+    .doc-section h2 { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 12px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .doc-section p { font-size: 15px; font-weight: 300; color: #333; line-height: 1.8; margin-bottom: 14px; }
+    .contact-box { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-top: 48px; }
+    .contact-box h3 { font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .contact-box p { font-size: 15px; font-weight: 300; color: var(--mid); line-height: 1.6; }
+    .contact-box a { color: var(--accent); text-decoration: none; }
+    footer { background: var(--black); color: var(--white); padding: 32px 40px; margin-top: auto; }
+    .footer-inner { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-links a { font-size: 13px; color: #666; text-decoration: none; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-copy { font-size: 12px; color: #444; }
+    @media (max-width: 480px) { nav { padding: 0 20px; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
+  </nav>
+  <div class="container">
+    <div class="doc-label">Platform Policy</div>
+    <h1 class="doc-title">Prohibited Items</h1>
+    <div class="doc-date">Effective date: March 1, 2025 &nbsp;·&nbsp; XEKIE LLC</div>
+    <div class="warning-box">
+      <p>⚠️ The following items and categories are strictly prohibited on XEKIE. Posting for prohibited items will result in immediate removal and may result in account suspension or termination. When in doubt, don't post it.</p>
+    </div>
+    <div class="category">
+      <div class="category-header"><div class="category-icon">⚠️</div><div class="category-title">Weapons & Dangerous Items</div></div>
+      <div class="item-list">
+        <div class="item">Illegal firearms, unregistered weapons, or weapons modifications</div>
+        <div class="item">Explosives, ammunition for illegal purposes, or materials to manufacture weapons</div>
+        <div class="item">Knives or bladed weapons where prohibited by law</div>
+        <div class="item">Tasers, stun guns, or other weapons where prohibited by local law</div>
+      </div>
+    </div>
+    <div class="category">
+      <div class="category-header"><div class="category-icon">💊</div><div class="category-title">Drugs & Regulated Substances</div></div>
+      <div class="item-list">
+        <div class="item">Illegal drugs or controlled substances of any kind</div>
+        <div class="item">Prescription medications without a valid prescription</div>
+        <div class="item">Drug paraphernalia intended for illegal drug use</div>
+        <div class="item">Alcohol sales (regulated — requires proper licensing)</div>
+        <div class="item">Tobacco products where prohibited by local law</div>
+      </div>
+    </div>
+    <div class="category">
+      <div class="category-header"><div class="category-icon">🚫</div><div class="category-title">Illegal & Stolen Goods</div></div>
+      <div class="item-list">
+        <div class="item">Stolen property of any kind</div>
+        <div class="item">Counterfeit goods, fake brand items, or fraudulent products</div>
+        <div class="item">Items that circumvent copyright or intellectual property protections</div>
+        <div class="item">Pirated software, media, or digital content</div>
+        <div class="item">Government-issued documents (IDs, passports, licenses)</div>
+      </div>
+    </div>
+    <div class="category">
+      <div class="category-header"><div class="category-icon">🔞</div><div class="category-title">Adult & Inappropriate Content</div></div>
+      <div class="item-list">
+        <div class="item">Adult content or services of a sexual nature</div>
+        <div class="item">Any content involving minors in a sexual context (strictly prohibited and will be reported to authorities)</div>
+        <div class="item">Escort services or solicitation</div>
+      </div>
+    </div>
+    <div class="category">
+      <div class="category-header"><div class="category-icon">🐾</div><div class="category-title">Animals</div></div>
+      <div class="item-list">
+        <div class="item">Live animals (connect with licensed breeders or shelters directly)</div>
+        <div class="item">Endangered species or protected wildlife products</div>
+        <div class="item">Animal parts where prohibited by law (ivory, certain furs, etc.)</div>
+      </div>
+    </div>
+    <div class="category">
+      <div class="category-header"><div class="category-icon">💰</div><div class="category-title">Financial & Personal Data</div></div>
+      <div class="item-list">
+        <div class="item">Credit card numbers, bank account information, or financial credentials</div>
+        <div class="item">Personal data, databases, or hacked account information</div>
+        <div class="item">Fraudulent currency or money laundering services</div>
+        <div class="item">Pyramid schemes, multi-level marketing, or get-rich-quick schemes</div>
+      </div>
+    </div>
+    <div class="category">
+      <div class="category-header"><div class="category-icon">☢️</div><div class="category-title">Hazardous Materials</div></div>
+      <div class="item-list">
+        <div class="item">Hazardous chemicals, toxic substances, or radioactive materials</div>
+        <div class="item">Items recalled for safety hazards</div>
+        <div class="item">Medical waste or biohazardous materials</div>
+      </div>
+    </div>
+    <div class="doc-section">
+      <h2>Enforcement</h2>
+      <p>XEKIE reserves the right to remove any listing at any time for any reason, including listings that violate this policy. Violations may result in a warning, temporary suspension, or permanent account termination depending on the severity.</p>
+      <p>We also cooperate with law enforcement when required and will report illegal activity when we become aware of it.</p>
+    </div>
+    <div class="contact-box">
+      <h3>See something that shouldn't be here?</h3>
+      <p>If you spot a listing that violates our policies, email us at <a href="mailto:zach@xekie.com">zach@xekie.com</a> with the details. We take reports seriously and will act quickly.</p>
+    </div>
   </div>
-</footer>
-
-</body></html>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Guidelines</a>
+      </div>
+      <div class="footer-copy">© 2025 XEKIE LLC</div>
+    </div>
+  </footer>
+</body>
+</html>
