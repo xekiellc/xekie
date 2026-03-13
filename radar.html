@@ -72,6 +72,8 @@
     .btn-share{font-size:13px;font-weight:500;padding:9px 14px;border-radius:100px;background:transparent;color:var(--mid);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;}
     .btn-share:hover{border-color:var(--black);color:var(--black);}
     .view-count{font-size:12px;color:var(--mid);}
+    .response-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:#EAF3DE;color:#3B6D11;}
+    .hot-badge{background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;}
     .early-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;letter-spacing:0.03em;}
     .empty-state{text-align:center;padding:80px 20px;}
     .empty-icon{font-size:48px;margin-bottom:16px;}
@@ -119,6 +121,7 @@
     </a>
     <div class="nav-right">
       <span class="nav-user" id="nav-user"></span>
+      <a href="notifications.html" class="btn-nav">🔔 Get Alerts</a>
       <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
       <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
     </div>
@@ -128,9 +131,7 @@
     <h1 class="page-title">Radar</h1>
     <p class="page-sub">Browse what buyers want. Find your next sale.</p>
     <p class="swipe-tip">💡 Swipe right to save, swipe left to skip</p>
-
     <input type="text" class="search-bar" id="search" placeholder="Search XEKIEs by keyword, location..." oninput="filterXekies()" />
-
     <div class="filter-row">
       <button class="filter-btn active" onclick="setCategory('', this)">All</button>
       <button class="filter-btn" onclick="setCategory('Electronics', this)">Electronics</button>
@@ -141,7 +142,6 @@
       <button class="filter-btn" onclick="setCategory('Household Items', this)">Household</button>
       <button class="filter-toggle" id="advanced-toggle" onclick="toggleAdvanced()">⚙ Filters</button>
     </div>
-
     <div class="advanced-filters" id="advanced-filters">
       <div class="filter-grid">
         <div class="filter-field">
@@ -161,7 +161,6 @@
         <button class="btn-clear-filters" onclick="clearFilters()">✕ Clear filters</button>
       </div>
     </div>
-
     <div class="results-count" id="results-count"></div>
     <div id="xekie-feed"><div class="loading">Loading XEKIEs...</div></div>
   </div>
@@ -206,6 +205,7 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let allXekies = [], activeCategory = '', currentUser = null, activeXekieId = null, activeXekieOwner = null;
+    let offerCounts = {};
     const BETA_CUTOFF = new Date('2026-06-01');
 
     function timeAgo(ts) {
@@ -233,6 +233,12 @@
       const { data, error } = await _sb.from('xekies').select('*').order('created_at', { ascending: false });
       if (error) { document.getElementById('xekie-feed').innerHTML = '<div class="loading">Error loading. Please refresh.</div>'; return; }
       allXekies = data || [];
+      if (allXekies.length) {
+        const ids = allXekies.map(x => x.id);
+        const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
+        offerCounts = {};
+        (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
+      }
       filterXekies();
     }
 
@@ -299,6 +305,8 @@
         else if (expired) statusBadge = '<span class="status-badge status-expired">⏰ Expired</span>';
         const cardClass = fulfilled ? 'fulfilled' : expired ? 'expired' : '';
         const canRespond = !fulfilled && !expired;
+        const cnt = offerCounts[x.id] || 0;
+        const responseBadge = cnt > 0 ? `<span class="response-badge ${cnt >= 5 ? 'hot-badge' : ''}">${cnt >= 5 ? '🔥' : '💬'} ${cnt} response${cnt!==1?'s':''}</span>` : '';
         return `
         <div class="xekie-card ${cardClass}" id="card-${x.id}" data-id="${x.id}">
           <div class="swipe-hint-right">SAVE ✓</div>
@@ -318,6 +326,7 @@
               <span>⏱ ${timeAgo(x.created_at)}</span>
               ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
               <span class="view-count">👁 ${x.view_count||0}</span>
+              ${responseBadge}
             </div>
             <div class="card-actions">
               <button class="btn-share" onclick="shareXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
@@ -330,7 +339,6 @@
       xekies.forEach(x => {
         _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {});
       });
-
       document.querySelectorAll('.xekie-card').forEach(card => addSwipe(card));
     }
 
@@ -396,12 +404,10 @@
       const msgEl = document.getElementById('modal-msg');
       if (!message) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Please write a message to the buyer.'; return; }
       btn.disabled = true; btn.textContent = 'Sending...';
-
       const { error } = await _sb.from('offers').insert({
         xekie_id: activeXekieId, seller_id: currentUser.id,
         message, price: price ? parseInt(price) : null
       });
-
       if (error) {
         msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message;
         btn.disabled=false; btn.textContent='Send response';
@@ -425,10 +431,7 @@
         await fetch('/.netlify/functions/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'offer', to: buyerEmail,
-            data: { xekieTitle, offerMessage, offerPrice }
-          })
+          body: JSON.stringify({ type: 'offer', to: buyerEmail, data: { xekieTitle, offerMessage, offerPrice } })
         });
       } catch(e) { /* silent */ }
     }
