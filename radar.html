@@ -4,101 +4,111 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XEKIE — Radar</title>
+  <meta name="description" content="Browse XEKIEs — see what buyers want and respond with your best offer.">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-DPXVZVMJXX');
-  </script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
-    body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
-    nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 10; }
-    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; display: flex; flex-direction: column; line-height: 1; }
-    .nav-logo .xe { color: var(--accent); }
-    .nav-tagline { font-size: 8px; font-weight: 400; letter-spacing: 0.15em; color: var(--mid); font-family: var(--font-body); text-transform: uppercase; }
-    .nav-right { display: flex; align-items: center; gap: 12px; }
-    .nav-user { font-size: 14px; color: var(--mid); }
-    .btn-nav { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: transparent; color: var(--mid); cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
-    .btn-nav:hover { border-color: var(--black); color: var(--black); }
-    .btn-nav.primary { background: var(--black); color: var(--white); border-color: transparent; }
-    .btn-nav.primary:hover { background: var(--accent); }
-    .container { max-width: 900px; margin: 0 auto; padding: 48px 20px; flex: 1; }
-    .page-title { font-family: var(--font-display); font-weight: 800; font-size: 36px; letter-spacing: -0.03em; margin-bottom: 6px; }
-    .page-sub { font-size: 15px; font-weight: 300; color: var(--mid); margin-bottom: 32px; }
-    .search-bar { width: 100%; padding: 12px 18px; border: 1.5px solid var(--border); border-radius: 100px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; margin-bottom: 20px; transition: border-color 0.2s; }
-    .search-bar:focus { border-color: var(--black); }
-    .filters { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
-    .filter-btn { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: var(--white); color: var(--mid); cursor: pointer; transition: all 0.2s; }
-    .filter-btn:hover { border-color: var(--black); color: var(--black); }
-    .filter-btn.active { background: var(--black); color: var(--white); border-color: transparent; }
-    .results-count { font-size: 13px; color: var(--mid); margin-bottom: 16px; }
-    .xekie-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 12px; transition: transform 0.15s, box-shadow 0.15s; position: relative; touch-action: pan-y; user-select: none; }
-    .xekie-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
-    .xekie-card.swiping { transition: transform 0.1s; }
-    .xekie-card.swipe-right { transform: translateX(120%) rotate(8deg) !important; opacity: 0; transition: all 0.4s ease; }
-    .xekie-card.swipe-left { transform: translateX(-120%) rotate(-8deg) !important; opacity: 0; transition: all 0.4s ease; }
-    .swipe-hint-right { position: absolute; top: 20px; left: 20px; background: #22c55e; color: white; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 100px; opacity: 0; transition: opacity 0.2s; letter-spacing: 0.05em; }
-    .swipe-hint-left { position: absolute; top: 20px; right: 20px; background: #ef4444; color: white; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 100px; opacity: 0; transition: opacity 0.2s; letter-spacing: 0.05em; }
-    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
-    .card-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: var(--black); }
-    .card-budget { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--accent); white-space: nowrap; text-align: right; }
-    .card-budget-flex { font-size: 11px; font-weight: 400; color: var(--mid); display: block; }
-    .card-desc { font-size: 15px; font-weight: 300; color: var(--mid); line-height: 1.5; margin-bottom: 14px; }
-    .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-    .card-meta { font-size: 13px; color: var(--mid); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-    .category-pill { display: inline-block; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 100px; background: var(--cream); color: var(--mid); border: 1px solid var(--border); }
-    .card-actions { display: flex; gap: 8px; align-items: center; }
-    .btn-respond { font-size: 13px; font-weight: 500; padding: 9px 18px; border-radius: 100px; background: var(--black); color: var(--white); border: none; cursor: pointer; transition: background 0.2s, transform 0.15s; }
-    .btn-respond:hover { background: var(--accent); transform: translateY(-1px); }
-    .btn-share { font-size: 13px; font-weight: 500; padding: 9px 14px; border-radius: 100px; background: transparent; color: var(--mid); border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; }
-    .btn-share:hover { border-color: var(--black); color: var(--black); }
-    .view-count { font-size: 12px; color: var(--mid); }
-    .early-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 100px; background: linear-gradient(135deg, #ff4d1c, #ff8c00); color: white; letter-spacing: 0.03em; }
-    .empty-state { text-align: center; padding: 80px 20px; }
-    .empty-icon { font-size: 48px; margin-bottom: 16px; }
-    .empty-title { font-family: var(--font-display); font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-    .empty-sub { font-size: 15px; font-weight: 300; color: var(--mid); }
-    .loading { text-align: center; padding: 60px; color: var(--mid); font-size: 15px; }
-    .swipe-tip { text-align: center; font-size: 12px; color: var(--mid); margin-bottom: 16px; display: none; }
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: var(--white); border-radius: 20px; padding: 36px; max-width: 480px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; }
-    .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--mid); }
-    .modal-title { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
-    .modal-sub { font-size: 14px; color: var(--mid); margin-bottom: 24px; }
-    .modal label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 7px; color: var(--black); }
-    .modal input, .modal textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; margin-bottom: 16px; transition: border-color 0.2s; }
-    .modal input:focus, .modal textarea:focus { border-color: var(--black); }
-    .modal textarea { min-height: 100px; resize: vertical; }
-    .modal-budget-row { display: flex; gap: 8px; margin-bottom: 24px; }
-    .modal-prefix { width: 44px; height: 46px; background: var(--cream); border: 1.5px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 500; color: var(--mid); flex-shrink: 0; }
-    .modal-prefix-input { flex: 1; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; }
-    .modal-msg { padding: 12px 16px; border-radius: 10px; font-size: 14px; margin-bottom: 16px; display: none; }
-    .modal-msg.error { background: #FCEBEB; color: #A32D2D; display: block; }
-    .modal-msg.success { background: #EAF3DE; color: #3B6D11; display: block; }
-    .btn-modal-submit { width: 100%; padding: 14px; background: var(--black); color: var(--white); border: none; border-radius: 10px; font-family: var(--font-body); font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
-    .btn-modal-submit:hover { background: var(--accent); }
-    .share-toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: var(--black); color: var(--white); padding: 12px 24px; border-radius: 100px; font-size: 14px; font-weight: 500; z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-    .share-toast.show { opacity: 1; }
-    footer { background: var(--black); color: var(--white); padding: 40px; margin-top: auto; }
-    .footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-    .footer-logo { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
-    .footer-logo .xe { color: var(--accent); }
-    .footer-tagline { font-size: 11px; letter-spacing: 0.2em; color: #555; text-transform: uppercase; }
-    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
-    .footer-links a { font-size: 13px; color: #666; text-decoration: none; transition: color 0.2s; }
-    .footer-links a:hover { color: var(--white); }
-    .footer-bottom { font-size: 12px; color: #444; border-top: 1px solid #1a1a1a; padding-top: 20px; }
-    @media (max-width: 600px) { nav { padding: 0 20px; } .card-top { flex-direction: column; } .swipe-tip { display: block; } }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
+    .nav-right{display:flex;align-items:center;gap:12px;}
+    .nav-user{font-size:14px;color:var(--mid);}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-nav:hover{border-color:var(--black);color:var(--black);}
+    .btn-nav.primary{background:var(--black);color:var(--white);border-color:transparent;}
+    .btn-nav.primary:hover{background:var(--accent);}
+    .container{max-width:900px;margin:0 auto;padding:48px 20px;flex:1;}
+    .page-title{font-family:var(--font-display);font-weight:800;font-size:36px;letter-spacing:-0.03em;margin-bottom:6px;}
+    .page-sub{font-size:15px;font-weight:300;color:var(--mid);margin-bottom:32px;}
+    .search-bar{width:100%;padding:12px 18px;border:1.5px solid var(--border);border-radius:100px;font-family:var(--font-body);font-size:15px;color:var(--black);background:var(--white);outline:none;margin-bottom:16px;transition:border-color 0.2s;}
+    .search-bar:focus{border-color:var(--black);}
+    .filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+    .filter-btn{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:var(--white);color:var(--mid);cursor:pointer;transition:all 0.2s;}
+    .filter-btn:hover{border-color:var(--black);color:var(--black);}
+    .filter-btn.active{background:var(--black);color:var(--white);border-color:transparent;}
+    .advanced-filters{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;display:none;}
+    .advanced-filters.open{display:block;}
+    .filter-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+    .filter-field label{display:block;font-size:12px;font-weight:500;color:var(--mid);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.1em;}
+    .filter-field input,.filter-field select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:14px;color:var(--black);background:var(--cream);outline:none;}
+    .filter-field input:focus,.filter-field select:focus{border-color:var(--black);}
+    .btn-clear-filters{font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:var(--font-body);}
+    .filter-toggle{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:var(--white);color:var(--mid);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+    .filter-toggle:hover{border-color:var(--black);color:var(--black);}
+    .filter-toggle.active{border-color:var(--accent);color:var(--accent);}
+    .results-count{font-size:13px;color:var(--mid);margin-bottom:16px;}
+    .xekie-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-bottom:12px;transition:transform 0.15s,box-shadow 0.15s;position:relative;touch-action:pan-y;user-select:none;}
+    .xekie-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.07);}
+    .xekie-card.fulfilled{opacity:0.6;background:#f8f8f6;}
+    .xekie-card.expired{opacity:0.5;background:#f8f8f6;}
+    .xekie-card.swiping{transition:transform 0.1s;}
+    .xekie-card.swipe-right{transform:translateX(120%) rotate(8deg) !important;opacity:0;transition:all 0.4s ease;}
+    .xekie-card.swipe-left{transform:translateX(-120%) rotate(-8deg) !important;opacity:0;transition:all 0.4s ease;}
+    .swipe-hint-right{position:absolute;top:20px;left:20px;background:#22c55e;color:white;font-size:13px;font-weight:700;padding:6px 12px;border-radius:100px;opacity:0;transition:opacity 0.2s;}
+    .swipe-hint-left{position:absolute;top:20px;right:20px;background:#ef4444;color:white;font-size:13px;font-weight:700;padding:6px 12px;border-radius:100px;opacity:0;transition:opacity 0.2s;}
+    .status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin-bottom:8px;}
+    .status-fulfilled{background:#EAF3DE;color:#3B6D11;}
+    .status-expired{background:#f4f2ec;color:#6b6b6b;}
+    .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px;}
+    .card-title{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-0.02em;color:var(--black);}
+    .card-budget{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--accent);white-space:nowrap;text-align:right;}
+    .card-budget-flex{font-size:11px;font-weight:400;color:var(--mid);display:block;}
+    .card-desc{font-size:15px;font-weight:300;color:var(--mid);line-height:1.5;margin-bottom:14px;}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+    .card-meta{font-size:13px;color:var(--mid);display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+    .category-pill{display:inline-block;font-size:12px;font-weight:500;padding:3px 10px;border-radius:100px;background:var(--cream);color:var(--mid);border:1px solid var(--border);}
+    .card-actions{display:flex;gap:8px;align-items:center;}
+    .btn-respond{font-size:13px;font-weight:500;padding:9px 18px;border-radius:100px;background:var(--black);color:var(--white);border:none;cursor:pointer;transition:background 0.2s,transform 0.15s;}
+    .btn-respond:hover{background:var(--accent);transform:translateY(-1px);}
+    .btn-share{font-size:13px;font-weight:500;padding:9px 14px;border-radius:100px;background:transparent;color:var(--mid);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;}
+    .btn-share:hover{border-color:var(--black);color:var(--black);}
+    .view-count{font-size:12px;color:var(--mid);}
+    .early-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;letter-spacing:0.03em;}
+    .empty-state{text-align:center;padding:80px 20px;}
+    .empty-icon{font-size:48px;margin-bottom:16px;}
+    .empty-title{font-family:var(--font-display);font-size:24px;font-weight:700;margin-bottom:8px;}
+    .empty-sub{font-size:15px;font-weight:300;color:var(--mid);}
+    .loading{text-align:center;padding:60px;color:var(--mid);font-size:15px;}
+    .swipe-tip{text-align:center;font-size:12px;color:var(--mid);margin-bottom:16px;display:none;}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--white);border-radius:20px;padding:36px;max-width:480px;width:100%;position:relative;max-height:90vh;overflow-y:auto;}
+    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);}
+    .modal-title{font-family:var(--font-display);font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+    .modal-sub{font-size:14px;color:var(--mid);margin-bottom:24px;}
+    .modal label{display:block;font-size:13px;font-weight:500;margin-bottom:7px;color:var(--black);}
+    .modal input,.modal textarea{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;color:var(--black);background:var(--white);outline:none;margin-bottom:16px;transition:border-color 0.2s;}
+    .modal input:focus,.modal textarea:focus{border-color:var(--black);}
+    .modal textarea{min-height:100px;resize:vertical;}
+    .modal-budget-row{display:flex;gap:8px;margin-bottom:24px;}
+    .modal-prefix{width:44px;height:46px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:500;color:var(--mid);flex-shrink:0;}
+    .modal-prefix-input{flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;color:var(--black);background:var(--white);outline:none;}
+    .modal-msg{padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:16px;display:none;}
+    .modal-msg.error{background:#FCEBEB;color:#A32D2D;display:block;}
+    .modal-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
+    .btn-modal-submit{width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
+    .btn-modal-submit:hover{background:var(--accent);}
+    .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;font-weight:500;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+    .share-toast.show{opacity:1;}
+    footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
+    .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+    .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
+    .footer-logo .xe{color:var(--accent);}
+    .footer-tagline{font-size:11px;letter-spacing:0.2em;color:#555;text-transform:uppercase;}
+    .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
+    .footer-links a:hover{color:var(--white);}
+    .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
+    @media(max-width:600px){nav{padding:0 20px;}.card-top{flex-direction:column;}.swipe-tip{display:block;}.filter-grid{grid-template-columns:1fr 1fr;}}
   </style>
 </head>
 <body>
@@ -113,12 +123,15 @@
       <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
     </div>
   </nav>
+
   <div class="container">
     <h1 class="page-title">Radar</h1>
     <p class="page-sub">Browse what buyers want. Find your next sale.</p>
     <p class="swipe-tip">💡 Swipe right to save, swipe left to skip</p>
-    <input type="text" class="search-bar" id="search" placeholder="Search XEKIEs..." oninput="filterXekies()" />
-    <div class="filters">
+
+    <input type="text" class="search-bar" id="search" placeholder="Search XEKIEs by keyword, location..." oninput="filterXekies()" />
+
+    <div class="filter-row">
       <button class="filter-btn active" onclick="setCategory('', this)">All</button>
       <button class="filter-btn" onclick="setCategory('Electronics', this)">Electronics</button>
       <button class="filter-btn" onclick="setCategory('Trading Cards', this)">Trading Cards</button>
@@ -126,10 +139,33 @@
       <button class="filter-btn" onclick="setCategory('Tools', this)">Tools</button>
       <button class="filter-btn" onclick="setCategory('Services', this)">Services</button>
       <button class="filter-btn" onclick="setCategory('Household Items', this)">Household</button>
+      <button class="filter-toggle" id="advanced-toggle" onclick="toggleAdvanced()">⚙ Filters</button>
     </div>
+
+    <div class="advanced-filters" id="advanced-filters">
+      <div class="filter-grid">
+        <div class="filter-field">
+          <label>Min Budget ($)</label>
+          <input type="number" id="filter-min" placeholder="e.g. 100" oninput="filterXekies()" />
+        </div>
+        <div class="filter-field">
+          <label>Max Budget ($)</label>
+          <input type="number" id="filter-max" placeholder="e.g. 1000" oninput="filterXekies()" />
+        </div>
+        <div class="filter-field">
+          <label>Location</label>
+          <input type="text" id="filter-location" placeholder="e.g. Ohio" oninput="filterXekies()" />
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="btn-clear-filters" onclick="clearFilters()">✕ Clear filters</button>
+      </div>
+    </div>
+
     <div class="results-count" id="results-count"></div>
     <div id="xekie-feed"><div class="loading">Loading XEKIEs...</div></div>
   </div>
+
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <button class="modal-close" onclick="closeModal()">✕</button>
@@ -146,7 +182,9 @@
       <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send response</button>
     </div>
   </div>
-  <div class="share-toast" id="share-toast">Link copied to clipboard!</div>
+
+  <div class="share-toast" id="share-toast">Link copied to clipboard! 🔗</div>
+
   <footer>
     <div class="footer-inner">
       <div>
@@ -159,15 +197,17 @@
         <a href="guidelines.html">Community Guidelines</a>
         <a href="terms.html">Terms of Service</a>
       </div>
-      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved. XEKIE is a platform connecting buyers and sellers. We are not responsible for transactions conducted between users.</div>
+      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
     </div>
   </footer>
+
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let allXekies = [], activeCategory = '', currentUser = null, activeXekieId = null;
+    let allXekies = [], activeCategory = '', currentUser = null, activeXekieId = null, activeXekieOwner = null;
     const BETA_CUTOFF = new Date('2026-06-01');
+
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
@@ -175,6 +215,7 @@
       }
       return "just now";
     }
+
     function formatBudget(x) {
       if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
       if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
@@ -182,21 +223,45 @@
       if (x.budget) return '$'+Number(x.budget).toLocaleString();
       return '$—';
     }
-    function isEarlyAdopter(createdAt) { return new Date(createdAt) < BETA_CUTOFF; }
+
+    function isExpired(x) {
+      if (!x.expires_at) return false;
+      return new Date(x.expires_at) < new Date();
+    }
+
     async function loadXekies() {
       const { data, error } = await _sb.from('xekies').select('*').order('created_at', { ascending: false });
       if (error) { document.getElementById('xekie-feed').innerHTML = '<div class="loading">Error loading. Please refresh.</div>'; return; }
       allXekies = data || [];
       filterXekies();
     }
+
     function setCategory(cat, btn) {
       activeCategory = cat;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       filterXekies();
     }
+
+    function toggleAdvanced() {
+      const panel = document.getElementById('advanced-filters');
+      const btn = document.getElementById('advanced-toggle');
+      panel.classList.toggle('open');
+      btn.classList.toggle('active');
+    }
+
+    function clearFilters() {
+      document.getElementById('filter-min').value = '';
+      document.getElementById('filter-max').value = '';
+      document.getElementById('filter-location').value = '';
+      filterXekies();
+    }
+
     function filterXekies() {
       const search = document.getElementById('search').value.toLowerCase();
+      const filterMin = parseFloat(document.getElementById('filter-min')?.value) || 0;
+      const filterMax = parseFloat(document.getElementById('filter-max')?.value) || Infinity;
+      const filterLoc = (document.getElementById('filter-location')?.value || '').toLowerCase();
       let filtered = allXekies;
       if (activeCategory) filtered = filtered.filter(x => x.category === activeCategory);
       if (search) filtered = filtered.filter(x =>
@@ -204,25 +269,46 @@
         (x.description||'').toLowerCase().includes(search) ||
         (x.location||'').toLowerCase().includes(search)
       );
+      if (filterMin > 0) filtered = filtered.filter(x => {
+        const bud = x.budget_max || x.budget || x.budget_min || 0;
+        return bud >= filterMin;
+      });
+      if (filterMax < Infinity) filtered = filtered.filter(x => {
+        const bud = x.budget_min || x.budget || 0;
+        return bud <= filterMax;
+      });
+      if (filterLoc) filtered = filtered.filter(x => (x.location||'').toLowerCase().includes(filterLoc));
       renderXekies(filtered);
     }
+
     function renderXekies(xekies) {
       const feed = document.getElementById('xekie-feed');
       document.getElementById('results-count').textContent = xekies.length ? xekies.length+' XEKIE'+(xekies.length!==1?'s':'')+' found' : '';
       if (!xekies.length) {
-        feed.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No XEKIEs found</div><p class="empty-sub">Try a different search or category.</p></div>`;
+        feed.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No XEKIEs found</div><p class="empty-sub">Try a different search or filter.</p></div>`;
         return;
       }
       feed.innerHTML = xekies.map(x => {
         const budget = formatBudget(x);
         const flexTag = x.is_flexible ? '<span class="card-budget-flex">flexible</span>' : '';
-        const earlyBadge = isEarlyAdopter(x.created_at) ? '<span class="early-badge">⚡ Early Adopter</span>' : '';
-        const views = x.view_count || 0;
-        return `<div class="xekie-card" id="card-${x.id}" data-id="${x.id}">
+        const earlyBadge = new Date(x.created_at) < BETA_CUTOFF ? '<span class="early-badge">⚡ Early Adopter</span>' : '';
+        const expired = isExpired(x);
+        const fulfilled = x.is_fulfilled;
+        let statusBadge = '';
+        if (fulfilled) statusBadge = '<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
+        else if (expired) statusBadge = '<span class="status-badge status-expired">⏰ Expired</span>';
+        const cardClass = fulfilled ? 'fulfilled' : expired ? 'expired' : '';
+        const canRespond = !fulfilled && !expired;
+        return `
+        <div class="xekie-card ${cardClass}" id="card-${x.id}" data-id="${x.id}">
           <div class="swipe-hint-right">SAVE ✓</div>
           <div class="swipe-hint-left">SKIP ✕</div>
+          ${statusBadge}
           <div class="card-top">
-            <div><div class="card-title">${x.title}</div>${earlyBadge}</div>
+            <div>
+              <div class="card-title">${x.title}</div>
+              ${earlyBadge}
+            </div>
             <div class="card-budget">${budget}${flexTag}</div>
           </div>
           ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
@@ -231,50 +317,53 @@
               ${x.location ? `<span>📍 ${x.location}</span>` : ''}
               <span>⏱ ${timeAgo(x.created_at)}</span>
               ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
-              <span class="view-count">👁 ${views} views</span>
+              <span class="view-count">👁 ${x.view_count||0}</span>
             </div>
             <div class="card-actions">
-              <button class="btn-share" onclick="shareXekie('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
-              <button class="btn-respond" onclick="openModal('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Respond</button>
+              <button class="btn-share" onclick="shareXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
+              ${canRespond ? `<button class="btn-respond" onclick="openModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}', '${x.user_id}')">Respond</button>` : ''}
             </div>
           </div>
         </div>`;
       }).join('');
-      xekies.forEach(x => { _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {}); });
+
+      xekies.forEach(x => {
+        _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {});
+      });
+
       document.querySelectorAll('.xekie-card').forEach(card => addSwipe(card));
     }
+
     function addSwipe(card) {
-      let startX = 0, startY = 0, isDragging = false;
-      const onStart = (x, y) => { startX = x; startY = y; isDragging = true; card.classList.add('swiping'); };
-      const onMove = (x, y) => {
+      let startX = 0, isDragging = false;
+      const onStart = (x) => { startX = x; isDragging = true; card.classList.add('swiping'); };
+      const onMove = (x) => {
         if (!isDragging) return;
-        const dx = x - startX, dy = y - startY;
-        if (Math.abs(dy) > Math.abs(dx) * 1.5) return;
+        const dx = x - startX;
         card.style.transform = `translateX(${dx}px) rotate(${dx * 0.03}deg)`;
         card.querySelector('.swipe-hint-right').style.opacity = dx > 40 ? Math.min(1,(dx-40)/60) : 0;
         card.querySelector('.swipe-hint-left').style.opacity = dx < -40 ? Math.min(1,(-dx-40)/60) : 0;
       };
       const onEnd = (x) => {
         if (!isDragging) return;
-        isDragging = false;
-        card.classList.remove('swiping');
+        isDragging = false; card.classList.remove('swiping');
         const dx = x - startX;
         if (dx > 80) { card.classList.add('swipe-right'); setTimeout(() => card.remove(), 400); }
         else if (dx < -80) { card.classList.add('swipe-left'); setTimeout(() => card.remove(), 400); }
         else { card.style.transform = ''; card.querySelector('.swipe-hint-right').style.opacity=0; card.querySelector('.swipe-hint-left').style.opacity=0; }
       };
-      card.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
-      window.addEventListener('mousemove', e => { if (isDragging) onMove(e.clientX, e.clientY); });
+      card.addEventListener('mousedown', e => onStart(e.clientX));
+      window.addEventListener('mousemove', e => { if (isDragging) onMove(e.clientX); });
       window.addEventListener('mouseup', e => { if (isDragging) onEnd(e.clientX); });
-      card.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive:true});
-      card.addEventListener('touchmove', e => onMove(e.touches[0].clientX, e.touches[0].clientY), {passive:true});
+      card.addEventListener('touchstart', e => onStart(e.touches[0].clientX), {passive:true});
+      card.addEventListener('touchmove', e => onMove(e.touches[0].clientX), {passive:true});
       card.addEventListener('touchend', e => onEnd(e.changedTouches[0].clientX));
     }
+
     function shareXekie(id, title) {
-      const url = `${window.location.origin}/radar.html?xekie=${id}`;
-      const text = `Check out this XEKIE: "${title}" — ${url}`;
+      const url = `${window.location.origin}/xekie.html?id=${id}`;
       if (navigator.share) {
-        navigator.share({ title: 'XEKIE — ' + title, text, url }).catch(() => {});
+        navigator.share({ title: 'XEKIE — ' + title, url }).catch(() => {});
       } else {
         navigator.clipboard.writeText(url).then(() => {
           const toast = document.getElementById('share-toast');
@@ -283,32 +372,76 @@
         });
       }
     }
-    function openModal(xekieId, title) {
+
+    function openModal(xekieId, title, ownerId) {
       if (!currentUser) { window.location.href = 'login.html'; return; }
       activeXekieId = xekieId;
+      activeXekieOwner = ownerId;
       document.getElementById('modal-xekie-title').textContent = 'Re: ' + title;
       document.getElementById('modal-message').value = '';
       document.getElementById('modal-price').value = '';
       document.getElementById('modal-msg').className = 'modal-msg';
+      document.getElementById('modal-msg').style.display = 'none';
       document.getElementById('modal-submit').disabled = false;
       document.getElementById('modal-submit').textContent = 'Send response';
       document.getElementById('modal-overlay').classList.add('open');
     }
+
     function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
     async function submitResponse() {
       const message = document.getElementById('modal-message').value.trim();
       const price = document.getElementById('modal-price').value;
       const btn = document.getElementById('modal-submit');
       const msgEl = document.getElementById('modal-msg');
-      if (!message) { msgEl.className='modal-msg error'; msgEl.textContent='Please write a message to the buyer.'; return; }
+      if (!message) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Please write a message to the buyer.'; return; }
       btn.disabled = true; btn.textContent = 'Sending...';
-      const { error } = await _sb.from('offers').insert({ xekie_id: activeXekieId, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
-      if (error) { msgEl.className='modal-msg error'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send response'; }
-      else { msgEl.className='modal-msg success'; msgEl.textContent='Response sent! The buyer will be notified.'; btn.textContent='Sent ✓'; setTimeout(closeModal, 1800); }
+
+      const { error } = await _sb.from('offers').insert({
+        xekie_id: activeXekieId, seller_id: currentUser.id,
+        message, price: price ? parseInt(price) : null
+      });
+
+      if (error) {
+        msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message;
+        btn.disabled=false; btn.textContent='Send response';
+      } else {
+        if (activeXekieOwner) {
+          const xekie = allXekies.find(x => x.id === activeXekieId);
+          notifyBuyer(activeXekieOwner, xekie?.title || 'Your XEKIE', message, price);
+        }
+        msgEl.className='modal-msg success'; msgEl.style.display='block';
+        msgEl.textContent='Response sent! The buyer will be notified. ✓';
+        btn.textContent='Sent ✓';
+        setTimeout(closeModal, 2000);
+      }
     }
-    document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
+
+    async function notifyBuyer(buyerId, xekieTitle, offerMessage, offerPrice) {
+      try {
+        const { data: profile } = await _sb.from('profiles').select('email').eq('id', buyerId).single();
+        const buyerEmail = profile?.email;
+        if (!buyerEmail) return;
+        await fetch('/.netlify/functions/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'offer', to: buyerEmail,
+            data: { xekieTitle, offerMessage, offerPrice }
+          })
+        });
+      } catch(e) { /* silent */ }
+    }
+
+    document.getElementById('modal-overlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('modal-overlay')) closeModal();
+    });
+
     _sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) { currentUser = session.user; document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email; }
+      if (session) {
+        currentUser = session.user;
+        document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
+      }
       loadXekies();
     });
   </script>
