@@ -1,76 +1,118 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
-<title>My XEKIE Dashboard</title>
-<link rel="stylesheet" href="styles.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Dashboard</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0b1f33">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec;
+      --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12);
+      --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
+    }
+    body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; }
+    nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 10; }
+    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; }
+    .nav-logo span { color: var(--accent); }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-user { font-size: 14px; color: var(--mid); }
+    .btn-signout { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: transparent; color: var(--mid); cursor: pointer; transition: all 0.2s; }
+    .btn-signout:hover { border-color: var(--black); color: var(--black); }
+    .container { max-width: 900px; margin: 0 auto; padding: 48px 20px; }
+    .page-title { font-family: var(--font-display); font-weight: 800; font-size: 36px; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .page-sub { font-size: 15px; font-weight: 300; color: var(--mid); margin-bottom: 36px; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--black); color: var(--white); font-family: var(--font-body); font-size: 15px; font-weight: 500; padding: 12px 24px; border-radius: 100px; text-decoration: none; border: none; cursor: pointer; transition: background 0.2s, transform 0.15s; margin-bottom: 36px; }
+    .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+    .section-label { font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 16px; }
+    .xekie-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 12px; transition: transform 0.15s, box-shadow 0.15s; }
+    .xekie-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
+    .card-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .card-desc { font-size: 15px; font-weight: 300; color: var(--mid); line-height: 1.5; margin-bottom: 14px; }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .card-budget { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--accent); }
+    .card-meta { font-size: 13px; color: var(--mid); }
+    .btn-delete { font-size: 13px; font-weight: 500; padding: 7px 14px; border-radius: 100px; border: 1.5px solid var(--border); background: transparent; color: var(--mid); cursor: pointer; transition: all 0.2s; }
+    .btn-delete:hover { border-color: #E24B4A; color: #E24B4A; }
+    .empty-state { text-align: center; padding: 60px 20px; border: 2px dashed var(--border); border-radius: 16px; }
+    .empty-icon { font-size: 40px; margin-bottom: 16px; }
+    .empty-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .empty-sub { font-size: 15px; font-weight: 300; color: var(--mid); margin-bottom: 24px; }
+    .loading { text-align: center; padding: 40px; color: var(--mid); font-size: 15px; }
+  </style>
 </head>
-
 <body>
+  <nav>
+    <a href="index.html" class="nav-logo">XEK<span>IE</span></a>
+    <div class="nav-right">
+      <span class="nav-user" id="nav-user"></span>
+      <button class="btn-signout" onclick="signOut()">Sign out</button>
+    </div>
+  </nav>
+  <div class="container">
+    <h1 class="page-title">My XEKIEs</h1>
+    <p class="page-sub">Everything you've posted — your requests waiting for sellers.</p>
+    <a href="request.html" class="btn-primary">+ Post a new XEKIE</a>
+    <div class="section-label">Your active posts</div>
+    <div id="my-xekies"><div class="loading">Loading your XEKIEs...</div></div>
+  </div>
+  <script>
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_fCKM-ACI_E7K9-lflnwN-Q__Two4qgq";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let currentUser = null;
 
-<header class="navbar">
-<div class="nav-inner">
+    function timeAgo(ts) {
+      const s = Math.floor((new Date() - new Date(ts)) / 1000);
+      for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
+        const c = Math.floor(s / sec);
+        if (c >= 1) return c + " " + l + (c > 1 ? "s" : "") + " ago";
+      }
+      return "just now";
+    }
 
-<a href="index.html" class="nav-logo">XEKIE</a>
+    async function loadMyXekies(userId) {
+      const { data, error } = await supabase.from('xekies').select('*').eq('user_id', userId).order('created_at', { ascending: false });
+      const container = document.getElementById('my-xekies');
+      if (error || !data || data.length === 0) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No XEKIEs yet</div><p class="empty-sub">Post your first XEKIE and let sellers come to you.</p><a href="request.html" class="btn-primary" style="display:inline-flex;">Post your first XEKIE</a></div>`;
+        return;
+      }
+      container.innerHTML = data.map(x => `
+        <div class="xekie-card" id="card-${x.id}">
+          <div class="card-title">${x.title}</div>
+          <div class="card-desc">${x.description || ''}</div>
+          <div class="card-footer">
+            <div>
+              <div class="card-budget">$${x.budget}</div>
+              <div class="card-meta">Posted ${timeAgo(x.created_at)}${x.location ? ' · ' + x.location : ''}</div>
+            </div>
+            <button class="btn-delete" onclick="deleteXekie('${x.id}')">Delete</button>
+          </div>
+        </div>`).join('');
+    }
 
-<div class="nav-links">
-<a href="radar.html">Radar</a>
-<a href="request.html">Post</a>
-<a href="dashboard.html">My XEKIE</a>
-<a href="prohibited-items.html">Prohibited</a>
-</div>
+    async function deleteXekie(id) {
+      if (!confirm('Delete this XEKIE?')) return;
+      const { error } = await supabase.from('xekies').delete().eq('id', id).eq('user_id', currentUser.id);
+      if (!error) document.getElementById('card-' + id)?.remove();
+    }
 
-</div>
-</header>
+    async function signOut() {
+      await supabase.auth.signOut();
+      window.location.href = 'login.html';
+    }
 
-
-<section class="container">
-
-<h1>My XEKIE Dashboard</h1>
-
-<h2>Saved XEKIEs</h2>
-
-<div id="saved-feed"></div>
-
-</section>
-
-
-<footer class="xekie-footer">
-
-<div class="footer-inner">
-
-<strong>XEKIE — Trade Different</strong>
-
-</div>
-
-</footer>
-
-
-
-<script>
-
-const saved = JSON.parse(localStorage.getItem("savedXekies")) || [];
-
-const feed = document.getElementById("saved-feed");
-
-saved.forEach(x => {
-
-const card = document.createElement("div");
-card.className = "xekie-card";
-
-card.innerHTML = `
-<strong>${x.title}</strong><br>
-Budget: ${x.budget}<br>
-📍 ${x.location}
-`;
-
-feed.appendChild(card);
-
-});
-
-</script>
-
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) { window.location.href = 'login.html'; return; }
+      currentUser = session.user;
+      document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
+      loadMyXekies(session.user.id);
+    });
+  </script>
 </body>
 </html>
