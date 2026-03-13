@@ -85,8 +85,8 @@
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "sb_publishable_fCKM-ACI_E7K9-lflnwN-Q__Two4qgq";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    supabase.auth.getSession().then(({ data: { session } }) => { if (session) window.location.href = 'dashboard.html'; });
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    _sb.auth.getSession().then(({ data: { session } }) => { if (session) window.location.href = 'dashboard.html'; });
     function switchTab(tab) {
       document.getElementById('form-signin').style.display = tab === 'signin' ? 'block' : 'none';
       document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none';
@@ -102,7 +102,7 @@
       const btn = document.getElementById('btn-signin');
       if (!email || !password) return showMessage('Please fill in all fields.', 'error');
       btn.disabled = true; btn.textContent = 'Signing in...';
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await _sb.auth.signInWithPassword({ email, password });
       if (error) { showMessage(error.message, 'error'); btn.disabled = false; btn.textContent = 'Sign in'; }
       else { showMessage('Signed in! Redirecting...', 'success'); setTimeout(() => window.location.href = 'dashboard.html', 800); }
     }
@@ -114,20 +114,24 @@
       if (!name || !email || !password) return showMessage('Please fill in all fields.', 'error');
       if (password.length < 6) return showMessage('Password must be at least 6 characters.', 'error');
       btn.disabled = true; btn.textContent = 'Creating account...';
-      const { error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
+      const { error } = await _sb.auth.signUp({ email, password, options: { data: { full_name: name } } });
       if (error) { showMessage(error.message, 'error'); btn.disabled = false; btn.textContent = 'Create account'; }
       else { showMessage('Account created! Check your email to confirm, then sign in.', 'success'); btn.textContent = 'Check your email ✓'; }
     }
     async function signInWithGoogle() {
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/dashboard.html' } });
+      const { error } = await _sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/dashboard.html' } });
       if (error) showMessage(error.message, 'error');
     }
     async function forgotPassword() {
       const email = document.getElementById('signin-email').value.trim();
       if (!email) return showMessage('Enter your email above first.', 'error');
-      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/login.html' });
+      const { error } = await _sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/login.html' });
       if (error) showMessage(error.message, 'error');
       else showMessage('Password reset email sent! Check your inbox.', 'success');
+    }
+    async function signOut() {
+      await _sb.auth.signOut();
+      window.location.href = 'login.html';
     }
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
