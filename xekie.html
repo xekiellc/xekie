@@ -8,11 +8,12 @@
   <meta property="og:site_name" content="XEKIE">
   <meta property="og:title" content="XEKIE — Trade Different">
   <meta property="og:description" content="Someone is looking to buy this on XEKIE. Respond with your best offer.">
-  <meta property="og:url" id="og-url" content="https://xekie.com">
+  <meta property="og:url" content="https://xekie.com">
   <meta property="og:image" content="https://xekie.com/icon-180x180.png">
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="XEKIE — Trade Different">
   <meta name="twitter:description" content="Someone is looking to buy this on XEKIE.">
+  <meta name="twitter:image" content="https://xekie.com/icon-180x180.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
@@ -179,11 +180,15 @@
       }
       currentXekie = x;
       document.title = `XEKIE — ${x.title}`;
-      document.querySelector('meta[property="og:title"]').content = `${x.title} — XEKIE`;
-      document.querySelector('meta[property="og:description"]').content = x.description || `Budget: ${formatBudget(x)}. Respond with your best offer on XEKIE.`;
-      document.querySelector('meta[property="og:url"]').content = window.location.href;
-      document.querySelector('meta[name="twitter:title"]').content = `${x.title} — XEKIE`;
-      document.querySelector('meta[name="twitter:description"]').content = x.description || `Budget: ${formatBudget(x)}`;
+      document.querySelector('meta[property="og:title"]').setAttribute('content', `${x.title} — XEKIE`);
+      document.querySelector('meta[property="og:description"]').setAttribute('content', x.description || `Budget: ${formatBudget(x)}. Respond with your best offer on XEKIE.`);
+      document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
+      document.querySelector('meta[name="twitter:title"]').setAttribute('content', `${x.title} — XEKIE`);
+      document.querySelector('meta[name="twitter:description"]').setAttribute('content', x.description || `Budget: ${formatBudget(x)}`);
+      const ogParams = new URLSearchParams({ title: x.title, budget: formatBudget(x), location: x.location || '', category: x.category || '' });
+      const ogImg = `https://xekie.com/.netlify/functions/og-image?${ogParams}`;
+      document.querySelector('meta[property="og:image"]').setAttribute('content', ogImg);
+      document.querySelector('meta[name="twitter:image"]').setAttribute('content', ogImg);
 
       const isExpired = x.expires_at && new Date(x.expires_at) < new Date();
       const isFulfilled = x.is_fulfilled;
@@ -234,7 +239,6 @@
             ${expiryDisplay}
           </div>
         </div>
-
         <div class="cta-band">
           <h3>Want deals to come to you?</h3>
           <p>Post your own XEKIE — tell sellers what you want and let offers roll in.</p>
