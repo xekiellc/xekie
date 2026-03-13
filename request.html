@@ -1,167 +1,199 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-
-<title>Post a XEKIE</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<link rel="stylesheet" href="styles.css">
-
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-<style>
-
-.fireworks{
-font-size:40px;
-text-align:center;
-margin-top:20px;
-}
-
-.badge{
-background:#ffd700;
-color:black;
-padding:4px 8px;
-border-radius:12px;
-font-size:12px;
-margin-left:8px;
-}
-
-</style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Post a XEKIE</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0b1f33">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec;
+      --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12);
+      --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
+    }
+    body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; }
+    nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 10; }
+    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; }
+    .nav-logo span { color: var(--accent); }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-user { font-size: 14px; color: var(--mid); }
+    .btn-signout { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: transparent; color: var(--mid); cursor: pointer; transition: all 0.2s; }
+    .btn-signout:hover { border-color: var(--black); color: var(--black); }
+    .container { max-width: 640px; margin: 0 auto; padding: 48px 20px; }
+    .page-title { font-family: var(--font-display); font-weight: 800; font-size: 36px; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .page-sub { font-size: 15px; font-weight: 300; color: var(--mid); margin-bottom: 40px; line-height: 1.5; }
+    .form-card { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 40px; }
+    .form-group { margin-bottom: 24px; }
+    label { display: block; font-size: 13px; font-weight: 500; color: var(--black); margin-bottom: 7px; }
+    .label-hint { font-size: 12px; font-weight: 400; color: var(--mid); margin-left: 6px; }
+    input, textarea, select { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; transition: border-color 0.2s; }
+    input:focus, textarea:focus, select:focus { border-color: var(--black); }
+    input::placeholder, textarea::placeholder { color: #bbb; }
+    textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+    .budget-row { display: flex; gap: 10px; }
+    .budget-row input { flex: 1; }
+    .budget-prefix { display: flex; align-items: center; justify-content: center; width: 44px; height: 46px; background: var(--cream); border: 1.5px solid var(--border); border-radius: 10px; font-size: 16px; font-weight: 500; color: var(--mid); flex-shrink: 0; }
+    .char-count { font-size: 12px; color: var(--mid); text-align: right; margin-top: 5px; }
+    .btn-submit { width: 100%; padding: 15px; background: var(--black); color: var(--white); border: none; border-radius: 10px; font-family: var(--font-body); font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 8px; transition: background 0.2s, transform 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-submit:hover { background: var(--accent); transform: translateY(-1px); }
+    .btn-submit:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+    .message { padding: 14px 18px; border-radius: 10px; font-size: 14px; margin-bottom: 20px; display: none; }
+    .message.error { background: #FCEBEB; color: #A32D2D; border: 1px solid #F7C1C1; display: block; }
+    .message.success { background: #EAF3DE; color: #3B6D11; border: 1px solid #C0DD97; display: block; }
+    .preview-box { background: var(--cream); border-radius: 12px; padding: 18px 20px; margin-top: 16px; border: 1px dashed var(--border); }
+    .preview-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 10px; }
+    .preview-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--black); margin-bottom: 4px; min-height: 24px; }
+    .preview-desc { font-size: 14px; color: var(--mid); font-weight: 300; line-height: 1.5; min-height: 20px; }
+    .preview-budget { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--accent); margin-top: 10px; }
+    @media (max-width: 480px) { .form-card { padding: 28px 20px; } nav { padding: 0 20px; } }
+  </style>
 </head>
-
 <body>
+  <nav>
+    <a href="index.html" class="nav-logo">XEK<span>IE</span></a>
+    <div class="nav-right">
+      <span class="nav-user" id="nav-user"></span>
+      <button class="btn-signout" onclick="signOut()">Sign out</button>
+    </div>
+  </nav>
 
-<header class="navbar">
-<div class="nav-inner">
+  <div class="container">
+    <h1 class="page-title">Post a XEKIE</h1>
+    <p class="page-sub">Tell sellers exactly what you want. Be specific — better details get better responses.</p>
 
-<a href="index.html" class="nav-logo">
-XEKIE <span class="badge">EARLY ADOPTER</span>
-</a>
+    <div class="form-card">
+      <div id="message" class="message"></div>
 
-<div class="nav-links">
-<a href="radar.html">Radar</a>
-<a href="request.html">Post</a>
-<a href="dashboard.html">My XEKIE</a>
-<a href="prohibited-items.html">Prohibited</a>
-</div>
+      <div class="form-group">
+        <label>What do you want to buy? <span class="label-hint">Be specific</span></label>
+        <input type="text" id="title" placeholder="e.g. MacBook Pro M3, 16-inch, Space Black" maxlength="100" oninput="updatePreview()" />
+        <div class="char-count"><span id="title-count">0</span>/100</div>
+      </div>
 
-</div>
-</header>
+      <div class="form-group">
+        <label>Describe exactly what you're looking for <span class="label-hint">Condition, specs, preferences</span></label>
+        <textarea id="description" placeholder="e.g. Looking for a used or refurbished model in good condition. No cracks or major scratches. Happy to consider AppleCare transfer." maxlength="500" oninput="updatePreview()"></textarea>
+        <div class="char-count"><span id="desc-count">0</span>/500</div>
+      </div>
 
+      <div class="form-group">
+        <label>Your budget</label>
+        <div class="budget-row">
+          <div class="budget-prefix">$</div>
+          <input type="number" id="budget" placeholder="1500" min="1" max="999999" />
+        </div>
+      </div>
 
-<section class="container">
+      <div class="form-group">
+        <label>Location <span class="label-hint">City, state or "Anywhere / Ships OK"</span></label>
+        <input type="text" id="location" placeholder="e.g. Chicago, IL or Ships anywhere" />
+      </div>
 
-<h1>Post a XEKIE</h1>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="category">
+          <option value="">Select a category...</option>
+          <option>Electronics</option>
+          <option>Vehicles</option>
+          <option>Furniture & Home</option>
+          <option>Clothing & Accessories</option>
+          <option>Collectibles & Antiques</option>
+          <option>Sports & Outdoors</option>
+          <option>Musical Instruments</option>
+          <option>Books & Media</option>
+          <option>Jewelry & Watches</option>
+          <option>Tools & Equipment</option>
+          <option>Other</option>
+        </select>
+      </div>
 
-<form id="xekie-form">
+      <div class="preview-box">
+        <div class="preview-label">Live preview</div>
+        <div class="preview-title" id="preview-title">Your XEKIE title will appear here</div>
+        <div class="preview-desc" id="preview-desc">Your description will appear here...</div>
+        <div class="preview-budget" id="preview-budget">$—</div>
+      </div>
 
-<input id="title" type="text" placeholder="What are you looking for?" required>
-
-<input id="budget" type="text" placeholder="Budget">
-
-<input id="location" type="text" placeholder="Location">
-
-<button type="submit">Broadcast XEKIE</button>
-
-</form>
-
-<div id="celebration" class="fireworks"></div>
-
-</section>
-
-
-<footer class="xekie-footer">
-
-<div class="footer-inner">
-
-<strong>XEKIE — Trade Different</strong>
-
-</div>
-
-</footer>
-
-
-<audio id="toast">
-<source src="https://assets.mixkit.co/sfx/preview/mixkit-glass-toast-2159.mp3">
-</audio>
-
-
-<script>
-
-const form = document.getElementById("xekie-form");
-
-form.addEventListener("submit", function(e){
-
-e.preventDefault();
-
-/* confetti */
-
-confetti({
-particleCount:200,
-spread:70
-});
-
-/* fireworks emoji */
-
-document.getElementById("celebration").innerHTML = "🎆 🎆 🎆";
-
-/* clinking glasses sound */
-
-document.getElementById("toast").play();
-
-alert("🚀 Your XEKIE has been broadcast!");
-
-});
-
-</script>
+      <br>
+      <button class="btn-submit" id="btn-submit" onclick="postXekie()">
+        Post my XEKIE
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
 
   <script>
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_fCKM-ACI_E7K9-lflnwN-Q__Two4qgq";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let currentUser = null;
 
-const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co"
-const SUPABASE_KEY = "sb_publishable_fCKM-ACI_E7K9-1flnwN-Q__Two4qgq"
+    // Auth gate
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) { window.location.href = 'login.html'; return; }
+      currentUser = session.user;
+      document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
+    });
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    function updatePreview() {
+      const title = document.getElementById('title').value;
+      const desc = document.getElementById('description').value;
+      const budget = document.getElementById('budget').value;
+      document.getElementById('title-count').textContent = title.length;
+      document.getElementById('desc-count').textContent = desc.length;
+      document.getElementById('preview-title').textContent = title || 'Your XEKIE title will appear here';
+      document.getElementById('preview-desc').textContent = desc || 'Your description will appear here...';
+      document.getElementById('preview-budget').textContent = budget ? '$' + Number(budget).toLocaleString() : '$—';
+    }
 
-document.getElementById("xekie-form").addEventListener("submit", async (e) => {
+    function showMessage(text, type) {
+      const el = document.getElementById('message');
+      el.textContent = text; el.className = 'message ' + type;
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 
-  e.preventDefault()
+    async function postXekie() {
+      const title = document.getElementById('title').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const budget = document.getElementById('budget').value;
+      const location = document.getElementById('location').value.trim();
+      const category = document.getElementById('category').value;
+      const btn = document.getElementById('btn-submit');
 
-  const title = document.getElementById("title").value
-  const budget = document.getElementById("budget").value
-  const location = document.getElementById("location").value
+      if (!title) return showMessage('Please add a title — what do you want to buy?', 'error');
+      if (!budget || budget < 1) return showMessage('Please enter your budget.', 'error');
+      if (!location) return showMessage('Please add a location or write "Ships anywhere".', 'error');
 
-  const { data, error } = await supabase
-    .from("xekies")
-    .insert([
-      {
-        title: title,
-        description: "",
-        budget: budget,
-        location: location
+      btn.disabled = true;
+      btn.innerHTML = 'Posting... <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+      const { error } = await supabase.from('xekies').insert({
+        title,
+        description,
+        budget: parseInt(budget),
+        location,
+        category,
+        user_id: currentUser.id
+      });
+
+      if (error) {
+        showMessage('Something went wrong: ' + error.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = 'Post my XEKIE <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      } else {
+        showMessage('Your XEKIE is live! Redirecting to your dashboard...', 'success');
+        setTimeout(() => window.location.href = 'dashboard.html', 1500);
       }
-    ])
+    }
 
-  if (error) {
-    console.log(error)
-    alert("Error posting XEKIE")
-  } else {
-
-    // fireworks celebration
-    confetti({
-      particleCount: 150,
-      spread: 70
-    })
-
-    setTimeout(() => {
-      window.location.href = "/"
-    }, 1200)
-
-  }
-
-})
-
-</script>
-
+    async function signOut() {
+      await supabase.auth.signOut();
+      window.location.href = 'login.html';
+    }
+  </script>
 </body>
 </html>
