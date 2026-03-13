@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Saved XEKIEs</title>
+  <meta name="description" content="Your saved XEKIEs — XEKIEs you want to respond to later.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff4d1c">
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-nav:hover{border-color:var(--black);color:var(--black);}
+    .btn-nav.primary{background:var(--black);color:var(--white);border-color:transparent;}
+    .btn-nav.primary:hover{background:var(--accent);}
+    .container{max-width:860px;margin:0 auto;padding:48px 20px;flex:1;}
+    .page-title{font-family:var(--font-display);font-weight:800;font-size:36px;letter-spacing:-0.03em;margin-bottom:6px;}
+    .page-sub{font-size:15px;font-weight:300;color:var(--mid);margin-bottom:32px;}
+    .xekie-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-bottom:12px;transition:transform 0.15s,box-shadow 0.15s;}
+    .xekie-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.07);}
+    .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px;}
+    .card-title{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-0.02em;color:var(--black);}
+    .card-budget{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--accent);white-space:nowrap;}
+    .card-desc{font-size:15px;font-weight:300;color:var(--mid);line-height:1.5;margin-bottom:14px;}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+    .card-meta{font-size:13px;color:var(--mid);display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+    .category-pill{display:inline-block;font-size:12px;font-weight:500;padding:3px 10px;border-radius:100px;background:var(--cream);color:var(--mid);border:1px solid var(--border);}
+    .card-actions{display:flex;gap:8px;align-items:center;}
+    .btn-respond{font-size:13px;font-weight:500;padding:9px 18px;border-radius:100px;background:var(--black);color:var(--white);border:none;cursor:pointer;transition:background 0.2s;text-decoration:none;display:inline-block;}
+    .btn-respond:hover{background:var(--accent);}
+    .btn-unsave{font-size:13px;font-weight:500;padding:9px 14px;border-radius:100px;background:transparent;color:#A32D2D;border:1.5px solid rgba(163,45,45,0.2);cursor:pointer;transition:all 0.2s;}
+    .btn-unsave:hover{background:#FCEBEB;}
+    .empty-state{text-align:center;padding:80px 20px;}
+    .empty-icon{font-size:48px;margin-bottom:16px;}
+    .empty-title{font-family:var(--font-display);font-size:24px;font-weight:700;margin-bottom:8px;}
+    .empty-sub{font-size:15px;font-weight:300;color:var(--mid);margin-bottom:24px;}
+    .status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin-bottom:8px;}
+    .status-fulfilled{background:#EAF3DE;color:#3B6D11;}
+    .status-expired{background:#f4f2ec;color:#6b6b6b;}
+    footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
+    .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+    .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
+    .footer-logo .xe{color:var(--accent);}
+    .footer-tagline{font-size:11px;letter-spacing:0.2em;color:#555;text-transform:uppercase;}
+    .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
+    .footer-links a:hover{color:var(--white);}
+    .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
+    @media(max-width:600px){nav{padding:0 20px;}.card-top{flex-direction:column;}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
+    <div style="display:flex;gap:12px;">
+      <a href="radar.html" class="btn-nav">Radar</a>
+      <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
+      <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1 class="page-title">Saved XEKIEs</h1>
+    <p class="page-sub">XEKIEs you've bookmarked to respond to later.</p>
+    <div id="saved-list"><div style="text-align:center;padding:40px;color:var(--mid);">Loading...</div></div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+        <div class="footer-tagline">Trade Different</div>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Community Guidelines</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    function formatBudget(x) {
+      if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
+      if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
+      if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
+      if (x.budget) return '$'+Number(x.budget).toLocaleString();
+      return '$—';
+    }
+
+    function timeAgo(ts) {
+      const s = Math.floor((new Date() - new Date(ts)) / 1000);
+      for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
+        const c = Math.floor(s/sec); if (c>=1) return c+" "+l+(c>1?"s":"")+" ago";
+      }
+      return "just now";
+    }
+
+    async function loadSaved() {
+      const savedIds = JSON.parse(localStorage.getItem('savedXekies') || '[]');
+      const container = document.getElementById('saved-list');
+      if (!savedIds.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔖</div>
+            <div class="empty-title">No saved XEKIEs yet</div>
+            <p class="empty-sub">When you find a XEKIE you want to respond to later, tap "Save XEKIE" to bookmark it here.</p>
+            <a href="radar.html" class="btn-nav primary" style="display:inline-block;">Browse Radar →</a>
+          </div>`;
+        return;
+      }
+      const { data } = await _sb.from('xekies').select('*').in('id', savedIds);
+      if (!data || !data.length) {
+        localStorage.removeItem('savedXekies');
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔖</div><div class="empty-title">No saved XEKIEs</div><p class="empty-sub">They may have been deleted.</p></div>`;
+        return;
+      }
+      container.innerHTML = data.map(x => {
+        const expired = x.expires_at && new Date(x.expires_at) < new Date();
+        const fulfilled = x.is_fulfilled;
+        const canRespond = !expired && !fulfilled;
+        let statusBadge = '';
+        if (fulfilled) statusBadge = '<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
+        else if (expired) statusBadge = '<span class="status-badge status-expired">⏰ Expired</span>';
+        return `
+          <div class="xekie-card" id="card-${x.id}">
+            ${statusBadge}
+            <div class="card-top">
+              <div class="card-title">${x.title}</div>
+              <div class="card-budget">${formatBudget(x)}</div>
+            </div>
+            ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
+            <div class="card-footer">
+              <div class="card-meta">
+                ${x.location ? `<span>📍 ${x.location}</span>` : ''}
+                <span>⏱ ${timeAgo(x.created_at)}</span>
+                ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
+              </div>
+              <div class="card-actions">
+                <button class="btn-unsave" onclick="unsave('${x.id}')">✕ Remove</button>
+                ${canRespond ? `<a href="xekie.html?id=${x.id}" class="btn-respond">Respond →</a>` : `<a href="xekie.html?id=${x.id}" class="btn-respond" style="opacity:0.5;">View</a>`}
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function unsave(id) {
+      let saved = JSON.parse(localStorage.getItem('savedXekies') || '[]');
+      saved = saved.filter(s => s !== id);
+      localStorage.setItem('savedXekies', JSON.stringify(saved));
+      document.getElementById('card-' + id)?.remove();
+      if (!saved.length) loadSaved();
+    }
+
+    loadSaved();
+  </script>
+</body>
+</html>
