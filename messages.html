@@ -4,84 +4,68 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XEKIE — Messages</title>
+  <meta name="description" content="Your XEKIE messages — chat with buyers and sellers.">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-DPXVZVMJXX');
-  </script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
-    body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
-    nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 10; }
-    .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; display: flex; flex-direction: column; line-height: 1; }
-    .nav-logo .xe { color: var(--accent); }
-    .nav-tagline { font-size: 8px; font-weight: 400; letter-spacing: 0.15em; color: var(--mid); text-transform: uppercase; }
-    .nav-right { display: flex; align-items: center; gap: 12px; }
-    .btn-nav { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: transparent; color: var(--mid); cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
-    .btn-nav:hover { border-color: var(--black); color: var(--black); }
-    .btn-nav.primary { background: var(--black); color: var(--white); border-color: transparent; }
-    .btn-nav.primary:hover { background: var(--accent); }
-    .btn-nav.danger { color: #A32D2D; border-color: rgba(163,45,45,0.2); }
-    .btn-nav.danger:hover { background: #FCEBEB; border-color: #A32D2D; }
-    .container { max-width: 760px; margin: 0 auto; padding: 48px 20px; flex: 1; }
-    .page-title { font-family: var(--font-display); font-weight: 800; font-size: 36px; letter-spacing: -0.03em; margin-bottom: 6px; }
-    .page-sub { font-size: 15px; font-weight: 300; color: var(--mid); margin-bottom: 40px; }
-    .loading { text-align: center; padding: 60px; color: var(--mid); }
-    .xekie-group { margin-bottom: 32px; }
-    .xekie-header { background: var(--white); border: 1px solid var(--border); border-radius: 16px 16px 0 0; padding: 20px 24px; border-bottom: none; }
-    .xekie-header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-    .xekie-header-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
-    .xekie-header-budget { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--accent); white-space: nowrap; }
-    .xekie-header-meta { font-size: 13px; color: var(--mid); margin-top: 6px; display: flex; gap: 12px; flex-wrap: wrap; }
-    .response-count { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--accent); background: rgba(255,77,28,0.08); padding: 4px 12px; border-radius: 100px; margin-top: 10px; }
-    .response-count-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
-    .responses { border: 1px solid var(--border); border-radius: 0 0 16px 16px; overflow: hidden; }
-    .response-item { background: var(--white); padding: 20px 24px; border-top: 1px solid var(--border); transition: background 0.15s; }
-    .response-item:hover { background: var(--cream); }
-    .response-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-    .response-price { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--accent); }
-    .response-no-price { font-size: 13px; color: var(--mid); font-style: italic; }
-    .response-time { font-size: 12px; color: var(--mid); white-space: nowrap; margin-top: 4px; }
-    .response-msg { font-size: 15px; font-weight: 300; color: var(--black); line-height: 1.6; margin-bottom: 14px; }
-    .response-actions { display: flex; gap: 8px; }
-    .btn-contact { font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 100px; background: var(--black); color: var(--white); border: none; cursor: pointer; transition: background 0.2s; text-decoration: none; display: inline-block; }
-    .btn-contact:hover { background: var(--accent); }
-    .btn-dismiss { font-size: 13px; font-weight: 500; padding: 8px 14px; border-radius: 100px; background: transparent; color: var(--mid); border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; }
-    .btn-dismiss:hover { border-color: var(--black); color: var(--black); }
-    .seller-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; color: var(--mid); background: var(--cream); padding: 3px 10px; border-radius: 100px; border: 1px solid var(--border); }
-    .empty-state { text-align: center; padding: 80px 20px; }
-    .empty-icon { font-size: 52px; margin-bottom: 16px; }
-    .empty-title { font-family: var(--font-display); font-size: 26px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.02em; }
-    .empty-sub { font-size: 15px; font-weight: 300; color: var(--mid); margin-bottom: 28px; line-height: 1.6; max-width: 400px; margin-left: auto; margin-right: auto; }
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: var(--white); border-radius: 20px; padding: 36px; max-width: 460px; width: 100%; position: relative; }
-    .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--mid); }
-    .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em; }
-    .modal-sub { font-size: 14px; color: var(--mid); margin-bottom: 24px; line-height: 1.5; }
-    .modal-info { background: var(--cream); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-    .modal-info-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
-    .modal-info-value { font-size: 15px; font-weight: 400; color: var(--black); line-height: 1.5; }
-    .modal-note { font-size: 13px; color: var(--mid); line-height: 1.6; padding: 14px 16px; background: rgba(255,77,28,0.06); border-radius: 10px; border-left: 3px solid var(--accent); }
-    footer { background: var(--black); color: var(--white); padding: 40px; margin-top: auto; }
-    .footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-    .footer-logo { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
-    .footer-logo .xe { color: var(--accent); }
-    .footer-tagline { font-size: 11px; letter-spacing: 0.2em; color: #555; text-transform: uppercase; }
-    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
-    .footer-links a { font-size: 13px; color: #666; text-decoration: none; }
-    .footer-links a:hover { color: var(--white); }
-    .footer-bottom { font-size: 12px; color: #444; border-top: 1px solid #1a1a1a; padding-top: 20px; }
-    @media (max-width: 480px) { nav { padding: 0 20px; } .response-top { flex-direction: column; } }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-nav:hover{border-color:var(--black);color:var(--black);}
+    .btn-nav.primary{background:var(--black);color:var(--white);border-color:transparent;}
+    .btn-nav.primary:hover{background:var(--accent);}
+    .layout{display:flex;flex:1;max-width:1000px;margin:0 auto;width:100%;padding:32px 20px;gap:24px;}
+    .thread-list{width:320px;flex-shrink:0;}
+    .thread-list-title{font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:16px;}
+    .thread-item{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;}
+    .thread-item:hover{border-color:var(--accent);transform:translateX(2px);}
+    .thread-item.active{border-color:var(--accent);background:#fff8f6;}
+    .thread-xekie{font-size:13px;font-weight:600;color:var(--black);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .thread-preview{font-size:12px;color:var(--mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .thread-time{font-size:11px;color:var(--mid);margin-top:4px;}
+    .chat-panel{flex:1;background:var(--white);border:1px solid var(--border);border-radius:16px;display:flex;flex-direction:column;min-height:500px;}
+    .chat-header{padding:20px 24px;border-bottom:1px solid var(--border);}
+    .chat-xekie-title{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:4px;}
+    .chat-xekie-sub{font-size:13px;color:var(--mid);}
+    .chat-messages{flex:1;padding:20px 24px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;min-height:300px;max-height:480px;}
+    .msg-bubble{max-width:75%;padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.5;}
+    .msg-bubble.mine{background:var(--black);color:var(--white);align-self:flex-end;border-bottom-right-radius:4px;}
+    .msg-bubble.theirs{background:var(--cream);color:var(--black);align-self:flex-start;border-bottom-left-radius:4px;}
+    .msg-time{font-size:11px;opacity:0.6;margin-top:4px;}
+    .msg-price{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+    .chat-input-row{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-end;}
+    .chat-input{flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:12px;font-family:var(--font-body);font-size:14px;color:var(--black);background:var(--cream);outline:none;resize:none;min-height:44px;max-height:120px;transition:border-color 0.2s;}
+    .chat-input:focus{border-color:var(--black);}
+    .btn-send{padding:12px 20px;background:var(--black);color:var(--white);border:none;border-radius:12px;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;transition:background 0.2s;white-space:nowrap;}
+    .btn-send:hover{background:var(--accent);}
+    .empty-chat{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--mid);padding:40px;}
+    .empty-chat-icon{font-size:48px;}
+    .empty-chat-title{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--black);}
+    .empty-threads{text-align:center;padding:40px 20px;color:var(--mid);}
+    .notif-banner{background:#EAF3DE;border:1px solid #c0dd97;border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .notif-text{font-size:13px;color:#3B6D11;}
+    .btn-notif{font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;background:#3B6D11;color:white;border:none;cursor:pointer;}
+    .loading{text-align:center;padding:40px;color:var(--mid);}
+    footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
+    .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+    .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
+    .footer-logo .xe{color:var(--accent);}
+    .footer-tagline{font-size:11px;letter-spacing:0.2em;color:#555;text-transform:uppercase;}
+    .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
+    .footer-links a:hover{color:var(--white);}
+    .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
+    @media(max-width:700px){.layout{flex-direction:column;padding:16px;}.thread-list{width:100%;}.chat-panel{min-height:400px;}}
   </style>
 </head>
 <body>
@@ -90,35 +74,31 @@
       <span><span class="xe">XE</span>KIE</span>
       <span class="nav-tagline">Trade Different</span>
     </a>
-    <div class="nav-right">
+    <div style="display:flex;gap:12px;">
       <a href="radar.html" class="btn-nav">Radar</a>
-      <a href="request.html" class="btn-nav primary">+ New XEKIE</a>
-      <button class="btn-nav danger" onclick="signOut()">Sign out</button>
+      <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
+      <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
     </div>
   </nav>
-  <div class="container">
-    <h1 class="page-title">Messages</h1>
-    <p class="page-sub">Seller responses to your XEKIEs — review offers and connect with sellers.</p>
-    <div id="messages-feed"><div class="loading">Loading your messages...</div></div>
-  </div>
-  <div class="modal-overlay" id="contact-modal">
-    <div class="modal">
-      <button class="modal-close" onclick="closeContact()">✕</button>
-      <h2 class="modal-title">Connect with seller</h2>
-      <p class="modal-sub" id="contact-xekie-title"></p>
-      <div class="modal-info">
-        <div class="modal-info-label">Their offer</div>
-        <div class="modal-info-value" id="contact-offer-price"></div>
+
+  <div class="layout">
+    <div class="thread-list">
+      <div class="thread-list-title">Messages</div>
+      <div id="notif-banner" style="display:none;" class="notif-banner">
+        <span class="notif-text">🔔 Get notified for new messages</span>
+        <button class="btn-notif" onclick="requestNotifications()">Enable</button>
       </div>
-      <div class="modal-info">
-        <div class="modal-info-label">Their message</div>
-        <div class="modal-info-value" id="contact-offer-msg"></div>
-      </div>
-      <div class="modal-note">
-        💡 XEKIE connects buyers and sellers. To proceed, reach out directly — exchange contact info, agree on terms, and complete the transaction safely. Always meet in a public place for local transactions.
+      <div id="threads"><div class="loading">Loading...</div></div>
+    </div>
+    <div class="chat-panel" id="chat-panel">
+      <div class="empty-chat">
+        <div class="empty-chat-icon">💬</div>
+        <div class="empty-chat-title">Your messages</div>
+        <p style="font-size:14px;text-align:center;">Select a conversation to start chatting with buyers and sellers.</p>
       </div>
     </div>
   </div>
+
   <footer>
     <div class="footer-inner">
       <div>
@@ -134,11 +114,22 @@
       <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
     </div>
   </footer>
+
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null;
+    let activeThread = null;
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
+    if ('Notification' in window && Notification.permission === 'default') {
+      document.getElementById('notif-banner').style.display = 'flex';
+    }
+
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
@@ -146,93 +137,114 @@
       }
       return "just now";
     }
-    function formatBudget(x) {
-      if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
-      if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
-      if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
-      if (x.budget) return '$'+Number(x.budget).toLocaleString();
-      return '$—';
+
+    async function requestNotifications() {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') document.getElementById('notif-banner').style.display = 'none';
     }
+
     _sb.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { window.location.href = 'login.html'; return; }
       currentUser = session.user;
-      loadMessages();
+      loadThreads();
     });
-    async function loadMessages() {
-      const { data: xekies } = await _sb.from('xekies').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-      if (!xekies || !xekies.length) {
-        document.getElementById('messages-feed').innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">📭</div>
-            <div class="empty-title">No XEKIEs yet</div>
-            <p class="empty-sub">Post what you want to buy and sellers will respond here.</p>
-            <a href="request.html" class="btn-nav primary" style="display:inline-block;">Post your first XEKIE →</a>
+
+    async function loadThreads() {
+      const { data: asSeller } = await _sb.from('offers')
+        .select('*, xekies(title, user_id, id)')
+        .eq('seller_id', currentUser.id)
+        .order('created_at', { ascending: false });
+
+      const { data: myXekies } = await _sb.from('xekies')
+        .select('id, title').eq('user_id', currentUser.id);
+
+      let asBuyer = [];
+      if (myXekies && myXekies.length) {
+        const xekieIds = myXekies.map(x => x.id);
+        const { data } = await _sb.from('offers')
+          .select('*, xekies(title, user_id, id)')
+          .in('xekie_id', xekieIds)
+          .neq('seller_id', currentUser.id)
+          .order('created_at', { ascending: false });
+        asBuyer = data || [];
+      }
+
+      const allOffers = [...(asSeller || []), ...asBuyer];
+
+      if (!allOffers.length) {
+        document.getElementById('threads').innerHTML = `
+          <div class="empty-threads">
+            <p style="font-size:14px;">No messages yet.</p>
+            <p style="font-size:13px;margin-top:8px;">When sellers respond to your XEKIEs, conversations appear here.</p>
           </div>`;
         return;
       }
-      const ids = xekies.map(x => x.id);
-      const { data: offers } = await _sb.from('offers').select('*').in('xekie_id', ids).order('created_at', { ascending: false });
-      const offerMap = {};
-      (offers || []).forEach(o => { if (!offerMap[o.xekie_id]) offerMap[o.xekie_id] = []; offerMap[o.xekie_id].push(o); });
-      const xekiesWithOffers = xekies.filter(x => offerMap[x.id]?.length);
-      if (!xekiesWithOffers.length) {
-        document.getElementById('messages-feed').innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">📬</div>
-            <div class="empty-title">No responses yet</div>
-            <p class="empty-sub">You have ${xekies.length} active XEKIE${xekies.length !== 1 ? 's' : ''}. Sellers will respond here when they have what you're looking for.</p>
-            <a href="radar.html" class="btn-nav" style="display:inline-block;">Browse Radar</a>
+
+      document.getElementById('threads').innerHTML = allOffers.map(o => {
+        const xekieTitle = o.xekies?.title || 'XEKIE';
+        const isSeller = o.seller_id === currentUser.id;
+        const role = isSeller ? 'You responded' : 'Seller responded';
+        return `
+          <div class="thread-item" data-offer="${o.id}" data-xekie="${o.xekie_id}" data-title="${(xekieTitle).replace(/"/g,'&quot;')}" data-seller="${o.seller_id}" onclick="openThread(this)">
+            <div class="thread-xekie">${xekieTitle}</div>
+            <div class="thread-preview">${role}: ${(o.message||'').slice(0,50)}${(o.message||'').length>50?'...':''}</div>
+            <div class="thread-time">${timeAgo(o.created_at)}</div>
           </div>`;
-        return;
-      }
-      const feed = document.getElementById('messages-feed');
-      feed.innerHTML = xekiesWithOffers.map(x => {
-        const xOffers = offerMap[x.id] || [];
-        return `<div class="xekie-group">
-          <div class="xekie-header">
-            <div class="xekie-header-top">
-              <div class="xekie-header-title">${x.title}</div>
-              <div class="xekie-header-budget">${formatBudget(x)}</div>
-            </div>
-            <div class="xekie-header-meta">
-              ${x.location ? `<span>📍 ${x.location}</span>` : ''}
-              ${x.category ? `<span>${x.category}</span>` : ''}
-            </div>
-            <div class="response-count"><div class="response-count-dot"></div>${xOffers.length} response${xOffers.length !== 1 ? 's' : ''}</div>
-          </div>
-          <div class="responses">
-            ${xOffers.map(o => `
-              <div class="response-item" id="resp-${o.id}">
-                <div class="response-top">
-                  <div>
-                    ${o.price ? `<div class="response-price">$${Number(o.price).toLocaleString()}</div>` : '<div class="response-no-price">No price listed</div>'}
-                    <div class="response-time">${timeAgo(o.created_at)}</div>
-                  </div>
-                  <span class="seller-tag">🏪 Seller</span>
-                </div>
-                <div class="response-msg">${o.message}</div>
-                <div class="response-actions">
-                  <button class="btn-contact" onclick="openContact('${x.title.replace(/'/g,"\\'")}','${o.price||''}','${o.message.replace(/'/g,"\\'").replace(/\n/g,' ')}')">View details</button>
-                  <button class="btn-dismiss" onclick="dismissResponse('${o.id}')">Dismiss</button>
-                </div>
-              </div>`).join('')}
-          </div>
-        </div>`;
       }).join('');
     }
-    function openContact(xekieTitle, price, msg) {
-      document.getElementById('contact-xekie-title').textContent = 'Re: ' + xekieTitle;
-      document.getElementById('contact-offer-price').textContent = price ? '$' + Number(price).toLocaleString() : 'No price listed';
-      document.getElementById('contact-offer-msg').textContent = msg;
-      document.getElementById('contact-modal').classList.add('open');
+
+    async function openThread(el) {
+      const offerId = el.dataset.offer;
+      const xekieId = el.dataset.xekie;
+      const xekieTitle = el.dataset.title;
+      const sellerId = el.dataset.seller;
+      activeThread = { offerId, xekieId, xekieTitle, sellerId };
+
+      document.querySelectorAll('.thread-item').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+
+      const { data: offer } = await _sb.from('offers').select('*').eq('id', offerId).single();
+      const { data: xekie } = await _sb.from('xekies').select('*').eq('id', xekieId).single();
+      const isBuyer = xekie?.user_id === currentUser.id;
+
+      document.getElementById('chat-panel').innerHTML = `
+        <div class="chat-header">
+          <div class="chat-xekie-title">${xekieTitle}</div>
+          <div class="chat-xekie-sub">${isBuyer ? 'Seller responded to your XEKIE' : 'Your response to a XEKIE'} · <a href="xekie.html?id=${xekieId}" style="color:var(--accent);">View XEKIE →</a></div>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+          ${offer ? `
+            <div class="msg-bubble ${offer.seller_id === currentUser.id ? 'mine' : 'theirs'}">
+              ${offer.price ? `<div class="msg-price">$${Number(offer.price).toLocaleString()}</div>` : ''}
+              <div>${offer.message}</div>
+              <div class="msg-time">${timeAgo(offer.created_at)}</div>
+            </div>` : ''}
+        </div>
+        <div class="chat-input-row">
+          <textarea class="chat-input" id="chat-input" placeholder="Type a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+          <button class="btn-send" onclick="sendMessage()">Send →</button>
+        </div>`;
     }
-    function closeContact() { document.getElementById('contact-modal').classList.remove('open'); }
-    document.getElementById('contact-modal').addEventListener('click', e => { if (e.target === document.getElementById('contact-modal')) closeContact(); });
-    function dismissResponse(id) {
-      const el = document.getElementById('resp-' + id);
-      if (el) { el.style.opacity='0'; el.style.transform='translateX(-20px)'; el.style.transition='all 0.3s'; setTimeout(() => el.remove(), 300); }
+
+    async function sendMessage() {
+      if (!activeThread) return;
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      const msgs = document.getElementById('chat-messages');
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble mine';
+      bubble.innerHTML = `<div>${text}</div><div class="msg-time">just now</div>`;
+      msgs.appendChild(bubble);
+      msgs.scrollTop = msgs.scrollHeight;
+      await _sb.from('offers').insert({
+        xekie_id: activeThread.xekieId,
+        seller_id: currentUser.id,
+        message: text,
+        price: null
+      });
     }
-    async function signOut() { await _sb.auth.signOut(); window.location.href = 'login.html'; }
   </script>
 </body>
 </html>
