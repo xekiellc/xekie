@@ -7,14 +7,10 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0b1f33">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec;
-      --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12);
-      --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
-    }
+    :root { --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec; --accent: #ff4d1c; --mid: #6b6b6b; --border: rgba(10,10,10,0.12); --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif; }
     body { font-family: var(--font-body); background: var(--cream); color: var(--black); min-height: 100vh; }
     nav { padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 10; }
     .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; }
@@ -26,16 +22,15 @@
     .btn-nav.primary { background: var(--black); color: var(--white); border-color: transparent; }
     .btn-nav.primary:hover { background: var(--accent); }
     .container { max-width: 900px; margin: 0 auto; padding: 48px 20px; }
-    .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 32px; flex-wrap: wrap; }
     .page-title { font-family: var(--font-display); font-weight: 800; font-size: 36px; letter-spacing: -0.03em; margin-bottom: 6px; }
-    .page-sub { font-size: 15px; font-weight: 300; color: var(--mid); }
+    .page-sub { font-size: 15px; font-weight: 300; color: var(--mid); margin-bottom: 32px; }
+    .search-bar { width: 100%; padding: 12px 18px; border: 1.5px solid var(--border); border-radius: 100px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; margin-bottom: 24px; transition: border-color 0.2s; }
+    .search-bar:focus { border-color: var(--black); }
+    .search-bar::placeholder { color: #bbb; }
     .filters { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
     .filter-btn { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 100px; border: 1.5px solid var(--border); background: var(--white); color: var(--mid); cursor: pointer; transition: all 0.2s; }
     .filter-btn:hover { border-color: var(--black); color: var(--black); }
     .filter-btn.active { background: var(--black); color: var(--white); border-color: transparent; }
-    .search-bar { width: 100%; padding: 12px 18px; border: 1.5px solid var(--border); border-radius: 100px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; margin-bottom: 24px; transition: border-color 0.2s; }
-    .search-bar:focus { border-color: var(--black); }
-    .search-bar::placeholder { color: #bbb; }
     .results-count { font-size: 13px; color: var(--mid); margin-bottom: 16px; }
     .xekie-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 12px; transition: transform 0.15s, box-shadow 0.15s; }
     .xekie-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
@@ -45,15 +40,31 @@
     .card-desc { font-size: 15px; font-weight: 300; color: var(--mid); line-height: 1.5; margin-bottom: 14px; }
     .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
     .card-meta { font-size: 13px; color: var(--mid); display: flex; gap: 12px; flex-wrap: wrap; }
-    .card-meta span { display: flex; align-items: center; gap: 4px; }
     .category-pill { display: inline-block; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 100px; background: var(--cream); color: var(--mid); border: 1px solid var(--border); }
-    .btn-respond { font-size: 13px; font-weight: 500; padding: 9px 18px; border-radius: 100px; background: var(--black); color: var(--white); border: none; cursor: pointer; transition: background 0.2s, transform 0.15s; text-decoration: none; display: inline-block; }
+    .btn-respond { font-size: 13px; font-weight: 500; padding: 9px 18px; border-radius: 100px; background: var(--black); color: var(--white); border: none; cursor: pointer; transition: background 0.2s, transform 0.15s; }
     .btn-respond:hover { background: var(--accent); transform: translateY(-1px); }
     .empty-state { text-align: center; padding: 80px 20px; }
     .empty-icon { font-size: 48px; margin-bottom: 16px; }
     .empty-title { font-family: var(--font-display); font-size: 24px; font-weight: 700; margin-bottom: 8px; }
     .empty-sub { font-size: 15px; font-weight: 300; color: var(--mid); }
     .loading { text-align: center; padding: 60px; color: var(--mid); font-size: 15px; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--white); border-radius: 20px; padding: 36px; max-width: 480px; width: 100%; position: relative; }
+    .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--mid); }
+    .modal-title { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .modal-sub { font-size: 14px; color: var(--mid); margin-bottom: 24px; }
+    .modal label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 7px; }
+    .modal input, .modal textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; margin-bottom: 16px; }
+    .modal textarea { min-height: 100px; resize: vertical; }
+    .modal-budget-row { display: flex; gap: 8px; margin-bottom: 24px; }
+    .modal-prefix { width: 44px; height: 46px; background: var(--cream); border: 1.5px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 500; color: var(--mid); flex-shrink: 0; }
+    .modal-prefix-input { flex: 1; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: var(--font-body); font-size: 15px; color: var(--black); background: var(--white); outline: none; }
+    .modal-msg { padding: 12px 16px; border-radius: 10px; font-size: 14px; margin-bottom: 16px; display: none; }
+    .modal-msg.error { background: #FCEBEB; color: #A32D2D; display: block; }
+    .modal-msg.success { background: #EAF3DE; color: #3B6D11; display: block; }
+    .btn-modal-submit { width: 100%; padding: 14px; background: var(--black); color: var(--white); border: none; border-radius: 10px; font-family: var(--font-body); font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .btn-modal-submit:hover { background: var(--accent); }
     @media (max-width: 600px) { nav { padding: 0 20px; } .card-top { flex-direction: column; } }
   </style>
 </head>
@@ -66,18 +77,11 @@
       <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
     </div>
   </nav>
-
   <div class="container">
-    <div class="page-header">
-      <div>
-        <h1 class="page-title">Radar</h1>
-        <p class="page-sub">Browse what buyers want. Find your next sale.</p>
-      </div>
-    </div>
-
+    <h1 class="page-title">Radar</h1>
+    <p class="page-sub">Browse what buyers want. Find your next sale.</p>
     <input type="text" class="search-bar" id="search" placeholder="Search XEKIEs — try 'MacBook', 'vintage', 'Chicago'..." oninput="filterXekies()" />
-
-    <div class="filters" id="filters">
+    <div class="filters">
       <button class="filter-btn active" onclick="setCategory('', this)">All</button>
       <button class="filter-btn" onclick="setCategory('Electronics', this)">Electronics</button>
       <button class="filter-btn" onclick="setCategory('Vehicles', this)">Vehicles</button>
@@ -86,88 +90,63 @@
       <button class="filter-btn" onclick="setCategory('Collectibles & Antiques', this)">Collectibles</button>
       <button class="filter-btn" onclick="setCategory('Other', this)">Other</button>
     </div>
-
     <div class="results-count" id="results-count"></div>
     <div id="xekie-feed"><div class="loading">Loading XEKIEs...</div></div>
   </div>
 
-  <!-- Respond Modal -->
-  <div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;">
-    <div style="background:var(--white);border-radius:20px;padding:36px;max-width:480px;width:100%;position:relative;">
-      <button onclick="closeModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);">✕</button>
-      <h2 style="font-family:var(--font-display);font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;">Respond to XEKIE</h2>
-      <p id="modal-xekie-title" style="font-size:14px;color:var(--mid);margin-bottom:24px;"></p>
-      <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:13px;font-weight:500;margin-bottom:7px;">Your message to the buyer</label>
-        <textarea id="modal-message" style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;min-height:100px;outline:none;resize:vertical;color:var(--black);background:var(--white);" placeholder="Hi! I have exactly what you're looking for. Here's what I can offer..."></textarea>
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2 class="modal-title">Respond to XEKIE</h2>
+      <p class="modal-sub" id="modal-xekie-title"></p>
+      <label>Your message to the buyer</label>
+      <textarea id="modal-message" placeholder="Hi! I have exactly what you're looking for..."></textarea>
+      <label>Your asking price</label>
+      <div class="modal-budget-row">
+        <div class="modal-prefix">$</div>
+        <input type="number" id="modal-price" class="modal-prefix-input" placeholder="1200" />
       </div>
-      <div style="margin-bottom:24px;">
-        <label style="display:block;font-size:13px;font-weight:500;margin-bottom:7px;">Your asking price</label>
-        <div style="display:flex;gap:8px;">
-          <div style="width:44px;height:46px;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:500;color:var(--mid);flex-shrink:0;">$</div>
-          <input type="number" id="modal-price" style="flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;color:var(--black);background:var(--white);outline:none;" placeholder="1200" />
-        </div>
-      </div>
-      <div id="modal-message-box" style="display:none;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:16px;"></div>
-      <button onclick="submitResponse()" id="modal-submit" style="width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;">Send response</button>
+      <div class="modal-msg" id="modal-msg"></div>
+      <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send response</button>
     </div>
   </div>
 
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_fCKM-ACI_E7K9-lflnwN-Q__Two4qgq";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    let allXekies = [];
-    let activeCategory = '';
-    let currentUser = null;
-    let activeXekieId = null;
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let allXekies = [], activeCategory = '', currentUser = null, activeXekieId = null;
 
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
-        const c = Math.floor(s / sec);
-        if (c >= 1) return c + " " + l + (c > 1 ? "s" : "") + " ago";
+        const c = Math.floor(s / sec); if (c >= 1) return c + " " + l + (c > 1 ? "s" : "") + " ago";
       }
       return "just now";
     }
-
     async function loadXekies() {
-      const { data, error } = await supabase.from('xekies').select('*').order('created_at', { ascending: false });
-      if (error) { document.getElementById('xekie-feed').innerHTML = '<div class="loading">Error loading XEKIEs. Please refresh.</div>'; return; }
+      const { data, error } = await _sb.from('xekies').select('*').order('created_at', { ascending: false });
+      if (error) { document.getElementById('xekie-feed').innerHTML = '<div class="loading">Error loading. Please refresh.</div>'; return; }
       allXekies = data || [];
       filterXekies();
     }
-
     function setCategory(cat, btn) {
       activeCategory = cat;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       filterXekies();
     }
-
     function filterXekies() {
       const search = document.getElementById('search').value.toLowerCase();
       let filtered = allXekies;
       if (activeCategory) filtered = filtered.filter(x => x.category === activeCategory);
-      if (search) filtered = filtered.filter(x =>
-        (x.title || '').toLowerCase().includes(search) ||
-        (x.description || '').toLowerCase().includes(search) ||
-        (x.location || '').toLowerCase().includes(search)
-      );
+      if (search) filtered = filtered.filter(x => (x.title||'').toLowerCase().includes(search) || (x.description||'').toLowerCase().includes(search) || (x.location||'').toLowerCase().includes(search));
       renderXekies(filtered);
     }
-
     function renderXekies(xekies) {
       const feed = document.getElementById('xekie-feed');
-      const count = document.getElementById('results-count');
-      count.textContent = xekies.length === 0 ? '' : xekies.length + ' XEKIE' + (xekies.length !== 1 ? 's' : '') + ' found';
-
-      if (xekies.length === 0) {
-        feed.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No XEKIEs found</div><p class="empty-sub">Try a different search or category.</p></div>`;
-        return;
-      }
-
+      document.getElementById('results-count').textContent = xekies.length ? xekies.length + ' XEKIE' + (xekies.length !== 1 ? 's' : '') + ' found' : '';
+      if (!xekies.length) { feed.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No XEKIEs found</div><p class="empty-sub">Try a different search or category.</p></div>`; return; }
       feed.innerHTML = xekies.map(x => `
         <div class="xekie-card">
           <div class="card-top">
@@ -181,76 +160,36 @@
               <span>⏱ ${timeAgo(x.created_at)}</span>
               ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
             </div>
-            <button class="btn-respond" onclick="openModal('${x.id}', '${(x.title || '').replace(/'/g, "\\'")}')">Respond</button>
+            <button class="btn-respond" onclick="openModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Respond</button>
           </div>
         </div>`).join('');
     }
-
     function openModal(xekieId, title) {
       if (!currentUser) { window.location.href = 'login.html'; return; }
       activeXekieId = xekieId;
       document.getElementById('modal-xekie-title').textContent = 'Re: ' + title;
       document.getElementById('modal-message').value = '';
       document.getElementById('modal-price').value = '';
-      document.getElementById('modal-message-box').style.display = 'none';
+      document.getElementById('modal-msg').className = 'modal-msg';
       document.getElementById('modal-submit').disabled = false;
       document.getElementById('modal-submit').textContent = 'Send response';
-      document.getElementById('modal-overlay').style.display = 'flex';
+      document.getElementById('modal-overlay').classList.add('open');
     }
-
-    function closeModal() {
-      document.getElementById('modal-overlay').style.display = 'none';
-    }
-
+    function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
     async function submitResponse() {
       const message = document.getElementById('modal-message').value.trim();
       const price = document.getElementById('modal-price').value;
       const btn = document.getElementById('modal-submit');
-      const msgBox = document.getElementById('modal-message-box');
-
-      if (!message) {
-        msgBox.style.display = 'block';
-        msgBox.style.background = '#FCEBEB'; msgBox.style.color = '#A32D2D';
-        msgBox.textContent = 'Please write a message to the buyer.';
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Sending...';
-
-      const { error } = await supabase.from('offers').insert({
-        xekie_id: activeXekieId,
-        seller_id: currentUser.id,
-        message,
-        price: price ? parseInt(price) : null
-      });
-
-      if (error) {
-        msgBox.style.display = 'block';
-        msgBox.style.background = '#FCEBEB'; msgBox.style.color = '#A32D2D';
-        msgBox.textContent = 'Error sending: ' + error.message;
-        btn.disabled = false;
-        btn.textContent = 'Send response';
-      } else {
-        msgBox.style.display = 'block';
-        msgBox.style.background = '#EAF3DE'; msgBox.style.color = '#3B6D11';
-        msgBox.textContent = 'Response sent! The buyer will be notified.';
-        btn.textContent = 'Sent ✓';
-        setTimeout(closeModal, 1800);
-      }
+      const msgEl = document.getElementById('modal-msg');
+      if (!message) { msgEl.className = 'modal-msg error'; msgEl.textContent = 'Please write a message to the buyer.'; return; }
+      btn.disabled = true; btn.textContent = 'Sending...';
+      const { error } = await _sb.from('offers').insert({ xekie_id: activeXekieId, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
+      if (error) { msgEl.className = 'modal-msg error'; msgEl.textContent = 'Error: ' + error.message; btn.disabled = false; btn.textContent = 'Send response'; }
+      else { msgEl.className = 'modal-msg success'; msgEl.textContent = 'Response sent! The buyer will be notified.'; btn.textContent = 'Sent ✓'; setTimeout(closeModal, 1800); }
     }
-
-    // Close modal on overlay click
-    document.getElementById('modal-overlay').addEventListener('click', (e) => {
-      if (e.target === document.getElementById('modal-overlay')) closeModal();
-    });
-
-    // Auth — radar is public but modal needs auth
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        currentUser = session.user;
-        document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
-      }
+    document.getElementById('modal-overlay').addEventListener('click', (e) => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
+    _sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) { currentUser = session.user; document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email; }
       loadXekies();
     });
   </script>
