@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--black);}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--white);text-decoration:none;}
+    .nav-logo .xe{color:var(--accent);}
+    .admin-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;background:var(--accent);color:white;letter-spacing:0.1em;}
+    .container{max-width:1100px;margin:0 auto;padding:40px 20px;}
+    .page-title{font-family:var(--font-display);font-size:32px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;}
+    .page-sub{font-size:15px;color:var(--mid);margin-bottom:32px;}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px;}
+    .stat-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:24px;}
+    .stat-num{font-family:var(--font-display);font-size:40px;font-weight:800;color:var(--accent);}
+    .stat-label{font-size:13px;color:var(--mid);margin-top:4px;}
+    .stat-sub{font-size:12px;color:var(--mid);margin-top:2px;}
+    .section-title{font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:16px;margin-top:40px;}
+    table{width:100%;border-collapse:collapse;background:var(--white);border-radius:16px;overflow:hidden;border:1px solid var(--border);}
+    th{text-align:left;padding:12px 16px;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);border-bottom:1px solid var(--border);background:var(--cream);}
+    td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border);}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:#fafaf8;}
+    .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;}
+    .badge-green{background:#EAF3DE;color:#3B6D11;}
+    .badge-orange{background:#FEF3C7;color:#92400E;}
+    .badge-gray{background:#f4f2ec;color:#6b6b6b;}
+    .badge-purple{background:#f5f3ff;color:#7c3aed;}
+    .login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--black);}
+    .login-box{background:var(--white);border-radius:20px;padding:48px;max-width:360px;width:100%;text-align:center;}
+    .login-title{font-family:var(--font-display);font-size:24px;font-weight:800;margin-bottom:8px;}
+    .login-sub{font-size:14px;color:var(--mid);margin-bottom:24px;}
+    .login-input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;outline:none;margin-bottom:12px;}
+    .login-input:focus{border-color:var(--black);}
+    .login-btn{width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;}
+    .login-btn:hover{background:var(--accent);}
+    .login-error{color:#A32D2D;font-size:13px;margin-top:8px;}
+    .refresh-btn{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;}
+    .refresh-btn:hover{border-color:var(--black);color:var(--black);}
+    .search-input{padding:8px 14px;border:1.5px solid var(--border);border-radius:100px;font-family:var(--font-body);font-size:13px;outline:none;width:220px;}
+    .search-input:focus{border-color:var(--black);}
+    .table-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+    @media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr;}.container{padding:20px 12px;}}
+  </style>
+</head>
+<body>
+
+  <div class="login-screen" id="login-screen">
+    <div class="login-box">
+      <div style="font-family:var(--font-display);font-size:28px;font-weight:800;margin-bottom:4px;"><span style="color:var(--accent);">XE</span>KIE</div>
+      <div class="login-title">Admin Access</div>
+      <div class="login-sub">Restricted to XEKIE team only.</div>
+      <input type="password" class="login-input" id="admin-password" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')checkPassword()" />
+      <button class="login-btn" onclick="checkPassword()">Enter →</button>
+      <div class="login-error" id="login-error"></div>
+    </div>
+  </div>
+
+  <div id="admin-content" style="display:none;">
+    <nav>
+      <a href="index.html" class="nav-logo"><span class="xe">XE</span>KIE</a>
+      <span class="admin-badge">ADMIN</span>
+    </nav>
+    <div class="container">
+      <div class="page-title">Admin Dashboard</div>
+      <div class="page-sub" id="last-updated">Loading...</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-users">—</div>
+          <div class="stat-label">Total Users</div>
+          <div class="stat-sub" id="stat-users-today">— today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-xekies">—</div>
+          <div class="stat-label">Times XEKIE'd</div>
+          <div class="stat-sub" id="stat-xekies-active">— active</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-offers">—</div>
+          <div class="stat-label">Total Responses</div>
+          <div class="stat-sub" id="stat-offers-today">— today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-promoted">—</div>
+          <div class="stat-label">Promoted XEKIEs</div>
+          <div class="stat-sub">$5 each</div>
+        </div>
+      </div>
+
+      <div class="section-title">Recent Signups</div>
+      <div class="table-header">
+        <input type="text" class="search-input" id="user-search" placeholder="Search users..." oninput="filterUsers()" />
+        <button class="refresh-btn" onclick="loadAdmin()">↻ Refresh</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Joined</th>
+            <th>XEKIEs Posted</th>
+            <th>Responses Given</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody id="users-body">
+          <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--mid);">Loading...</td></tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">Recent XEKIEs</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Budget</th>
+            <th>Location</th>
+            <th>Posted</th>
+            <th>Views · Responses</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="xekies-body">
+          <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--mid);">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const ADMIN_PASSWORD = "xekie2025";
+
+    function checkPassword() {
+      const pw = document.getElementById('admin-password').value;
+      if (pw === ADMIN_PASSWORD) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('admin-content').style.display = 'block';
+        loadAdmin();
+      } else {
+        document.getElementById('login-error').textContent = 'Incorrect password.';
+      }
+    }
+
+    let allUsers = [], allXekies = [];
+
+    function timeAgo(ts) {
+      const s = Math.floor((new Date() - new Date(ts)) / 1000);
+      for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
+        const c = Math.floor(s/sec); if (c>=1) return c+" "+l+(c>1?"s":"")+" ago";
+      }
+      return "just now";
+    }
+
+    function formatBudget(x) {
+      if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
+      if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
+      if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
+      if (x.budget) return '$'+Number(x.budget).toLocaleString();
+      return '$—';
+    }
+
+    async function loadAdmin() {
+      document.getElementById('last-updated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+      const { data: xekies } = await _sb.from('xekies').select('*').order('created_at', { ascending: false });
+      allXekies = xekies || [];
+      const { data: offers } = await _sb.from('offers').select('*').order('created_at', { ascending: false });
+      const allOffers = offers || [];
+      const offersByXekie = {}, offersBySeller = {};
+      const today = new Date(); today.setHours(0,0,0,0);
+      let offersToday = 0;
+      allOffers.forEach(o => {
+        offersByXekie[o.xekie_id] = (offersByXekie[o.xekie_id] || 0) + 1;
+        offersBySeller[o.seller_id] = (offersBySeller[o.seller_id] || 0) + 1;
+        if (new Date(o.created_at) >= today) offersToday++;
+      });
+      const xekiesByUser = {};
+      let activeXekies = 0, promotedXekies = 0;
+      allXekies.forEach(x => {
+        xekiesByUser[x.user_id] = (xekiesByUser[x.user_id] || 0) + 1;
+        if (!x.is_fulfilled && (!x.expires_at || new Date(x.expires_at) > new Date())) activeXekies++;
+        if (x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date()) promotedXekies++;
+      });
+      const { data: subs } = await _sb.from('subscriptions').select('*').order('created_at', { ascending: false });
+      const allSubs = subs || [];
+      const userIds = [...new Set([...allXekies.map(x => x.user_id), ...allSubs.map(s => s.user_id)].filter(Boolean))];
+      document.getElementById('stat-users').textContent = userIds.length;
+      document.getElementById('stat-xekies').textContent = allXekies.length;
+      document.getElementById('stat-xekies-active').textContent = activeXekies + ' active';
+      document.getElementById('stat-offers').textContent = allOffers.length;
+      document.getElementById('stat-offers-today').textContent = offersToday + ' today';
+      document.getElementById('stat-promoted').textContent = promotedXekies;
+
+      const subUsers = allSubs.map(s => ({ id: s.user_id, name: s.name || '—', email: s.email || '—', joined: s.created_at, xekies: xekiesByUser[s.user_id] || 0, offers: offersBySeller[s.user_id] || 0, type: 'seller' }));
+      const subUserIds = new Set(allSubs.map(s => s.user_id));
+      const buyerUsers = [...new Set(allXekies.map(x => x.user_id))].filter(id => !subUserIds.has(id)).map(id => ({ id, name: '—', email: '—', joined: allXekies.filter(x => x.user_id === id).sort((a,b) => new Date(a.created_at)-new Date(b.created_at))[0]?.created_at, xekies: xekiesByUser[id] || 0, offers: offersBySeller[id] || 0, type: 'buyer' }));
+      allUsers = [...subUsers, ...buyerUsers].sort((a,b) => new Date(b.joined) - new Date(a.joined));
+      const usersToday = allUsers.filter(u => u.joined && new Date(u.joined) >= today).length;
+      document.getElementById('stat-users-today').textContent = usersToday + ' today';
+      renderUsers(allUsers);
+      renderXekies(allXekies, offersByXekie);
+    }
+
+    function renderUsers(users) {
+      const tbody = document.getElementById('users-body');
+      if (!users.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--mid);">No users yet</td></tr>'; return; }
+      tbody.innerHTML = users.map(u => `
+        <tr>
+          <td><strong>${u.name}</strong></td>
+          <td>${u.email}</td>
+          <td>${u.joined ? timeAgo(u.joined) : '—'}</td>
+          <td>${u.xekies}</td>
+          <td>${u.offers}</td>
+          <td><span class="badge ${u.type === 'seller' ? 'badge-purple' : 'badge-green'}">${u.type}</span></td>
+        </tr>`).join('');
+    }
+
+    function renderXekies(xekies, offersByXekie) {
+      const tbody = document.getElementById('xekies-body');
+      if (!xekies.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--mid);">No XEKIEs yet</td></tr>'; return; }
+      tbody.innerHTML = xekies.slice(0, 50).map(x => {
+        const expired = x.expires_at && new Date(x.expires_at) < new Date();
+        const status = x.is_fulfilled ? 'fulfilled' : expired ? 'expired' : x.is_promoted ? 'promoted' : 'active';
+        const badgeClass = {fulfilled:'badge-green',expired:'badge-gray',promoted:'badge-purple',active:'badge-orange'}[status];
+        return `<tr>
+          <td><a href="xekie.html?id=${x.id}" target="_blank" style="color:var(--black);font-weight:500;">${x.title}</a></td>
+          <td>${x.category || '—'}</td>
+          <td>${formatBudget(x)}</td>
+          <td>${x.location || '—'}</td>
+          <td>${timeAgo(x.created_at)}</td>
+          <td>${x.view_count||0} 👁 · ${offersByXekie[x.id]||0} 💬</td>
+          <td><span class="badge ${badgeClass}">${status}</span></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function filterUsers() {
+      const q = document.getElementById('user-search').value.toLowerCase();
+      renderUsers(allUsers.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)));
+    }
+  </script>
+</body>
+</html>
