@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XEKIE — Post a XEKIE</title>
-  <meta name="description" content="Post what you want to buy on XEKIE. Let sellers come to you.">
+  <title>XEKIE it — Just XEKIE It.</title>
+  <meta name="description" content="Can't find it? Just XEKIE it. Post what you want and let sellers come to you.">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
@@ -89,23 +89,20 @@
   </nav>
 
   <div class="container">
-    <h1 class="page-title">Post a XEKIE</h1>
-    <p class="page-sub">Tell sellers exactly what you want. Be specific — better details get better responses.</p>
+    <h1 class="page-title">XEKIE it.</h1>
+    <p class="page-sub">Can't find it? Just XEKIE it. Tell sellers exactly what you want — better details get better responses.</p>
     <div class="form-card">
       <div id="message" class="message"></div>
-
       <div class="form-group">
-        <label>What do you want to buy? <span class="label-hint">Be specific</span></label>
-        <input type="text" id="title" placeholder="e.g. MacBook Pro M3, 16-inch, Space Black" maxlength="100" oninput="updatePreview()" />
+        <label>What do you want to find? <span class="label-hint">Be specific</span></label>
+        <input type="text" id="title" placeholder="e.g. First edition Hell's Angels by Hunter S. Thompson" maxlength="100" oninput="updatePreview()" />
         <div class="char-count"><span id="title-count">0</span>/100</div>
       </div>
-
       <div class="form-group">
         <label>Describe exactly what you're looking for <span class="label-hint">Condition, specs, preferences</span></label>
-        <textarea id="description" placeholder="e.g. Looking for a used or refurbished model in good condition. No cracks or major scratches." maxlength="500" oninput="updatePreview()"></textarea>
+        <textarea id="description" placeholder="e.g. Looking for a first print in good condition. No major damage to spine or cover." maxlength="500" oninput="updatePreview()"></textarea>
         <div class="char-count"><span id="desc-count">0</span>/500</div>
       </div>
-
       <div class="budget-section">
         <div class="budget-section-title">Your budget</div>
         <div class="budget-row">
@@ -120,12 +117,10 @@
           <label for="is-flexible">I'm flexible on price if the right item comes along</label>
         </div>
       </div>
-
       <div class="form-group">
         <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
-        <input type="text" id="location" placeholder="e.g. Cuyahoga Falls, OH or Ships anywhere" />
+        <input type="text" id="location" placeholder="e.g. Akron, OH or Ships anywhere" />
       </div>
-
       <div class="form-group">
         <label>Category</label>
         <select id="category">
@@ -136,9 +131,14 @@
           <option>Tools</option>
           <option>Services</option>
           <option>Household Items</option>
+          <option>Clothes &amp; Apparel</option>
+          <option>Books</option>
+          <option>Toys</option>
+          <option>Music &amp; Movies</option>
+          <option>Collectibles</option>
+          <option>Other</option>
         </select>
       </div>
-
       <div class="form-group">
         <label>How long should your XEKIE stay active?</label>
         <div class="expiry-grid">
@@ -151,7 +151,6 @@
           <button class="expiry-btn" data-hours="-1" onclick="setExpiry(this)">Buy Now<span class="expiry-sub">Urgent</span></button>
         </div>
       </div>
-
       <div class="preview-box">
         <div class="preview-label">Live preview</div>
         <div class="preview-title" id="preview-title">Your XEKIE title will appear here</div>
@@ -160,7 +159,7 @@
         <div class="preview-expiry" id="preview-expiry">⏱ Active for 1 week</div>
       </div>
       <br>
-      <button class="btn-submit" id="btn-submit" onclick="postXekie()">Post my XEKIE →</button>
+      <button class="btn-submit" id="btn-submit" onclick="postXekie()">Just XEKIE it →</button>
     </div>
   </div>
 
@@ -271,55 +270,28 @@
       const location = document.getElementById('location').value.trim();
       const category = document.getElementById('category').value;
       const btn = document.getElementById('btn-submit');
-
-      if (!title) return showMessage('Please add a title — what do you want to buy?', 'error');
+      if (!title) return showMessage('Please add a title — what do you want to find?', 'error');
       if (!budget_min && !budget_max) return showMessage('Please enter at least a minimum or maximum budget.', 'error');
       if (!location) return showMessage('Please add a location or write "Ships anywhere".', 'error');
       if (!category) return showMessage('Please select a category.', 'error');
-
-      btn.disabled = true; btn.textContent = 'Posting...';
-
+      btn.disabled = true; btn.textContent = 'XEKIE\'ing...';
       let expires_at = null;
-      if (selectedExpiryHours > 0) {
-        expires_at = new Date(Date.now() + selectedExpiryHours * 60 * 60 * 1000).toISOString();
-      }
-
-      const insertData = {
-        title, description,
-        budget: budget_max ? parseInt(budget_max) : parseInt(budget_min),
-        budget_min: budget_min ? parseInt(budget_min) : null,
-        budget_max: budget_max ? parseInt(budget_max) : null,
-        is_flexible, location, category,
-        user_id: currentUser.id,
-        view_count: 0,
-        is_fulfilled: false
-      };
+      if (selectedExpiryHours > 0) expires_at = new Date(Date.now() + selectedExpiryHours * 60 * 60 * 1000).toISOString();
+      const insertData = { title, description, budget: budget_max ? parseInt(budget_max) : parseInt(budget_min), budget_min: budget_min ? parseInt(budget_min) : null, budget_max: budget_max ? parseInt(budget_max) : null, is_flexible, location, category, user_id: currentUser.id, view_count: 0, is_fulfilled: false };
       if (expires_at) insertData.expires_at = expires_at;
-
       const { error } = await _sb.from('xekies').insert(insertData);
-
       if (error) {
         if (error.message && error.message.includes('expires_at')) {
           delete insertData.expires_at;
           const { error: error2 } = await _sb.from('xekies').insert(insertData);
-          if (error2) { showMessage('Something went wrong: ' + error2.message, 'error'); btn.disabled = false; btn.textContent = 'Post my XEKIE →'; return; }
-        } else {
-          showMessage('Something went wrong: ' + error.message, 'error');
-          btn.disabled = false; btn.textContent = 'Post my XEKIE →'; return;
-        }
+          if (error2) { showMessage('Something went wrong: ' + error2.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
+        } else { showMessage('Something went wrong: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
       }
-
-      showMessage('🎆 Your XEKIE is live!', 'success');
+      showMessage('🎆 Your XEKIE is live! Sellers will find you.', 'success');
       launchFireworks();
-      btn.textContent = 'Posted! ✓';
+      btn.textContent = 'XEKIE\'d! ✓';
       const { data: posted } = await _sb.from('xekies').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(1);
-      if (posted && posted[0]) {
-        fetch('/.netlify/functions/notify-sellers', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(posted[0])
-        }).catch(() => {});
-      }
+      if (posted && posted[0]) { fetch('/.netlify/functions/notify-sellers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(posted[0]) }).catch(() => {}); }
       setTimeout(() => window.location.href = 'dashboard.html', 2500);
     }
   </script>
