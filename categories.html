@@ -56,14 +56,14 @@
       <span class="nav-tagline">Trade Different</span>
     </a>
     <div style="display:flex;gap:12px;">
-      <a href="radar.html" class="btn-nav">All Radar</a>
-      <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
+      <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
+      <a href="request.html" class="btn-nav primary">XEKIE it →</a>
     </div>
   </nav>
 
   <div class="hero">
     <h1 class="hero-title">Browse by <span>Category</span></h1>
-    <p class="hero-sub">Find buyers in your niche. Respond to XEKIEs that match what you sell.</p>
+    <p class="hero-sub">People are XEKIE'ing in your niche right now. Find your next sale.</p>
   </div>
 
   <div class="container">
@@ -103,6 +103,30 @@
         <div class="cat-icon">🏠</div>
         <div class="cat-name">Household Items</div>
         <div class="cat-count" id="count-Household Items">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html?category=Clothes & Apparel" class="cat-card">
+        <div class="cat-icon">👗</div>
+        <div class="cat-name">Clothes &amp; Apparel</div>
+        <div class="cat-count" id="count-Clothes & Apparel">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html?category=Books" class="cat-card">
+        <div class="cat-icon">📚</div>
+        <div class="cat-name">Books</div>
+        <div class="cat-count" id="count-Books">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html?category=Toys" class="cat-card">
+        <div class="cat-icon">🧸</div>
+        <div class="cat-name">Toys</div>
+        <div class="cat-count" id="count-Toys">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="radar.html?category=Music & Movies" class="cat-card">
+        <div class="cat-icon">🎬</div>
+        <div class="cat-name">Music &amp; Movies</div>
+        <div class="cat-count" id="count-Music & Movies">Loading...</div>
         <div class="cat-arrow">→</div>
       </a>
       <a href="radar.html?category=Collectibles" class="cat-card">
@@ -146,7 +170,7 @@
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const cats = ['Electronics','Trading Cards','Vehicles','Tools','Services','Household Items','Collectibles','Other'];
+    const cats = ['Electronics','Trading Cards','Vehicles','Tools','Services','Household Items','Clothes & Apparel','Books','Toys','Music & Movies','Collectibles','Other'];
 
     async function loadCounts() {
       const { data } = await _sb.from('xekies').select('category').eq('is_fulfilled', false);
@@ -154,10 +178,7 @@
       (data || []).forEach(x => { if (x.category) counts[x.category] = (counts[x.category] || 0) + 1; });
       cats.forEach(cat => {
         const el = document.getElementById('count-' + cat);
-        if (el) {
-          const n = counts[cat] || 0;
-          el.textContent = n + ' active XEKIE' + (n !== 1 ? 's' : '');
-        }
+        if (el) { const n = counts[cat] || 0; el.textContent = n + ' active XEKIE' + (n !== 1 ? 's' : ''); }
       });
     }
     loadCounts();
