@@ -113,9 +113,9 @@
     </a>
     <div class="nav-right">
       <a href="saved.html" class="btn-nav">🔖 Saved</a>
-      <a href="radar.html" class="btn-nav">Radar</a>
+      <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
       <a href="messages.html" class="btn-nav">Messages</a>
-      <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
+      <a href="request.html" class="btn-nav primary">XEKIE it →</a>
       <button class="btn-nav" onclick="signOut()">Sign out</button>
     </div>
   </nav>
@@ -127,10 +127,10 @@
         <div class="user-meta" id="user-meta"></div>
         <div id="early-badge-container"></div>
       </div>
-      <a href="request.html" class="btn-nav primary" style="align-self:flex-start;">+ Post a XEKIE</a>
+      <a href="request.html" class="btn-nav primary" style="align-self:flex-start;">+ XEKIE it</a>
     </div>
     <div class="stats-row">
-      <div class="stat-card"><div class="stat-num" id="stat-xekies">—</div><div class="stat-label">XEKIEs posted</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-xekies">—</div><div class="stat-label">Times XEKIE'd</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-offers">—</div><div class="stat-label">Responses received</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-views">—</div><div class="stat-label">Total views</div></div>
     </div>
@@ -252,7 +252,7 @@
 
       const container = document.getElementById('xekie-list');
       if (!list.length) {
-        container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No XEKIEs yet</div><p class="empty-sub">Post what you want to buy and let sellers come to you.</p><a href="request.html" class="btn-nav primary" style="display:inline-block;">Post your first XEKIE →</a></div>`;
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Nothing XEKIE'd yet</div><p class="empty-sub">Can't find something? Just XEKIE it — tell sellers what you want and let them come to you.</p><a href="request.html" class="btn-nav primary" style="display:inline-block;">XEKIE something →</a></div>`;
         return;
       }
       container.innerHTML = list.map(x => {
