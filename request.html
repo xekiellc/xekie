@@ -50,6 +50,17 @@
     .expiry-btn:hover{border-color:var(--black);color:var(--black);}
     .expiry-btn.active{background:var(--black);color:var(--white);border-color:var(--black);}
     .expiry-btn .expiry-sub{display:block;font-size:10px;font-weight:400;opacity:0.7;margin-top:2px;}
+    .photo-upload-section{background:var(--cream);border-radius:12px;padding:20px;margin-bottom:24px;}
+    .photo-upload-title{font-size:13px;font-weight:500;margin-bottom:12px;}
+    .photo-drop-zone{border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--white);}
+    .photo-drop-zone:hover,.photo-drop-zone.dragover{border-color:var(--accent);background:#fff8f6;}
+    .photo-drop-icon{font-size:32px;margin-bottom:8px;}
+    .photo-drop-text{font-size:14px;color:var(--mid);}
+    .photo-drop-sub{font-size:12px;color:#bbb;margin-top:4px;}
+    .photo-previews{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
+    .photo-preview-item{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--cream);}
+    .photo-preview-item img{width:100%;height:100%;object-fit:cover;}
+    .photo-remove{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:100px;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
     .btn-submit{width:100%;padding:15px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:16px;font-weight:500;cursor:pointer;margin-top:8px;transition:background 0.2s,transform 0.15s;}
     .btn-submit:hover{background:var(--accent);transform:translateY(-1px);}
     .btn-submit:disabled{background:#ccc;cursor:not-allowed;transform:none;}
@@ -151,6 +162,16 @@
           <button class="expiry-btn" data-hours="-1" onclick="setExpiry(this)">Buy Now<span class="expiry-sub">Urgent</span></button>
         </div>
       </div>
+      <div class="photo-upload-section">
+        <div class="photo-upload-title">Photos <span style="font-size:12px;font-weight:400;color:var(--mid);">Optional — up to 4 photos help sellers know exactly what you want</span></div>
+        <div class="photo-drop-zone" id="photo-drop-zone" onclick="document.getElementById('photo-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+          <div class="photo-drop-icon">📷</div>
+          <div class="photo-drop-text">Tap to add photos</div>
+          <div class="photo-drop-sub">JPG, PNG, WEBP · Max 5MB each · Up to 4 photos</div>
+        </div>
+        <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect(event)" />
+        <div class="photo-previews" id="photo-previews"></div>
+      </div>
       <div class="preview-box">
         <div class="preview-label">Live preview</div>
         <div class="preview-title" id="preview-title">Your XEKIE title will appear here</div>
@@ -183,8 +204,7 @@
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let currentUser = null;
-    let selectedExpiryHours = 168;
+    let currentUser = null, selectedExpiryHours = 168, selectedPhotos = [];
 
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (!session) { window.location.href = 'login.html'; return; }
@@ -194,9 +214,7 @@
 
     function setExpiry(btn) {
       document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedExpiryHours = parseInt(btn.dataset.hours);
-      updatePreview();
+      btn.classList.add('active'); selectedExpiryHours = parseInt(btn.dataset.hours); updatePreview();
     }
 
     function getExpiryLabel(hours) {
@@ -261,6 +279,49 @@
       animate();
     }
 
+    function handleDragOver(e) { e.preventDefault(); document.getElementById('photo-drop-zone').classList.add('dragover'); }
+    function handleDragLeave(e) { document.getElementById('photo-drop-zone').classList.remove('dragover'); }
+    function handleDrop(e) { e.preventDefault(); document.getElementById('photo-drop-zone').classList.remove('dragover'); addPhotos(Array.from(e.dataTransfer.files)); }
+    function handlePhotoSelect(e) { addPhotos(Array.from(e.target.files)); e.target.value = ''; }
+
+    function addPhotos(files) {
+      const imageFiles = files.filter(f => f.type.startsWith('image/'));
+      const remaining = 4 - selectedPhotos.length;
+      imageFiles.slice(0, remaining).forEach(file => {
+        if (file.size > 5 * 1024 * 1024) { alert(file.name + ' is too large. Max 5MB per photo.'); return; }
+        const reader = new FileReader();
+        reader.onload = (e) => { selectedPhotos.push({ file, previewUrl: e.target.result }); renderPhotoPreviews(); };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderPhotoPreviews() {
+      const container = document.getElementById('photo-previews');
+      const dropZone = document.getElementById('photo-drop-zone');
+      dropZone.style.display = selectedPhotos.length >= 4 ? 'none' : 'block';
+      container.innerHTML = selectedPhotos.map((p, i) => `
+        <div class="photo-preview-item">
+          <img src="${p.previewUrl}" alt="Photo ${i+1}" />
+          <button class="photo-remove" onclick="removePhoto(${i})">✕</button>
+        </div>`).join('');
+    }
+
+    function removePhoto(i) { selectedPhotos.splice(i, 1); renderPhotoPreviews(); }
+
+    async function uploadPhotos(xekieId) {
+      const urls = [];
+      for (const p of selectedPhotos) {
+        const ext = p.file.name.split('.').pop() || 'jpg';
+        const path = `${currentUser.id}/${xekieId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error } = await _sb.storage.from('xekie-photos').upload(path, p.file, { contentType: p.file.type, upsert: true });
+        if (!error) {
+          const { data: urlData } = _sb.storage.from('xekie-photos').getPublicUrl(path);
+          urls.push(urlData.publicUrl);
+        }
+      }
+      return urls;
+    }
+
     async function postXekie() {
       const title = document.getElementById('title').value.trim();
       const description = document.getElementById('description').value.trim();
@@ -279,19 +340,22 @@
       if (selectedExpiryHours > 0) expires_at = new Date(Date.now() + selectedExpiryHours * 60 * 60 * 1000).toISOString();
       const insertData = { title, description, budget: budget_max ? parseInt(budget_max) : parseInt(budget_min), budget_min: budget_min ? parseInt(budget_min) : null, budget_max: budget_max ? parseInt(budget_max) : null, is_flexible, location, category, user_id: currentUser.id, view_count: 0, is_fulfilled: false };
       if (expires_at) insertData.expires_at = expires_at;
-      const { error } = await _sb.from('xekies').insert(insertData);
+      const { data: newXekie, error } = await _sb.from('xekies').insert(insertData).select().single();
       if (error) {
         if (error.message && error.message.includes('expires_at')) {
           delete insertData.expires_at;
-          const { error: error2 } = await _sb.from('xekies').insert(insertData);
-          if (error2) { showMessage('Something went wrong: ' + error2.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
+          const { data: nX2, error: e2 } = await _sb.from('xekies').insert(insertData).select().single();
+          if (e2) { showMessage('Something went wrong: ' + e2.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
         } else { showMessage('Something went wrong: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
       }
+      if (selectedPhotos.length && newXekie) {
+        btn.textContent = 'Uploading photos...';
+        const photoUrls = await uploadPhotos(newXekie.id);
+        if (photoUrls.length) await _sb.from('xekies').update({ photos: photoUrls }).eq('id', newXekie.id);
+      }
       showMessage('🎆 Your XEKIE is live! Sellers will find you.', 'success');
-      launchFireworks();
-      btn.textContent = 'XEKIE\'d! ✓';
-      const { data: posted } = await _sb.from('xekies').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(1);
-      if (posted && posted[0]) { fetch('/.netlify/functions/notify-sellers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(posted[0]) }).catch(() => {}); }
+      launchFireworks(); btn.textContent = 'XEKIE\'d! ✓';
+      if (newXekie) { fetch('/.netlify/functions/notify-sellers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newXekie) }).catch(() => {}); }
       setTimeout(() => window.location.href = 'dashboard.html', 2500);
     }
   </script>
