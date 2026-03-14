@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XEKIE — Trade Different</title>
-  <meta name="description" content="The demand-side marketplace. Post what you want to buy. Let sellers come to you.">
+  <title>XEKIE — Just XEKIE It.</title>
+  <meta name="description" content="Can't find it? Just XEKIE it. Post what you want to buy and let sellers come to you.">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
@@ -20,13 +20,7 @@
     }
     html { scroll-behavior: smooth; }
     body { font-family: var(--font-body); background: var(--cream); color: var(--black); overflow-x: hidden; }
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 0 48px; height: 64px;
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(244,242,236,0.85); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px; height: 64px; display: flex; align-items: center; justify-content: space-between; background: rgba(244,242,236,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
     .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; color: var(--black); text-decoration: none; display: flex; flex-direction: column; line-height: 1; }
     .nav-logo .xe { color: var(--accent); }
     .nav-tagline { font-size: 8px; font-weight: 400; letter-spacing: 0.18em; color: var(--mid); text-transform: uppercase; }
@@ -37,11 +31,7 @@
     .btn-primary:hover { background: var(--accent) !important; }
     .btn-accent { background: var(--accent); color: var(--white) !important; border-color: transparent !important; }
     .btn-accent:hover { background: #e03a0a !important; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,77,28,0.3); }
-    .hero {
-      min-height: 100vh; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 120px 24px 80px; position: relative; overflow: hidden; text-align: center;
-    }
+    .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 120px 24px 80px; position: relative; overflow: hidden; text-align: center; }
     .hero-bg { position: absolute; inset: 0; z-index: 0; background: var(--cream); }
     .hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; }
     .hero-orb-1 { width: 600px; height: 600px; background: rgba(255,77,28,0.15); top: -100px; right: -100px; }
@@ -52,7 +42,7 @@
     @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
     .hero-title { font-family: var(--font-display); font-weight: 800; font-size: clamp(52px, 9vw, 100px); line-height: 0.95; letter-spacing: -0.04em; color: var(--black); margin-bottom: 28px; animation: fadeUp 0.6s 0.1s ease both; }
     .hero-title .xe { color: var(--accent); }
-    .hero-title .line2 { display: block; color: var(--mid); font-size: 0.55em; font-weight: 700; letter-spacing: -0.02em; margin-top: 8px; }
+    .hero-title .line2 { display: block; color: var(--accent); font-size: 0.45em; font-weight: 800; letter-spacing: -0.02em; margin-top: 12px; }
     .hero-sub { font-size: clamp(17px, 2.5vw, 22px); font-weight: 300; color: var(--mid); line-height: 1.5; max-width: 520px; margin: 0 auto 40px; animation: fadeUp 0.6s 0.2s ease both; }
     .hero-sub strong { font-weight: 500; color: var(--black); }
     .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.6s 0.3s ease both; }
@@ -84,7 +74,7 @@
     .why-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.02em; }
     .why-desc { font-size: 14px; font-weight: 300; color: #666; line-height: 1.6; }
     .contrast { background: var(--accent); padding: 80px 24px; text-align: center; }
-    .contrast-title { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 6vw, 64px); letter-spacing: -0.04em; color: var(--white); line-height: 1; margin-bottom: 16px; }
+    .contrast-title { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 6vw, 72px); letter-spacing: -0.04em; color: var(--white); line-height: 1; margin-bottom: 16px; }
     .contrast-sub { font-size: 18px; font-weight: 300; color: rgba(255,255,255,0.75); margin-bottom: 36px; }
     .contrast .btn { font-size: 16px; padding: 16px 36px; background: var(--white); color: var(--black) !important; border: none !important; }
     .contrast .btn:hover { background: var(--black) !important; color: var(--white) !important; transform: translateY(-2px); }
@@ -113,19 +103,8 @@
     .footer-bottom { border-top: 1px solid #1a1a1a; padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .footer-legal { font-size: 12px; color: #333; line-height: 1.6; max-width: 560px; }
     .footer-copy { font-size: 12px; color: #333; }
-    @media (max-width: 768px) {
-      nav { padding: 0 20px; }
-      .steps { grid-template-columns: 1fr; gap: 2px; }
-      .step:first-child { border-radius: 20px 20px 0 0; }
-      .step:last-child { border-radius: 0 0 20px 20px; }
-      .why-grid { grid-template-columns: 1fr; }
-      footer { padding: 48px 24px 32px; }
-      .footer-top { flex-direction: column; }
-    }
-    @media (max-width: 480px) {
-      .hero-cta { flex-direction: column; align-items: center; }
-      .nav-links .btn:not(.btn-primary) { display: none; }
-    }
+    @media (max-width: 768px) { nav { padding: 0 20px; } .steps { grid-template-columns: 1fr; gap: 2px; } .step:first-child { border-radius: 20px 20px 0 0; } .step:last-child { border-radius: 0 0 20px 20px; } .why-grid { grid-template-columns: 1fr; } footer { padding: 48px 24px 32px; } .footer-top { flex-direction: column; } }
+    @media (max-width: 480px) { .hero-cta { flex-direction: column; align-items: center; } .nav-links .btn:not(.btn-primary) { display: none; } }
   </style>
 </head>
 <body>
@@ -135,9 +114,9 @@
       <span class="nav-tagline">Trade Different</span>
     </a>
     <div class="nav-links">
-      <a href="radar.html" class="btn">Radar</a>
+      <a href="radar.html" class="btn">Browse XEKIEs</a>
       <a href="login.html" class="btn" id="nav-signin">Sign in</a>
-      <a href="request.html" class="btn btn-primary" id="nav-post">Post a XEKIE</a>
+      <a href="request.html" class="btn btn-primary" id="nav-post">XEKIE it →</a>
     </div>
   </nav>
 
@@ -149,18 +128,18 @@
     <div class="hero-content">
       <div class="hero-eyebrow">
         <div class="hero-eyebrow-dot"></div>
-        Beta — now live
+        The new way to find anything
       </div>
       <h1 class="hero-title">
         <span class="xe">XE</span>KIE
-        <span class="line2">Trade Different</span>
+        <span class="line2">Just XEKIE It.</span>
       </h1>
       <p class="hero-sub">
-        The marketplace <strong>flipped on its head.</strong><br>
-        Post what you want to buy. Let sellers come to you.
+        Can't find it anywhere? <strong>Just XEKIE it.</strong><br>
+        Post what you want. Let sellers come to you.
       </p>
       <div class="hero-cta">
-        <a href="request.html" class="btn btn-accent">Post what you want →</a>
+        <a href="request.html" class="btn btn-accent">XEKIE it →</a>
         <a href="radar.html" class="btn">Browse XEKIEs</a>
       </div>
     </div>
@@ -178,14 +157,14 @@
       <div class="steps">
         <div class="step">
           <div class="step-num">01</div>
-          <div class="step-title">Post your XEKIE</div>
-          <div class="step-desc">Tell sellers exactly what you want — item, condition, budget, location. Be as specific as you like.</div>
+          <div class="step-title">XEKIE what you want</div>
+          <div class="step-desc">Can't find it? XEKIE it. Tell sellers exactly what you want — item, condition, budget, location. Be as specific as you like.</div>
           <div class="step-accent">📝</div>
         </div>
         <div class="step">
           <div class="step-num">02</div>
           <div class="step-title">Sellers respond</div>
-          <div class="step-desc">Sellers browse the Radar and respond directly to your post with their price and offer.</div>
+          <div class="step-desc">Sellers browse XEKIEs and respond directly to your post with their price and offer.</div>
           <div class="step-accent">📡</div>
         </div>
         <div class="step">
@@ -217,33 +196,33 @@
         <div class="why-item">
           <div class="why-icon">🔍</div>
           <div class="why-title">Find the unfindable</div>
-          <div class="why-desc">Post for rare, specific, or hard-to-find items. If someone has it, they'll find your XEKIE.</div>
+          <div class="why-desc">Looking for a first-edition book? A vintage guitar? A rare card? XEKIE it — if someone has it, they'll find you.</div>
         </div>
         <div class="why-item">
           <div class="why-icon">🤝</div>
           <div class="why-title">Local or anywhere</div>
-          <div class="why-desc">Buy local in your city or open it up to sellers everywhere. Your XEKIE, your rules.</div>
+          <div class="why-desc">XEKIE locally in your city or open it up to sellers everywhere. Your XEKIE, your rules.</div>
         </div>
       </div>
     </div>
   </section>
 
   <section class="contrast">
-    <div class="contrast-title">Ready to trade different?</div>
-    <p class="contrast-sub">Join the beta. Post your first XEKIE in under 2 minutes.</p>
-    <a href="request.html" class="btn">Post a XEKIE — it's free →</a>
+    <div class="contrast-title">Just XEKIE It.</div>
+    <p class="contrast-sub">Stop searching. Start XEKIE'ing. It takes under 2 minutes.</p>
+    <a href="request.html" class="btn">XEKIE it — it's free →</a>
   </section>
 
   <section class="section recent">
     <div class="section-inner">
-      <div class="section-label">Live on Radar</div>
-      <h2 class="section-title">Recent XEKIEs</h2>
-      <p class="section-sub">Real buyers, real requests — right now.</p>
+      <div class="section-label">Live on XEKIE</div>
+      <h2 class="section-title">People are XEKIE'ing right now</h2>
+      <p class="section-sub">Real buyers, real requests — find your next sale.</p>
       <div class="xekie-grid" id="recent-feed">
         <div class="feed-loading">Loading XEKIEs...</div>
       </div>
       <div class="view-all">
-        <a href="radar.html" class="btn btn-primary">View all XEKIEs on Radar →</a>
+        <a href="radar.html" class="btn btn-primary">Browse all XEKIEs →</a>
       </div>
     </div>
   </section>
@@ -257,9 +236,9 @@
       <div class="footer-links">
         <div class="footer-col">
           <div class="footer-col-title">Platform</div>
-          <a href="radar.html">Radar</a>
+          <a href="radar.html">Browse XEKIEs</a>
           <a href="categories.html">Categories</a>
-          <a href="request.html">Post a XEKIE</a>
+          <a href="request.html">XEKIE it</a>
           <a href="notifications.html">Seller Alerts</a>
           <a href="login.html">Sign in</a>
           <a href="dashboard.html">Dashboard</a>
@@ -309,14 +288,9 @@
     }
 
     async function loadRecent() {
-      const { data } = await _sb.from('xekies')
-        .select('*').eq('is_fulfilled', false)
-        .order('created_at', { ascending: false }).limit(6);
+      const { data } = await _sb.from('xekies').select('*').eq('is_fulfilled', false).order('created_at', { ascending: false }).limit(6);
       const feed = document.getElementById('recent-feed');
-      if (!data || !data.length) {
-        feed.innerHTML = '<div class="feed-loading">No XEKIEs yet — be the first to post!</div>';
-        return;
-      }
+      if (!data || !data.length) { feed.innerHTML = '<div class="feed-loading">No XEKIEs yet — be the first to XEKIE it!</div>'; return; }
       const ids = data.map(x => x.id);
       const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
       const offerCounts = {};
