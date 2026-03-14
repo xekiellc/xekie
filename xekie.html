@@ -46,6 +46,19 @@
     .category-pill{display:inline-block;font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;background:var(--cream);color:var(--mid);border:1px solid var(--border);}
     .xekie-title{font-family:var(--font-display);font-size:32px;font-weight:800;letter-spacing:-0.03em;margin-bottom:12px;line-height:1.15;}
     .xekie-desc{font-size:16px;font-weight:300;color:#444;line-height:1.7;margin-bottom:24px;}
+    .photo-gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;border-radius:16px;overflow:hidden;}
+    .photo-gallery.single{grid-template-columns:1fr;}
+    .photo-gallery.three .photo-item:first-child{grid-column:1/-1;}
+    .photo-item{aspect-ratio:4/3;overflow:hidden;cursor:pointer;background:var(--cream);}
+    .photo-item img{width:100%;height:100%;object-fit:cover;transition:transform 0.2s;}
+    .photo-item:hover img{transform:scale(1.03);}
+    .photo-lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;align-items:center;justify-content:center;}
+    .photo-lightbox.open{display:flex;}
+    .photo-lightbox img{max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain;}
+    .lightbox-close{position:absolute;top:20px;right:24px;color:white;font-size:28px;cursor:pointer;background:none;border:none;}
+    .lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);color:white;font-size:32px;cursor:pointer;background:rgba(255,255,255,0.1);border:none;padding:12px 16px;border-radius:100px;}
+    .lightbox-prev{left:16px;}
+    .lightbox-next{right:16px;}
     .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;}
     .detail-item{background:var(--cream);border-radius:12px;padding:16px 18px;}
     .detail-label{font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--mid);margin-bottom:4px;}
@@ -108,13 +121,13 @@
     </a>
     <div class="nav-right">
       <a href="saved.html" class="btn-nav">🔖 Saved</a>
-      <a href="radar.html" class="btn-nav">Radar</a>
-      <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
+      <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
+      <a href="request.html" class="btn-nav primary">XEKIE it →</a>
     </div>
   </nav>
 
   <div class="container">
-    <a href="radar.html" class="back-link">← Back to Radar</a>
+    <a href="radar.html" class="back-link">← Back to Browse</a>
     <div id="content"><div class="loading">Loading XEKIE...</div></div>
   </div>
 
@@ -132,6 +145,13 @@
       <div class="modal-msg" id="modal-msg"></div>
       <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send response</button>
     </div>
+  </div>
+
+  <div class="photo-lightbox" id="photo-lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)">‹</button>
+    <img id="lightbox-img" src="" alt="Photo" />
+    <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)">›</button>
   </div>
 
   <div class="qr-modal" id="qr-modal" onclick="if(event.target===this)closeQR()">
@@ -167,6 +187,7 @@
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     const BETA_CUTOFF = new Date('2026-06-01');
     let currentXekie = null, currentUser = null;
+    let lightboxPhotos = [], lightboxIndex = 0;
 
     const params = new URLSearchParams(window.location.search);
     const xekieId = params.get('id');
@@ -192,6 +213,7 @@
       const { data: x, error } = await _sb.from('xekies').select('*').eq('id', xekieId).single();
       if (error || !x) { document.getElementById('content').innerHTML = '<div class="loading">XEKIE not found.</div>'; return; }
       currentXekie = x;
+
       document.title = `XEKIE — ${x.title}`;
       document.querySelector('meta[property="og:title"]').setAttribute('content', `${x.title} — XEKIE`);
       document.querySelector('meta[property="og:description"]').setAttribute('content', x.description || `Budget: ${formatBudget(x)}. Respond with your best offer on XEKIE.`);
@@ -219,6 +241,18 @@
         else expiryDisplay = `<span>⏱ ${Math.floor(hoursLeft/24)} days left</span>`;
       }
 
+      // Build photo gallery
+      let photoGallery = '';
+      if (x.photos && x.photos.length) {
+        const cls = x.photos.length === 1 ? 'single' : x.photos.length === 3 ? 'three' : '';
+        photoGallery = `<div class="photo-gallery ${cls}">
+          ${x.photos.map((url, i) => `
+            <div class="photo-item" onclick="openLightbox(${i})">
+              <img src="${url}" alt="Photo ${i+1}" loading="lazy" />
+            </div>`).join('')}
+        </div>`;
+      }
+
       document.getElementById('content').innerHTML = `
         <div class="xekie-card">
           <div class="card-badge-row">
@@ -228,6 +262,7 @@
           </div>
           <div class="xekie-title">${x.title}</div>
           ${x.description ? `<div class="xekie-desc">${x.description}</div>` : ''}
+          ${photoGallery}
           <div class="detail-grid">
             <div class="detail-item">
               <div class="detail-label">Budget</div>
@@ -256,14 +291,27 @@
           </div>
         </div>
         <div class="cta-band">
-          <h3>Want deals to come to you?</h3>
-          <p>Post your own XEKIE — tell sellers what you want and let offers roll in.</p>
-          <a href="request.html" class="btn-nav primary" style="display:inline-block;font-size:15px;padding:12px 28px;">Post a XEKIE →</a>
+          <h3>Just XEKIE it.</h3>
+          <p>Can't find what you're looking for? XEKIE it — tell sellers what you want and let offers roll in.</p>
+          <a href="request.html" class="btn-nav primary" style="display:inline-block;font-size:15px;padding:12px 28px;">XEKIE it →</a>
         </div>`;
 
       _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', xekieId).then(() => {});
       checkSaved();
     }
+
+    function openLightbox(i) {
+      lightboxPhotos = currentXekie?.photos || [];
+      lightboxIndex = i;
+      document.getElementById('lightbox-img').src = lightboxPhotos[i];
+      document.getElementById('photo-lightbox').classList.add('open');
+    }
+    function closeLightbox() { document.getElementById('photo-lightbox').classList.remove('open'); }
+    function lightboxNav(dir) {
+      lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length;
+      document.getElementById('lightbox-img').src = lightboxPhotos[lightboxIndex];
+    }
+    document.getElementById('photo-lightbox').addEventListener('click', e => { if (e.target === document.getElementById('photo-lightbox')) closeLightbox(); });
 
     function openModal() {
       if (!currentUser) { window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href); return; }
@@ -275,7 +323,6 @@
       document.getElementById('modal-submit').textContent = 'Send response';
       document.getElementById('modal-overlay').classList.add('open');
     }
-
     function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 
     async function submitResponse() {
@@ -291,10 +338,8 @@
     }
 
     function shareThis() {
-      const url = window.location.href;
-      const title = currentXekie?.title || 'Check this XEKIE';
-      if (navigator.share) { navigator.share({ title: `XEKIE — ${title}`, url }).catch(() => {}); }
-      else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
+      if (navigator.share) { navigator.share({ title: `XEKIE — ${currentXekie?.title}`, url: window.location.href }).catch(() => {}); }
+      else { navigator.clipboard.writeText(window.location.href).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
     }
     function shareToSMS() { window.open(`sms:&body=${encodeURIComponent((currentXekie?.title || 'Check this XEKIE') + ' — ' + window.location.href)}`); }
     function shareToFacebook() { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), '_blank'); }
@@ -318,7 +363,6 @@
       document.getElementById('qr-modal').classList.add('open');
     }
     function closeQR() { document.getElementById('qr-modal').classList.remove('open'); }
-
     document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
 
     _sb.auth.getSession().then(({ data: { session } }) => {
