@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XEKIE — Radar</title>
+  <title>XEKIE — Browse XEKIEs</title>
   <meta name="description" content="Browse XEKIEs — see what buyers want and respond with your best offer.">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
@@ -125,14 +125,14 @@
       <span class="nav-user" id="nav-user"></span>
       <a href="notifications.html" class="btn-nav">🔔 Get Alerts</a>
       <a href="categories.html" class="btn-nav">Categories</a>
-      <a href="request.html" class="btn-nav primary">Post a XEKIE</a>
+      <a href="request.html" class="btn-nav primary">XEKIE it →</a>
       <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
     </div>
   </nav>
 
   <div class="container">
-    <h1 class="page-title" id="page-title">Radar</h1>
-    <p class="page-sub" id="page-sub">Browse what buyers want. Find your next sale.</p>
+    <h1 class="page-title" id="page-title">Browse XEKIEs</h1>
+    <p class="page-sub" id="page-sub">People are XEKIE'ing right now. Find your next sale.</p>
     <p class="swipe-tip">💡 Swipe right to save, swipe left to skip</p>
     <input type="text" class="search-bar" id="search" placeholder="Search XEKIEs by keyword, location..." oninput="filterXekies()" />
     <div class="filter-row">
@@ -143,26 +143,19 @@
       <button class="filter-btn" onclick="setCategory('Tools', this)">Tools</button>
       <button class="filter-btn" onclick="setCategory('Services', this)">Services</button>
       <button class="filter-btn" onclick="setCategory('Household Items', this)">Household</button>
+      <button class="filter-btn" onclick="setCategory('Clothes & Apparel', this)">Clothes</button>
+      <button class="filter-btn" onclick="setCategory('Books', this)">Books</button>
+      <button class="filter-btn" onclick="setCategory('Toys', this)">Toys</button>
+      <button class="filter-btn" onclick="setCategory('Music & Movies', this)">Music & Movies</button>
       <button class="filter-toggle" id="advanced-toggle" onclick="toggleAdvanced()">⚙ Filters</button>
     </div>
     <div class="advanced-filters" id="advanced-filters">
       <div class="filter-grid">
-        <div class="filter-field">
-          <label>Min Budget ($)</label>
-          <input type="number" id="filter-min" placeholder="e.g. 100" oninput="filterXekies()" />
-        </div>
-        <div class="filter-field">
-          <label>Max Budget ($)</label>
-          <input type="number" id="filter-max" placeholder="e.g. 1000" oninput="filterXekies()" />
-        </div>
-        <div class="filter-field">
-          <label>Location</label>
-          <input type="text" id="filter-location" placeholder="e.g. Ohio" oninput="filterXekies()" />
-        </div>
+        <div class="filter-field"><label>Min Budget ($)</label><input type="number" id="filter-min" placeholder="e.g. 100" oninput="filterXekies()" /></div>
+        <div class="filter-field"><label>Max Budget ($)</label><input type="number" id="filter-max" placeholder="e.g. 1000" oninput="filterXekies()" /></div>
+        <div class="filter-field"><label>Location</label><input type="text" id="filter-location" placeholder="e.g. Ohio" oninput="filterXekies()" /></div>
       </div>
-      <div style="margin-top:12px;">
-        <button class="btn-clear-filters" onclick="clearFilters()">✕ Clear filters</button>
-      </div>
+      <div style="margin-top:12px;"><button class="btn-clear-filters" onclick="clearFilters()">✕ Clear filters</button></div>
     </div>
     <div class="results-count" id="results-count"></div>
     <div id="xekie-feed"><div class="loading">Loading XEKIEs...</div></div>
@@ -211,13 +204,12 @@
     let offerCounts = {};
     const BETA_CUTOFF = new Date('2026-06-01');
 
-    // Pre-select category from URL param
     const radarParams = new URLSearchParams(window.location.search);
     const urlCategory = radarParams.get('category');
     if (urlCategory) {
       activeCategory = urlCategory;
-      document.getElementById('page-title').textContent = urlCategory + ' Radar';
-      document.getElementById('page-sub').textContent = 'Browse ' + urlCategory + ' XEKIEs. Find your next sale.';
+      document.getElementById('page-title').textContent = urlCategory + ' XEKIEs';
+      document.getElementById('page-sub').textContent = 'People are XEKIE\'ing ' + urlCategory + ' right now. Find your next sale.';
     }
 
     function timeAgo(ts) {
@@ -236,10 +228,7 @@
       return '$—';
     }
 
-    function isExpired(x) {
-      if (!x.expires_at) return false;
-      return new Date(x.expires_at) < new Date();
-    }
+    function isExpired(x) { return x.expires_at && new Date(x.expires_at) < new Date(); }
 
     async function loadXekies() {
       const { data, error } = await _sb.from('xekies').select('*').order('created_at', { ascending: false });
@@ -251,7 +240,6 @@
         offerCounts = {};
         (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
       }
-      // Highlight active category button from URL
       if (urlCategory) {
         document.querySelectorAll('.filter-btn').forEach(btn => {
           const btnCat = btn.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || '';
@@ -269,10 +257,8 @@
     }
 
     function toggleAdvanced() {
-      const panel = document.getElementById('advanced-filters');
-      const btn = document.getElementById('advanced-toggle');
-      panel.classList.toggle('open');
-      btn.classList.toggle('active');
+      document.getElementById('advanced-filters').classList.toggle('open');
+      document.getElementById('advanced-toggle').classList.toggle('active');
     }
 
     function clearFilters() {
@@ -289,11 +275,7 @@
       const filterLoc = (document.getElementById('filter-location')?.value || '').toLowerCase();
       let filtered = allXekies;
       if (activeCategory) filtered = filtered.filter(x => x.category === activeCategory);
-      if (search) filtered = filtered.filter(x =>
-        (x.title||'').toLowerCase().includes(search) ||
-        (x.description||'').toLowerCase().includes(search) ||
-        (x.location||'').toLowerCase().includes(search)
-      );
+      if (search) filtered = filtered.filter(x => (x.title||'').toLowerCase().includes(search) || (x.description||'').toLowerCase().includes(search) || (x.location||'').toLowerCase().includes(search));
       if (filterMin > 0) filtered = filtered.filter(x => { const bud = x.budget_max || x.budget || x.budget_min || 0; return bud >= filterMin; });
       if (filterMax < Infinity) filtered = filtered.filter(x => { const bud = x.budget_min || x.budget || 0; return bud <= filterMax; });
       if (filterLoc) filtered = filtered.filter(x => (x.location||'').toLowerCase().includes(filterLoc));
@@ -304,16 +286,12 @@
       xekies = [...xekies.filter(x => x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date()), ...xekies.filter(x => !x.is_promoted || !x.promoted_until || new Date(x.promoted_until) <= new Date())];
       const feed = document.getElementById('xekie-feed');
       document.getElementById('results-count').textContent = xekies.length ? xekies.length+' XEKIE'+(xekies.length!==1?'s':'')+' found' : '';
-      if (!xekies.length) {
-        feed.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No XEKIEs found</div><p class="empty-sub">Try a different search or filter.</p></div>`;
-        return;
-      }
+      if (!xekies.length) { feed.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No XEKIEs found</div><p class="empty-sub">Try a different search or category.</p></div>`; return; }
       feed.innerHTML = xekies.map(x => {
         const budget = formatBudget(x);
         const flexTag = x.is_flexible ? '<span class="card-budget-flex">flexible</span>' : '';
         const earlyBadge = new Date(x.created_at) < BETA_CUTOFF ? '<span class="early-badge">⚡ Early Adopter</span>' : '';
-        const expired = isExpired(x);
-        const fulfilled = x.is_fulfilled;
+        const expired = isExpired(x), fulfilled = x.is_fulfilled;
         const isPromoted = x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date();
         let statusBadge = '';
         if (fulfilled) statusBadge = '<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
@@ -322,17 +300,13 @@
         const promotedLabel = isPromoted ? '<div class="promoted-label">⚡ Promoted</div>' : '';
         const canRespond = !fulfilled && !expired;
         const cnt = offerCounts[x.id] || 0;
-        const responseBadge = cnt > 0 ? `<span class="response-badge ${cnt >= 5 ? 'hot-badge' : ''}">${cnt >= 5 ? '🔥' : '💬'} ${cnt} response${cnt!==1?'s':''}</span>` : '';
         return `
         <div class="xekie-card ${cardClass}" id="card-${x.id}" data-id="${x.id}">
           <div class="swipe-hint-right">SAVE ✓</div>
           <div class="swipe-hint-left">SKIP ✕</div>
           ${promotedLabel}${statusBadge}
           <div class="card-top">
-            <div>
-              <div class="card-title">${x.title}</div>
-              ${earlyBadge}
-            </div>
+            <div><div class="card-title">${x.title}</div>${earlyBadge}</div>
             <div class="card-budget">${budget}${flexTag}</div>
           </div>
           ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
@@ -342,7 +316,7 @@
               <span>⏱ ${timeAgo(x.created_at)}</span>
               ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
               <span class="view-count">👁 ${x.view_count||0}</span>
-              ${responseBadge}
+              ${cnt > 0 ? `<span class="response-badge ${cnt >= 5 ? 'hot-badge' : ''}">${cnt >= 5 ? '🔥' : '💬'} ${cnt} response${cnt!==1?'s':''}</span>` : ''}
             </div>
             <div class="card-actions">
               <button class="btn-share" onclick="shareXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
@@ -358,21 +332,8 @@
     function addSwipe(card) {
       let startX = 0, isDragging = false;
       const onStart = (x) => { startX = x; isDragging = true; card.classList.add('swiping'); };
-      const onMove = (x) => {
-        if (!isDragging) return;
-        const dx = x - startX;
-        card.style.transform = `translateX(${dx}px) rotate(${dx * 0.03}deg)`;
-        card.querySelector('.swipe-hint-right').style.opacity = dx > 40 ? Math.min(1,(dx-40)/60) : 0;
-        card.querySelector('.swipe-hint-left').style.opacity = dx < -40 ? Math.min(1,(-dx-40)/60) : 0;
-      };
-      const onEnd = (x) => {
-        if (!isDragging) return;
-        isDragging = false; card.classList.remove('swiping');
-        const dx = x - startX;
-        if (dx > 80) { card.classList.add('swipe-right'); setTimeout(() => card.remove(), 400); }
-        else if (dx < -80) { card.classList.add('swipe-left'); setTimeout(() => card.remove(), 400); }
-        else { card.style.transform = ''; card.querySelector('.swipe-hint-right').style.opacity=0; card.querySelector('.swipe-hint-left').style.opacity=0; }
-      };
+      const onMove = (x) => { if (!isDragging) return; const dx = x - startX; card.style.transform = `translateX(${dx}px) rotate(${dx * 0.03}deg)`; card.querySelector('.swipe-hint-right').style.opacity = dx > 40 ? Math.min(1,(dx-40)/60) : 0; card.querySelector('.swipe-hint-left').style.opacity = dx < -40 ? Math.min(1,(-dx-40)/60) : 0; };
+      const onEnd = (x) => { if (!isDragging) return; isDragging = false; card.classList.remove('swiping'); const dx = x - startX; if (dx > 80) { card.classList.add('swipe-right'); setTimeout(() => card.remove(), 400); } else if (dx < -80) { card.classList.add('swipe-left'); setTimeout(() => card.remove(), 400); } else { card.style.transform = ''; card.querySelector('.swipe-hint-right').style.opacity=0; card.querySelector('.swipe-hint-left').style.opacity=0; } };
       card.addEventListener('mousedown', e => onStart(e.clientX));
       window.addEventListener('mousemove', e => { if (isDragging) onMove(e.clientX); });
       window.addEventListener('mouseup', e => { if (isDragging) onEnd(e.clientX); });
@@ -412,14 +373,10 @@
       const { error } = await _sb.from('offers').insert({ xekie_id: activeXekieId, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
       if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send response'; }
       else {
-        if (activeXekieOwner) {
-          const xekie = allXekies.find(x => x.id === activeXekieId);
-          notifyBuyer(activeXekieOwner, xekie?.title || 'Your XEKIE', message, price);
-        }
+        if (activeXekieOwner) { const xekie = allXekies.find(x => x.id === activeXekieId); notifyBuyer(activeXekieOwner, xekie?.title || 'Your XEKIE', message, price); }
         msgEl.className='modal-msg success'; msgEl.style.display='block';
         msgEl.textContent='Response sent! The buyer will be notified. ✓';
-        btn.textContent='Sent ✓';
-        setTimeout(closeModal, 2000);
+        btn.textContent='Sent ✓'; setTimeout(closeModal, 2000);
       }
     }
 
