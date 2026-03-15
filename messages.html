@@ -78,6 +78,7 @@
       <span class="nav-tagline">Trade Different</span>
     </a>
     <div style="display:flex;gap:10px;align-items:center;">
+      <a href="seller.html" class="btn-nav" id="nav-profile" style="display:none">👤 Profile</a>
       <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
       <a href="request.html" class="btn-nav primary">XEKIE it →</a>
     </div>
@@ -285,6 +286,9 @@
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (!session) { window.location.href = 'login.html'; return; }
       currentUser = session.user;
+      const profileLink = document.getElementById('nav-profile');
+      profileLink.href = `seller.html?id=${session.user.id}`;
+      profileLink.style.display = 'inline-block';
       loadConversations();
       _sb.channel('sidebar-updates').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `recipient_id=eq.${session.user.id}` }, () => loadConversations()).subscribe();
     });
