@@ -33,6 +33,7 @@
     .badge-orange{background:#FEF3C7;color:#92400E;}
     .badge-gray{background:#f4f2ec;color:#6b6b6b;}
     .badge-purple{background:#f5f3ff;color:#7c3aed;}
+    .badge-red{background:#fff5f5;color:#ef4444;}
     .login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--black);}
     .login-box{background:var(--white);border-radius:20px;padding:48px;max-width:360px;width:100%;text-align:center;}
     .login-title{font-family:var(--font-display);font-size:24px;font-weight:800;margin-bottom:8px;}
@@ -51,7 +52,6 @@
   </style>
 </head>
 <body>
-
   <div class="login-screen" id="login-screen">
     <div class="login-box">
       <div style="font-family:var(--font-display);font-size:28px;font-weight:800;margin-bottom:4px;"><span style="color:var(--accent);">XE</span>KIE</div>
@@ -72,26 +72,10 @@
       <div class="page-title">Admin Dashboard</div>
       <div class="page-sub" id="last-updated">Loading...</div>
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-num" id="stat-users">—</div>
-          <div class="stat-label">Total Users</div>
-          <div class="stat-sub" id="stat-users-today">— today</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num" id="stat-xekies">—</div>
-          <div class="stat-label">Times XEKIE'd</div>
-          <div class="stat-sub" id="stat-xekies-active">— active</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num" id="stat-offers">—</div>
-          <div class="stat-label">Total Responses</div>
-          <div class="stat-sub" id="stat-offers-today">— today</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num" id="stat-promoted">—</div>
-          <div class="stat-label">Promoted XEKIEs</div>
-          <div class="stat-sub">$5 each</div>
-        </div>
+        <div class="stat-card"><div class="stat-num" id="stat-users">—</div><div class="stat-label">Total Users</div><div class="stat-sub" id="stat-users-today">— today</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-xekies">—</div><div class="stat-label">Times XEKIE'd</div><div class="stat-sub" id="stat-xekies-active">— active</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-offers">—</div><div class="stat-label">Total Responses</div><div class="stat-sub" id="stat-offers-today">— today</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-promoted">—</div><div class="stat-label">Promoted XEKIEs</div><div class="stat-sub">$5 each</div></div>
       </div>
 
       <div class="section-title">Recent Signups</div>
@@ -100,37 +84,20 @@
         <button class="refresh-btn" onclick="loadAdmin()">↻ Refresh</button>
       </div>
       <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Joined</th>
-            <th>XEKIEs Posted</th>
-            <th>Responses Given</th>
-            <th>Type</th>
-          </tr>
-        </thead>
-        <tbody id="users-body">
-          <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--mid);">Loading...</td></tr>
-        </tbody>
+        <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>XEKIEs</th><th>Responses</th><th>Type</th></tr></thead>
+        <tbody id="users-body"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--mid);">Loading...</td></tr></tbody>
       </table>
 
       <div class="section-title">Recent XEKIEs</div>
       <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Budget</th>
-            <th>Location</th>
-            <th>Posted</th>
-            <th>Views · Responses</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="xekies-body">
-          <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--mid);">Loading...</td></tr>
-        </tbody>
+        <thead><tr><th>Title</th><th>Category</th><th>Budget</th><th>Location</th><th>Posted</th><th>Views · Responses</th><th>Status</th></tr></thead>
+        <tbody id="xekies-body"><tr><td colspan="7" style="text-align:center;padding:32px;color:var(--mid);">Loading...</td></tr></tbody>
+      </table>
+
+      <div class="section-title" style="color:#ef4444;">🚩 Reports <span id="reports-badge" style="font-size:14px;font-weight:400;color:var(--mid);"></span></div>
+      <table>
+        <thead><tr><th>XEKIE</th><th>Reason</th><th>Details</th><th>Reporter</th><th>Reported</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="reports-body"><tr><td colspan="7" style="text-align:center;padding:32px;color:var(--mid);">Loading...</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -143,13 +110,8 @@
 
     function checkPassword() {
       const pw = document.getElementById('admin-password').value;
-      if (pw === ADMIN_PASSWORD) {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('admin-content').style.display = 'block';
-        loadAdmin();
-      } else {
-        document.getElementById('login-error').textContent = 'Incorrect password.';
-      }
+      if (pw === ADMIN_PASSWORD) { document.getElementById('login-screen').style.display = 'none'; document.getElementById('admin-content').style.display = 'block'; loadAdmin(); }
+      else document.getElementById('login-error').textContent = 'Incorrect password.';
     }
 
     let allUsers = [], allXekies = [];
@@ -179,18 +141,10 @@
       const offersByXekie = {}, offersBySeller = {};
       const today = new Date(); today.setHours(0,0,0,0);
       let offersToday = 0;
-      allOffers.forEach(o => {
-        offersByXekie[o.xekie_id] = (offersByXekie[o.xekie_id] || 0) + 1;
-        offersBySeller[o.seller_id] = (offersBySeller[o.seller_id] || 0) + 1;
-        if (new Date(o.created_at) >= today) offersToday++;
-      });
+      allOffers.forEach(o => { offersByXekie[o.xekie_id] = (offersByXekie[o.xekie_id]||0)+1; offersBySeller[o.seller_id] = (offersBySeller[o.seller_id]||0)+1; if (new Date(o.created_at) >= today) offersToday++; });
       const xekiesByUser = {};
       let activeXekies = 0, promotedXekies = 0;
-      allXekies.forEach(x => {
-        xekiesByUser[x.user_id] = (xekiesByUser[x.user_id] || 0) + 1;
-        if (!x.is_fulfilled && (!x.expires_at || new Date(x.expires_at) > new Date())) activeXekies++;
-        if (x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date()) promotedXekies++;
-      });
+      allXekies.forEach(x => { xekiesByUser[x.user_id] = (xekiesByUser[x.user_id]||0)+1; if (!x.is_fulfilled && (!x.expires_at || new Date(x.expires_at) > new Date())) activeXekies++; if (x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date()) promotedXekies++; });
       const { data: subs } = await _sb.from('subscriptions').select('*').order('created_at', { ascending: false });
       const allSubs = subs || [];
       const userIds = [...new Set([...allXekies.map(x => x.user_id), ...allSubs.map(s => s.user_id)].filter(Boolean))];
@@ -200,53 +154,64 @@
       document.getElementById('stat-offers').textContent = allOffers.length;
       document.getElementById('stat-offers-today').textContent = offersToday + ' today';
       document.getElementById('stat-promoted').textContent = promotedXekies;
-
-      const subUsers = allSubs.map(s => ({ id: s.user_id, name: s.name || '—', email: s.email || '—', joined: s.created_at, xekies: xekiesByUser[s.user_id] || 0, offers: offersBySeller[s.user_id] || 0, type: 'seller' }));
+      const subUsers = allSubs.map(s => ({ id: s.user_id, name: s.name||'—', email: s.email||'—', joined: s.created_at, xekies: xekiesByUser[s.user_id]||0, offers: offersBySeller[s.user_id]||0, type: 'seller' }));
       const subUserIds = new Set(allSubs.map(s => s.user_id));
-      const buyerUsers = [...new Set(allXekies.map(x => x.user_id))].filter(id => !subUserIds.has(id)).map(id => ({ id, name: '—', email: '—', joined: allXekies.filter(x => x.user_id === id).sort((a,b) => new Date(a.created_at)-new Date(b.created_at))[0]?.created_at, xekies: xekiesByUser[id] || 0, offers: offersBySeller[id] || 0, type: 'buyer' }));
-      allUsers = [...subUsers, ...buyerUsers].sort((a,b) => new Date(b.joined) - new Date(a.joined));
+      const buyerUsers = [...new Set(allXekies.map(x => x.user_id))].filter(id => !subUserIds.has(id)).map(id => ({ id, name: '—', email: '—', joined: allXekies.filter(x => x.user_id===id).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))[0]?.created_at, xekies: xekiesByUser[id]||0, offers: offersBySeller[id]||0, type: 'buyer' }));
+      allUsers = [...subUsers, ...buyerUsers].sort((a,b) => new Date(b.joined)-new Date(a.joined));
       const usersToday = allUsers.filter(u => u.joined && new Date(u.joined) >= today).length;
       document.getElementById('stat-users-today').textContent = usersToday + ' today';
       renderUsers(allUsers);
       renderXekies(allXekies, offersByXekie);
+      const { data: reports } = await _sb.from('reports').select('*').order('created_at', { ascending: false }).limit(50);
+      const allReports = reports || [];
+      const pending = allReports.filter(r => r.status === 'pending').length;
+      document.getElementById('reports-badge').textContent = pending > 0 ? `— ${pending} pending` : '— none pending';
+      renderReports(allReports);
     }
 
     function renderUsers(users) {
       const tbody = document.getElementById('users-body');
       if (!users.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--mid);">No users yet</td></tr>'; return; }
-      tbody.innerHTML = users.map(u => `
-        <tr>
-          <td><strong>${u.name}</strong></td>
-          <td>${u.email}</td>
-          <td>${u.joined ? timeAgo(u.joined) : '—'}</td>
-          <td>${u.xekies}</td>
-          <td>${u.offers}</td>
-          <td><span class="badge ${u.type === 'seller' ? 'badge-purple' : 'badge-green'}">${u.type}</span></td>
-        </tr>`).join('');
+      tbody.innerHTML = users.map(u => `<tr><td><strong>${u.name}</strong></td><td>${u.email}</td><td>${u.joined ? timeAgo(u.joined) : '—'}</td><td>${u.xekies}</td><td>${u.offers}</td><td><span class="badge ${u.type==='seller'?'badge-purple':'badge-green'}">${u.type}</span></td></tr>`).join('');
     }
 
     function renderXekies(xekies, offersByXekie) {
       const tbody = document.getElementById('xekies-body');
       if (!xekies.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--mid);">No XEKIEs yet</td></tr>'; return; }
-      tbody.innerHTML = xekies.slice(0, 50).map(x => {
+      tbody.innerHTML = xekies.slice(0,50).map(x => {
         const expired = x.expires_at && new Date(x.expires_at) < new Date();
         const status = x.is_fulfilled ? 'fulfilled' : expired ? 'expired' : x.is_promoted ? 'promoted' : 'active';
         const badgeClass = {fulfilled:'badge-green',expired:'badge-gray',promoted:'badge-purple',active:'badge-orange'}[status];
-        return `<tr>
-          <td><a href="xekie.html?id=${x.id}" target="_blank" style="color:var(--black);font-weight:500;">${x.title}</a></td>
-          <td>${x.category || '—'}</td>
-          <td>${formatBudget(x)}</td>
-          <td>${x.location || '—'}</td>
-          <td>${timeAgo(x.created_at)}</td>
-          <td>${x.view_count||0} 👁 · ${offersByXekie[x.id]||0} 💬</td>
-          <td><span class="badge ${badgeClass}">${status}</span></td>
-        </tr>`;
+        return `<tr><td><a href="xekie.html?id=${x.id}" target="_blank" style="color:var(--black);font-weight:500;">${x.title}</a></td><td>${x.category||'—'}</td><td>${formatBudget(x)}</td><td>${x.location||'—'}</td><td>${timeAgo(x.created_at)}</td><td>${x.view_count||0} 👁 · ${offersByXekie[x.id]||0} 💬</td><td><span class="badge ${badgeClass}">${status}</span></td></tr>`;
       }).join('');
     }
 
     function filterUsers() {
       const q = document.getElementById('user-search').value.toLowerCase();
       renderUsers(allUsers.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)));
+    }
+
+    function renderReports(reports) {
+      const tbody = document.getElementById('reports-body');
+      if (!reports.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--mid);">No reports yet 🎉</td></tr>'; return; }
+      tbody.innerHTML = reports.map(r => {
+        const badgeClass = r.status === 'pending' ? 'badge-orange' : r.status === 'resolved' ? 'badge-green' : 'badge-gray';
+        const xekieLink = r.xekie_id ? `<a href="xekie.html?id=${r.xekie_id}" target="_blank" style="color:var(--black);font-weight:500;">View →</a>` : '—';
+        return `<tr>
+          <td>${xekieLink}</td>
+          <td><strong>${r.reason}</strong></td>
+          <td style="max-width:180px;font-size:12px;color:var(--mid);">${r.details || '—'}</td>
+          <td style="font-size:12px;color:var(--mid);">${r.reporter_id.slice(0,8)}...</td>
+          <td>${timeAgo(r.created_at)}</td>
+          <td><span class="badge ${badgeClass}">${r.status}</span></td>
+          <td>${r.status === 'pending' ? `<button onclick="resolveReport('${r.id}')" style="font-size:12px;padding:4px 10px;border:1.5px solid #c0dd97;border-radius:100px;background:transparent;color:#3B6D11;cursor:pointer;">✓ Resolve</button>` : ''}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    async function resolveReport(id) {
+      await _sb.from('reports').update({ status: 'resolved', reviewed_at: new Date().toISOString() }).eq('id', id);
+      loadAdmin();
     }
   </script>
 </body>
