@@ -117,6 +117,7 @@
     </a>
     <div class="nav-links">
       <a href="radar.html" class="btn">Browse XEKIEs</a>
+      <a href="seller.html" class="btn" id="nav-profile" style="display:none">👤 Profile</a>
       <a href="login.html" class="btn" id="nav-signin">Sign in</a>
       <a href="request.html" class="btn btn-primary" id="nav-post">XEKIE it →</a>
     </div>
@@ -270,7 +271,12 @@
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     _sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) document.getElementById('nav-signin').style.display = 'none';
+      if (session) {
+        document.getElementById('nav-signin').style.display = 'none';
+        const profileLink = document.getElementById('nav-profile');
+        profileLink.href = `seller.html?id=${session.user.id}`;
+        profileLink.style.display = 'inline-block';
+      }
     });
 
     function timeAgo(ts) {
