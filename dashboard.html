@@ -81,7 +81,7 @@
     .offer-item{background:var(--cream);border-radius:12px;padding:16px 18px;margin-bottom:10px;}
     .offer-price{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--accent);margin-bottom:4px;}
     .offer-msg{font-size:14px;color:var(--black);line-height:1.5;}
-    .offer-time{font-size:12px;color:var(--mid);margin-top:6px;}
+    .offer-time{font-size:12px;color:var(--mid);}
     .no-offers{text-align:center;padding:32px;color:var(--mid);font-size:15px;}
     .rating-stars{display:flex;gap:8px;justify-content:center;margin:20px 0;}
     .star-btn{font-size:32px;background:none;border:none;cursor:pointer;transition:transform 0.1s;opacity:0.3;}
@@ -114,7 +114,7 @@
     <div class="nav-right">
       <a href="saved.html" class="btn-nav">🔖 Saved</a>
       <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
-      <a href="messages.html" class="btn-nav">Messages</a>
+      <a href="messages.html" class="btn-nav">💬 Messages</a>
       <a href="request.html" class="btn-nav primary">XEKIE it →</a>
       <button class="btn-nav" onclick="signOut()">Sign out</button>
     </div>
@@ -335,7 +335,7 @@
     function closeRatingModal() { document.getElementById('rating-modal').classList.remove('open'); }
 
     async function repostXekie(id) {
-      if (!confirm('Repost this XEKIE? It will be re-activated for another week.')) return;
+      if (!confirm('Repost this XEKIE for another week?')) return;
       const newExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       const { error } = await _sb.from('xekies').update({ expires_at: newExpiry, is_fulfilled: false, view_count: 0 }).eq('id', id).eq('user_id', currentUser.id);
       if (!error) {
@@ -369,7 +369,10 @@
         <div class="offer-item">
           ${o.price ? `<div class="offer-price">$${Number(o.price).toLocaleString()}</div>` : ''}
           <div class="offer-msg">${o.message}</div>
-          <div class="offer-time">${timeAgo(o.created_at)}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
+            <div class="offer-time">${timeAgo(o.created_at)}</div>
+            <a href="messages.html?xekie=${xekieId}&other=${o.seller_id}" style="font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;padding:4px 12px;border:1.5px solid var(--accent);border-radius:100px;">💬 Open Chat</a>
+          </div>
         </div>`).join('');
     }
 
