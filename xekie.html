@@ -71,7 +71,7 @@
     .btn-save{width:100%;padding:12px;background:transparent;color:var(--black);border:1.5px solid var(--border);border-radius:12px;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;margin-bottom:8px;}
     .btn-save:hover{border-color:var(--black);}
     .btn-save.saved{background:#EAF3DE;color:#3B6D11;border-color:#c0dd97;}
-    .meta-row{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mid);margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
+    .meta-row{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mid);margin-top:24px;padding-top:20px;border-top:1px solid var(--border);align-items:center;}
     .cta-band{background:var(--black);border-radius:16px;padding:32px;text-align:center;margin-top:16px;}
     .cta-band h3{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--white);margin-bottom:8px;}
     .cta-band p{font-size:15px;color:#888;margin-bottom:20px;}
@@ -320,6 +320,7 @@
             <span>👁 ${x.view_count||0} views</span>
             <span>⏱ Posted ${timeAgo(x.created_at)}</span>
             ${expiryDisplay}
+            <a href="seller.html?id=${x.user_id}" style="margin-left:auto;font-size:13px;color:var(--accent);text-decoration:none;font-weight:500;">👤 View Poster's Profile →</a>
           </div>
         </div>
         <div class="cta-band">
