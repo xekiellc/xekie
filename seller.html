@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile | XEKIE</title>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="manifest" href="manifest.json" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #fafaf8;
+      --cream: #f4f2ec;
+      --accent: #ff4d1c;
+      --mid: #6b6b6b;
+      --border: #e8e6e0;
+      --radius: 16px;
+      --radius-pill: 100px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--cream);
+      color: var(--black);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--black);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; height: 60px;
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.3rem; color: var(--white); text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 8px; align-items: center; }
+    .nav-links a {
+      color: #aaa; text-decoration: none; font-size: 0.85rem;
+      font-weight: 500; padding: 6px 14px; border-radius: var(--radius-pill);
+      transition: all 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.08); }
+    .nav-btn { background: var(--accent) !important; color: var(--white) !important; }
+
+    .profile-hero { background: var(--black); padding: 48px 24px 0; }
+    .container { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; }
+
+    .profile-card {
+      background: var(--white);
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: 32px; margin-bottom: 24px;
+    }
+    .profile-top { display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+    .avatar {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 2rem; color: var(--white); flex-shrink: 0;
+      border: 4px solid var(--cream); margin-top: -44px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .profile-info { flex: 1; min-width: 200px; }
+    .profile-name {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.6rem; line-height: 1.1; margin-bottom: 8px;
+    }
+    .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: var(--radius-pill);
+      font-size: 0.72rem; font-weight: 500; letter-spacing: 0.3px;
+    }
+    .badge-verified { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+    .badge-early    { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+    .badge-member   { background: var(--cream); color: var(--mid); border: 1px solid var(--border); }
+    .profile-bio { color: #444; font-size: 0.95rem; line-height: 1.6; margin-bottom: 16px; }
+    .profile-bio.placeholder { color: var(--mid); font-style: italic; }
+    .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 20px; border-radius: var(--radius-pill);
+      font-family: 'DM Sans', sans-serif; font-weight: 500;
+      font-size: 0.88rem; cursor: pointer; border: none;
+      transition: all 0.2s; text-decoration: none;
+    }
+    .btn-primary { background: var(--accent); color: var(--white); }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-outline { background: transparent; color: var(--black); border: 1.5px solid var(--border); }
+    .btn-outline:hover { border-color: var(--black); background: var(--cream); }
+
+    .stats-row {
+      display: flex; gap: 1px; background: var(--border);
+      border-radius: var(--radius); overflow: hidden; margin-bottom: 24px;
+    }
+    .stat { flex: 1; background: var(--white); padding: 20px 16px; text-align: center; }
+    .stat-value {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.6rem; line-height: 1; margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 0.78rem; color: var(--mid); font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .stars-display { display: flex; gap: 2px; justify-content: center; margin-bottom: 4px; }
+    .star { color: #ddd; font-size: 1rem; }
+    .star.filled { color: #ffc107; }
+
+    .section { background: var(--white); border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; }
+    .section-header {
+      padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+    .section-count { font-size: 0.8rem; color: var(--mid); }
+
+    .review-item { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+    .review-item:last-child { border-bottom: none; }
+    .review-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .review-stars { display: flex; gap: 2px; }
+    .review-date { font-size: 0.78rem; color: var(--mid); }
+    .review-text { font-size: 0.9rem; color: #444; line-height: 1.5; }
+    .review-xekie { font-size: 0.8rem; color: var(--mid); margin-top: 6px; }
+    .review-xekie a { color: var(--accent); text-decoration: none; }
+    .review-xekie a:hover { text-decoration: underline; }
+
+    .empty { padding: 40px 24px; text-align: center; color: var(--mid); }
+    .empty-icon { font-size: 2rem; margin-bottom: 8px; }
+
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 200;
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white); border-radius: var(--radius);
+      width: 100%; max-width: 480px; padding: 32px;
+      animation: slideUp 0.2s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .modal-title {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.3rem; margin-bottom: 24px;
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block; font-size: 0.82rem; font-weight: 500;
+      color: var(--mid); margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .form-input, .form-textarea {
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+      color: var(--black); background: var(--cream);
+      transition: border-color 0.2s; outline: none;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+    .form-textarea { resize: vertical; min-height: 100px; }
+    .char-count { font-size: 0.75rem; color: var(--mid); text-align: right; margin-top: 4px; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 24px; }
+
+    .loading {
+      display: flex; align-items: center; justify-content: center;
+      padding: 80px 24px; gap: 8px; color: var(--mid);
+    }
+    .spinner {
+      width: 20px; height: 20px; border: 2px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .not-found { text-align: center; padding: 80px 24px; }
+    .not-found h2 {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 2rem; margin-bottom: 12px;
+    }
+
+    footer {
+      background: var(--black); color: #666;
+      padding: 32px 24px; text-align: center; font-size: 0.82rem;
+    }
+    footer a { color: #888; text-decoration: none; margin: 0 8px; }
+    footer a:hover { color: var(--white); }
+    .footer-logo {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.1rem; color: var(--white); margin-bottom: 12px;
+    }
+    .footer-logo span { color: var(--accent); }
+
+    @media (max-width: 600px) {
+      .profile-top { flex-direction: column; }
+      .avatar { margin-top: -44px; }
+      .stats-row { flex-direction: column; gap: 0; }
+      .stat { border-bottom: 1px solid var(--border); }
+      .stat:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">X<span>E</span>KIE</a>
+  <div class="nav-links">
+    <a href="radar.html">Browse</a>
+    <a href="request.html" class="nav-btn">+ Post XEKIE</a>
+    <a href="dashboard.html" id="nav-dashboard" style="display:none">Dashboard</a>
+    <a href="login.html" id="nav-login">Sign In</a>
+  </div>
+</nav>
+
+<div class="profile-hero"></div>
+
+<div class="container">
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <span>Loading profile…</span>
+  </div>
+
+  <div class="not-found" id="not-found" style="display:none">
+    <div style="font-size:3rem;margin-bottom:16px">👤</div>
+    <h2>Profile not found</h2>
+    <p style="color:var(--mid);margin-bottom:24px">This user doesn't exist or their profile is private.</p>
+    <a href="radar.html" class="btn btn-primary">Browse XEKIEs</a>
+  </div>
+
+  <div id="profile-content" style="display:none">
+
+    <div class="profile-card">
+      <div class="profile-top">
+        <div class="avatar" id="profile-avatar">?</div>
+        <div class="profile-info">
+          <div class="profile-name" id="profile-name">Loading…</div>
+          <div class="badges" id="profile-badges"></div>
+          <p class="profile-bio" id="profile-bio"></p>
+          <div class="profile-actions" id="profile-actions"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stars-display" id="stars-display"></div>
+        <div class="stat-value" id="stat-rating">—</div>
+        <div class="stat-label">Avg Rating</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="stat-reviews">0</div>
+        <div class="stat-label">Reviews</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="stat-offers">0</div>
+        <div class="stat-label">Offers Made</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Reviews</span>
+        <span class="section-count" id="reviews-count"></span>
+      </div>
+      <div id="reviews-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">Edit Profile</div>
+    <div class="form-group">
+      <label class="form-label">Display Name</label>
+      <input class="form-input" id="edit-name" maxlength="40" placeholder="Your name" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Bio</label>
+      <textarea class="form-textarea" id="edit-bio" maxlength="160" placeholder="Tell buyers a little about yourself…"></textarea>
+      <div class="char-count"><span id="bio-chars">0</span>/160</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">X<span>E</span>KIE</div>
+  <div>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="guidelines.html">Guidelines</a>
+    <a href="prohibited-items.html">Prohibited Items</a>
+  </div>
+  <div style="margin-top:12px">© 2025 XEKIE LLC · Akron, OH · Trade Different.</div>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://jlcrarqiyejgjbdesxik.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const EARLY_ADOPTER_CUTOFF = new Date('2026-06-01');
+
+  let currentUser = null;
+  let profileUserId = null;
+  let isOwnProfile = false;
+
+  async function init() {
+    const params = new URLSearchParams(window.location.search);
+    profileUserId = params.get('id');
+
+    const { data: { session } } = await supabase.auth.getSession();
+    currentUser = session?.user ?? null;
+
+    if (currentUser) {
+      document.getElementById('nav-login').style.display = 'none';
+      document.getElementById('nav-dashboard').style.display = 'inline-flex';
+    }
+
+    if (!profileUserId) {
+      if (currentUser) {
+        profileUserId = currentUser.id;
+      } else {
+        window.location.href = 'login.html';
+        return;
+      }
+    }
+
+    isOwnProfile = currentUser?.id === profileUserId;
+    await loadProfile();
+  }
+
+  async function loadProfile() {
+    try {
+      const [ratingsRes, offersRes, verifiedRes, profileRes] = await Promise.all([
+        supabase.from('ratings').select('stars, comment, xekie_id, created_at').eq('seller_id', profileUserId),
+        supabase.from('offers').select('id').eq('seller_id', profileUserId),
+        supabase.from('verified_sellers').select('verified_at').eq('user_id', profileUserId).maybeSingle(),
+        supabase.from('user_profiles').select('display_name, bio, created_at').eq('user_id', profileUserId).maybeSingle()
+      ]);
+
+      renderProfile(
+        profileRes.data,
+        ratingsRes.data || [],
+        offersRes.data || [],
+        verifiedRes.data
+      );
+    } catch (err) {
+      console.error(err);
+      showNotFound();
+    }
+  }
+
+  function renderProfile(meta, ratings, offers, verified) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('profile-content').style.display = 'block';
+
+    const displayName = meta?.display_name || (isOwnProfile ? 'Your Profile' : 'XEKIE Member');
+    document.getElementById('profile-name').textContent = displayName;
+    document.title = `${displayName} | XEKIE`;
+
+    const initials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    document.getElementById('profile-avatar').textContent = initials || '?';
+
+    const bioEl = document.getElementById('profile-bio');
+    if (meta?.bio) {
+      bioEl.textContent = meta.bio;
+    } else {
+      bioEl.textContent = isOwnProfile ? 'Add a bio to let buyers know who you are.' : 'No bio yet.';
+      bioEl.classList.add('placeholder');
+    }
+
+    const badgesEl = document.getElementById('profile-badges');
+    if (verified) {
+      badgesEl.innerHTML += `<span class="badge badge-verified">✓ Verified Seller</span>`;
+    }
+    const joinDate = meta?.created_at ? new Date(meta.created_at) : null;
+    if (joinDate && joinDate < EARLY_ADOPTER_CUTOFF) {
+      badgesEl.innerHTML += `<span class="badge badge-early">⚡ Early Adopter</span>`;
+    }
+    if (joinDate) {
+      const mo = joinDate.toLocaleString('default', { month: 'short', year: 'numeric' });
+      badgesEl.innerHTML += `<span class="badge badge-member">Joined ${mo}</span>`;
+    }
+
+    if (isOwnProfile) {
+      document.getElementById('profile-actions').innerHTML =
+        `<button class="btn btn-outline" onclick="openEditModal()">✏️ Edit Profile</button>`;
+    }
+
+    const totalOffers  = offers.length;
+    const totalReviews = ratings.length;
+    const avgRating    = totalReviews > 0
+      ? (ratings.reduce((s, r) => s + r.stars, 0) / totalReviews).toFixed(1)
+      : null;
+
+    document.getElementById('stat-offers').textContent  = totalOffers;
+    document.getElementById('stat-reviews').textContent = totalReviews;
+
+    if (avgRating) {
+      document.getElementById('stat-rating').textContent = avgRating;
+      const starsEl = document.getElementById('stars-display');
+      for (let i = 1; i <= 5; i++) {
+        starsEl.innerHTML += `<span class="star ${i <= Math.round(avgRating) ? 'filled' : ''}">★</span>`;
+      }
+    } else {
+      document.getElementById('stat-rating').textContent = '—';
+      document.getElementById('stars-display').innerHTML =
+        `<span style="color:var(--mid);font-size:0.8rem">No ratings yet</span>`;
+    }
+
+    document.getElementById('reviews-count').textContent =
+      totalReviews > 0 ? `${totalReviews} review${totalReviews !== 1 ? 's' : ''}` : '';
+
+    const listEl = document.getElementById('reviews-list');
+    if (totalReviews === 0) {
+      listEl.innerHTML = `<div class="empty"><div class="empty-icon">⭐</div><p>No reviews yet</p></div>`;
+    } else {
+      const sorted = [...ratings].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      listEl.innerHTML = sorted.map(r => {
+        const stars = Array.from({ length: 5 }, (_, i) =>
+          `<span class="star ${i < r.stars ? 'filled' : ''}">★</span>`).join('');
+        const date = new Date(r.created_at).toLocaleDateString('en-US',
+          { month: 'short', day: 'numeric', year: 'numeric' });
+        return `
+          <div class="review-item">
+            <div class="review-top">
+              <div class="review-stars">${stars}</div>
+              <span class="review-date">${date}</span>
+            </div>
+            ${r.comment ? `<div class="review-text">${esc(r.comment)}</div>` : ''}
+            <div class="review-xekie">on <a href="xekie.html?id=${r.xekie_id}">View XEKIE →</a></div>
+          </div>`;
+      }).join('');
+    }
+  }
+
+  function showNotFound() {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('not-found').style.display = 'block';
+  }
+
+  function openEditModal() {
+    const name = document.getElementById('profile-name').textContent;
+    const bio  = document.getElementById('profile-bio').textContent;
+    document.getElementById('edit-name').value = name === 'Your Profile' ? '' : name;
+    document.getElementById('edit-bio').value  = bio.includes('Add a bio') ? '' : bio;
+    updateBioCount();
+    document.getElementById('edit-modal').classList.add('open');
+  }
+
+  function closeEditModal() {
+    document.getElementById('edit-modal').classList.remove('open');
+  }
+
+  function updateBioCount() {
+    document.getElementById('bio-chars').textContent = document.getElementById('edit-bio').value.length;
+  }
+  document.getElementById('edit-bio').addEventListener('input', updateBioCount);
+
+  async function saveProfile() {
+    const name = document.getElementById('edit-name').value.trim();
+    const bio  = document.getElementById('edit-bio').value.trim();
+    if (!name) { alert('Please enter a display name.'); return; }
+
+    const btn = document.querySelector('#edit-modal .btn-primary');
+    btn.textContent = 'Saving…'; btn.disabled = true;
+
+    try {
+      const { error } = await supabase.from('user_profiles').upsert({
+        user_id:      profileUserId,
+        display_name: name,
+        bio:          bio,
+        updated_at:   new Date().toISOString()
+      }, { onConflict: 'user_id' });
+
+      if (error) throw error;
+
+      document.getElementById('profile-name').textContent = name;
+      document.title = `${name} | XEKIE`;
+      const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+      document.getElementById('profile-avatar').textContent = initials || '?';
+      const bioEl = document.getElementById('profile-bio');
+      bioEl.classList.remove('placeholder');
+      if (bio) {
+        bioEl.textContent = bio;
+      } else {
+        bioEl.textContent = 'Add a bio to let buyers know who you are.';
+        bioEl.classList.add('placeholder');
+      }
+      closeEditModal();
+    } catch (err) {
+      console.error(err);
+      alert('Could not save. Make sure you\'re signed in.');
+    } finally {
+      btn.textContent = 'Save Changes'; btn.disabled = false;
+    }
+  }
+
+  document.getElementById('edit-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+  });
+
+  function esc(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  init();
+</script>
+</body>
+</html>
