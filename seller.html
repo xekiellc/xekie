@@ -198,48 +198,57 @@
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const EARLY_ADOPTER_CUTOFF = new Date('2026-06-01');
 
-  let currentUser = null, profileUserId = null, isOwnProfile = false;
+  let currentUser = null, profileUserId = null, isOwnProfile = false, profileLoaded = false;
 
-  async function init() {
-    const params = new URLSearchParams(window.location.search);
-    profileUserId = params.get('id');
+  const params = new URLSearchParams(window.location.search);
+  profileUserId = params.get('id');
 
-    // Get session with a 3s timeout so we never hang
-    try {
-      const { data: { session } } = await Promise.race([
-        supabase.auth.getSession(),
-        new Promise(resolve => setTimeout(() => resolve({ data: { session: null } }), 3000))
-      ]);
-      currentUser = session?.user ?? null;
-    } catch(e) {
-      currentUser = null;
-    }
+  // Load profile data immediately — no auth required
+  if (profileUserId) {
+    loadProfile();
+  }
+
+  // Handle auth separately — updates nav and edit button after profile loads
+  supabase.auth.onAuthStateChange((event, session) => {
+    currentUser = session?.user ?? null;
 
     if (currentUser) {
       document.getElementById('nav-login').style.display = 'none';
       document.getElementById('nav-dashboard').style.display = 'inline-flex';
       document.getElementById('nav-profile').href = `seller.html?id=${currentUser.id}`;
       document.getElementById('nav-profile').style.display = 'inline-flex';
-    }
 
-    // If there's an ID in the URL, load that profile — no login required
-    if (profileUserId) {
-      isOwnProfile = currentUser?.id === profileUserId;
-      await loadProfile();
-      return;
-    }
-
-    // No ID in URL — need to be logged in to see own profile
-    if (currentUser) {
-      profileUserId = currentUser.id;
-      isOwnProfile = true;
-      await loadProfile();
+      // If no ID in URL, load own profile
+      if (!profileUserId) {
+        profileUserId = currentUser.id;
+        isOwnProfile = true;
+        if (!profileLoaded) loadProfile();
+      } else {
+        isOwnProfile = currentUser.id === profileUserId;
+        // Add edit button if own profile and already rendered
+        if (isOwnProfile && profileLoaded) {
+          document.getElementById('profile-actions').innerHTML =
+            `<button class="btn btn-outline" onclick="openEditModal()">✏️ Edit Profile</button>`;
+        }
+      }
     } else {
-      window.location.href = 'login.html';
+      // Not logged in — if no ID in URL, redirect to login
+      if (!profileUserId && !profileLoaded) {
+        window.location.href = 'login.html';
+      }
     }
-  }
+  });
+
+  // Fallback: if no auth state change fires within 2s and we have an ID, load anyway
+  setTimeout(() => {
+    if (!profileLoaded && profileUserId) loadProfile();
+    if (!profileLoaded && !profileUserId) window.location.href = 'login.html';
+  }, 2000);
 
   async function loadProfile() {
+    if (profileLoaded) return;
+    profileLoaded = true;
+
     try {
       const [ratingsRes, offersRes, verifiedRes, profileRes] = await Promise.all([
         supabase.from('ratings').select('stars, comment, xekie_id, created_at').eq('seller_id', profileUserId),
@@ -344,11 +353,6 @@
     }
   }
 
-  function showNotFound() {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('not-found').style.display = 'block';
-  }
-
   function openEditModal() {
     const name = document.getElementById('profile-name').textContent;
     const bio  = document.getElementById('profile-bio').textContent;
@@ -413,8 +417,6 @@
   function esc(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
-
-  init();
 </script>
 </body>
 </html>
