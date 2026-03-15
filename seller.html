@@ -161,7 +161,6 @@
   </div>
 </div>
 
-<!-- EDIT MODAL -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
     <div class="modal-title">Edit Profile</div>
@@ -195,21 +194,24 @@
 <script>
   const SUPABASE_URL = 'https://jlcrarqiyejgjbdesxik.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const EARLY_ADOPTER_CUTOFF = new Date('2026-06-01');
 
-  let currentUser = null, profileUserId = null, isOwnProfile = false, profileLoaded = false;
+  let currentUser = null;
+  let profileUserId = null;
+  let isOwnProfile = false;
+  let profileLoaded = false;
 
   const params = new URLSearchParams(window.location.search);
   profileUserId = params.get('id');
 
-  // Load profile data immediately — no auth required
+  // Load profile immediately if we have an ID — no auth needed
   if (profileUserId) {
     loadProfile();
   }
 
-  // Handle auth separately — updates nav and edit button after profile loads
-  supabase.auth.onAuthStateChange((event, session) => {
+  // Auth runs in parallel — just updates nav + edit button
+  sb.auth.onAuthStateChange((event, session) => {
     currentUser = session?.user ?? null;
 
     if (currentUser) {
@@ -218,32 +220,30 @@
       document.getElementById('nav-profile').href = `seller.html?id=${currentUser.id}`;
       document.getElementById('nav-profile').style.display = 'inline-flex';
 
-      // If no ID in URL, load own profile
       if (!profileUserId) {
         profileUserId = currentUser.id;
         isOwnProfile = true;
         if (!profileLoaded) loadProfile();
       } else {
         isOwnProfile = currentUser.id === profileUserId;
-        // Add edit button if own profile and already rendered
         if (isOwnProfile && profileLoaded) {
           document.getElementById('profile-actions').innerHTML =
             `<button class="btn btn-outline" onclick="openEditModal()">✏️ Edit Profile</button>`;
         }
       }
     } else {
-      // Not logged in — if no ID in URL, redirect to login
       if (!profileUserId && !profileLoaded) {
         window.location.href = 'login.html';
       }
     }
   });
 
-  // Fallback: if no auth state change fires within 2s and we have an ID, load anyway
+  // Fallback timeout — if no ID and no auth after 3s, redirect to login
   setTimeout(() => {
-    if (!profileLoaded && profileUserId) loadProfile();
-    if (!profileLoaded && !profileUserId) window.location.href = 'login.html';
-  }, 2000);
+    if (!profileLoaded && !profileUserId) {
+      window.location.href = 'login.html';
+    }
+  }, 3000);
 
   async function loadProfile() {
     if (profileLoaded) return;
@@ -251,10 +251,10 @@
 
     try {
       const [ratingsRes, offersRes, verifiedRes, profileRes] = await Promise.all([
-        supabase.from('ratings').select('stars, comment, xekie_id, created_at').eq('seller_id', profileUserId),
-        supabase.from('offers').select('id').eq('seller_id', profileUserId),
-        supabase.from('verified_sellers').select('verified_at').eq('user_id', profileUserId).maybeSingle(),
-        supabase.from('user_profiles').select('display_name, bio, created_at').eq('user_id', profileUserId).maybeSingle()
+        sb.from('ratings').select('stars, comment, xekie_id, created_at').eq('seller_id', profileUserId),
+        sb.from('offers').select('id').eq('seller_id', profileUserId),
+        sb.from('verified_sellers').select('verified_at').eq('user_id', profileUserId).maybeSingle(),
+        sb.from('user_profiles').select('display_name, bio, created_at').eq('user_id', profileUserId).maybeSingle()
       ]);
 
       renderProfile(
@@ -380,7 +380,7 @@
     btn.textContent = 'Saving…'; btn.disabled = true;
 
     try {
-      const { error } = await supabase.from('user_profiles').upsert({
+      const { error } = await sb.from('user_profiles').upsert({
         user_id:      profileUserId,
         display_name: name,
         bio:          bio,
