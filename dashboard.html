@@ -115,6 +115,7 @@
       <a href="saved.html" class="btn-nav">🔖 Saved</a>
       <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
       <a href="messages.html" class="btn-nav">💬 Messages</a>
+      <a href="seller.html" class="btn-nav" id="nav-profile">👤 Profile</a>
       <a href="request.html" class="btn-nav primary">XEKIE it →</a>
       <button class="btn-nav" onclick="signOut()">Sign out</button>
     </div>
@@ -234,6 +235,7 @@
       const joined = new Date(session.user.created_at);
       document.getElementById('user-meta').textContent = 'Member since ' + joined.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
       if (joined < BETA_CUTOFF) document.getElementById('early-badge-container').innerHTML = '<div class="early-badge">⚡ Early Adopter</div>';
+      document.getElementById('nav-profile').href = `seller.html?id=${session.user.id}`;
       loadDashboard();
     });
 
@@ -371,7 +373,10 @@
           <div class="offer-msg">${o.message}</div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
             <div class="offer-time">${timeAgo(o.created_at)}</div>
-            <a href="messages.html?xekie=${xekieId}&other=${o.seller_id}" style="font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;padding:4px 12px;border:1.5px solid var(--accent);border-radius:100px;">💬 Open Chat</a>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <a href="seller.html?id=${o.seller_id}" style="font-size:12px;font-weight:600;color:var(--mid);text-decoration:none;padding:4px 12px;border:1.5px solid var(--border);border-radius:100px;">👤 Profile</a>
+              <a href="messages.html?xekie=${xekieId}&other=${o.seller_id}" style="font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;padding:4px 12px;border:1.5px solid var(--accent);border-radius:100px;">💬 Open Chat</a>
+            </div>
           </div>
         </div>`).join('');
     }
