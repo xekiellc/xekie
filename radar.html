@@ -123,7 +123,7 @@
     </a>
     <div class="nav-right">
       <span class="nav-user" id="nav-user"></span>
-      <a href="notifications.html" class="btn-nav">🔔 Get Alerts</a>
+      <a href="watches.html" class="btn-nav">🔔 My Watches</a>
       <a href="categories.html" class="btn-nav">Categories</a>
       <a href="request.html" class="btn-nav primary">XEKIE it →</a>
       <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
@@ -148,6 +148,7 @@
       <button class="filter-btn" onclick="setCategory('Toys', this)">Toys</button>
       <button class="filter-btn" onclick="setCategory('Music & Movies', this)">Music & Movies</button>
       <button class="filter-toggle" id="advanced-toggle" onclick="toggleAdvanced()">⚙ Filters</button>
+      <button class="filter-toggle" onclick="watchSearch()" style="color:#ff4d1c;border-color:rgba(255,77,28,0.3);">🔔 Watch this search</button>
     </div>
     <div class="advanced-filters" id="advanced-filters">
       <div class="filter-grid">
@@ -285,7 +286,7 @@
       xekies = [...xekies.filter(x => x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date()), ...xekies.filter(x => !x.is_promoted || !x.promoted_until || new Date(x.promoted_until) <= new Date())];
       const feed = document.getElementById('xekie-feed');
       document.getElementById('results-count').textContent = xekies.length ? xekies.length+' XEKIE'+(xekies.length!==1?'s':'')+' found' : '';
-      if (!xekies.length) { feed.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No XEKIEs found</div><p class="empty-sub">Try a different search or category.</p></div>`; return; }
+      if (!xekies.length) { feed.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No XEKIEs found</div><p class="empty-sub">Try a different search or <button onclick="watchSearch()" style="background:none;border:none;color:var(--accent);font-family:var(--font-body);font-size:15px;cursor:pointer;font-weight:500;">🔔 watch this search</button> to get alerted when one is posted.</p></div>`; return; }
       feed.innerHTML = xekies.map(x => {
         const budget = formatBudget(x);
         const flexTag = x.is_flexible ? '<span class="card-budget-flex">flexible</span>' : '';
@@ -341,6 +342,14 @@
       card.addEventListener('touchstart', e => onStart(e.touches[0].clientX), {passive:true});
       card.addEventListener('touchmove', e => onMove(e.touches[0].clientX), {passive:true});
       card.addEventListener('touchend', e => onEnd(e.changedTouches[0].clientX));
+    }
+
+    function watchSearch() {
+      const search = document.getElementById('search').value.trim();
+      const params = new URLSearchParams();
+      if (search) params.set('keyword', search);
+      if (activeCategory) params.set('category', activeCategory);
+      window.location.href = 'watches.html?' + params.toString();
     }
 
     function shareXekie(id, title) {
