@@ -95,6 +95,7 @@
     </a>
     <div class="nav-right">
       <span class="nav-user" id="nav-user"></span>
+      <a href="seller.html" class="btn-nav" id="nav-profile" style="display:none">👤 Profile</a>
       <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
     </div>
   </nav>
@@ -210,6 +211,9 @@
       if (!session) { window.location.href = 'login.html'; return; }
       currentUser = session.user;
       document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
+      const profileLink = document.getElementById('nav-profile');
+      profileLink.href = `seller.html?id=${session.user.id}`;
+      profileLink.style.display = 'inline-block';
     });
 
     function setExpiry(btn) {
