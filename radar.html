@@ -39,8 +39,8 @@
     .advanced-filters.open{display:block;}
     .filter-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
     .filter-field label{display:block;font-size:12px;font-weight:500;color:var(--mid);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.1em;}
-    .filter-field input,.filter-field select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:14px;color:var(--black);background:var(--cream);outline:none;}
-    .filter-field input:focus,.filter-field select:focus{border-color:var(--black);}
+    .filter-field input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:14px;color:var(--black);background:var(--cream);outline:none;}
+    .filter-field input:focus{border-color:var(--black);}
     .btn-clear-filters{font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:var(--font-body);}
     .filter-toggle{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:var(--white);color:var(--mid);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
     .filter-toggle:hover{border-color:var(--black);color:var(--black);}
@@ -178,7 +178,7 @@
     </div>
   </div>
 
-  <div class="share-toast" id="share-toast">Link copied to clipboard! 🔗</div>
+  <div class="share-toast" id="share-toast">Link copied! 🔗</div>
 
   <footer>
     <div class="footer-inner">
@@ -252,8 +252,7 @@
     function setCategory(cat, btn) {
       activeCategory = cat;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      filterXekies();
+      btn.classList.add('active'); filterXekies();
     }
 
     function toggleAdvanced() {
@@ -300,6 +299,7 @@
         const promotedLabel = isPromoted ? '<div class="promoted-label">⚡ Promoted</div>' : '';
         const canRespond = !fulfilled && !expired;
         const cnt = offerCounts[x.id] || 0;
+        const photoStrip = x.photos && x.photos.length ? `<div style="display:flex;gap:4px;margin-bottom:10px;border-radius:8px;overflow:hidden;max-height:80px;">${x.photos.slice(0,3).map(url => `<img src="${url}" style="flex:1;height:80px;object-fit:cover;" loading="lazy" />`).join('')}</div>` : '';
         return `
         <div class="xekie-card ${cardClass}" id="card-${x.id}" data-id="${x.id}">
           <div class="swipe-hint-right">SAVE ✓</div>
@@ -310,6 +310,7 @@
             <div class="card-budget">${budget}${flexTag}</div>
           </div>
           ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
+          ${photoStrip}
           <div class="card-footer">
             <div class="card-meta">
               ${x.location ? `<span>📍 ${x.location}</span>` : ''}
@@ -345,7 +346,7 @@
     function shareXekie(id, title) {
       const url = `${window.location.origin}/xekie.html?id=${id}`;
       if (navigator.share) { navigator.share({ title: 'XEKIE — ' + title, url }).catch(() => {}); }
-      else { navigator.clipboard.writeText(url).then(() => { const toast = document.getElementById('share-toast'); toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500); }); }
+      else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
     }
 
     function openModal(xekieId, title, ownerId) {
