@@ -122,7 +122,6 @@
       <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
       <a href="messages.html" class="btn-nav">💬 Messages</a>
       <a href="seller.html" class="btn-nav" id="nav-profile">👤 Profile</a>
-      <a href="request.html" class="btn-nav primary">XEKIE it →</a>
       <button class="btn-nav" onclick="signOut()">Sign out</button>
     </div>
   </nav>
@@ -137,7 +136,6 @@
       <a href="request.html" class="btn-nav primary" style="align-self:flex-start;">+ XEKIE it</a>
     </div>
 
-    <!-- Push notification banner -->
     <div class="notif-banner" id="notif-banner" style="display:none;">
       <div class="notif-banner-text">
         <strong>🔔 Get notified instantly</strong> when a seller responds to your XEKIE — even when the site is closed.
@@ -217,9 +215,7 @@
     async function initNotifications() {
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
       const permission = Notification.permission;
-      if (permission === 'granted') {
-        document.getElementById('notif-banner').style.display = 'none';
-      } else if (permission === 'default') {
+      if (permission === 'default') {
         document.getElementById('notif-banner').style.display = 'flex';
       }
     }
@@ -248,7 +244,7 @@
         t.classList.add('show');
         setTimeout(() => { t.classList.remove('show'); t.textContent = 'Link copied! 🔗'; }, 3000);
       } catch(err) {
-        console.error('Push subscription error:', err);
+        console.error('Push error:', err);
         btn.disabled = false;
         btn.textContent = 'Enable Notifications';
       }
@@ -299,8 +295,6 @@
       document.getElementById('user-meta').textContent = 'Member since ' + joined.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
       if (joined < BETA_CUTOFF) document.getElementById('early-badge-container').innerHTML = '<div class="early-badge">⚡ Early Adopter</div>';
       document.getElementById('nav-profile').href = `seller.html?id=${session.user.id}`;
-
-      // Register service worker and check notification status
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(console.error);
       }
