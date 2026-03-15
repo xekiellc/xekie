@@ -101,6 +101,24 @@
     .btn-qr-close{margin-top:16px;width:100%;padding:10px;background:var(--black);color:white;border:none;border-radius:10px;font-family:var(--font-body);cursor:pointer;}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
+    .report-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center;padding:20px;}
+    .report-modal.open{display:flex;}
+    .report-box{background:var(--white);border-radius:20px;padding:36px;max-width:440px;width:100%;position:relative;}
+    .report-title{font-family:var(--font-display);font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-0.02em;}
+    .report-sub{font-size:14px;color:var(--mid);margin-bottom:20px;}
+    .report-reasons{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+    .report-reason{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;}
+    .report-reason:hover{border-color:var(--black);}
+    .report-reason.selected{border-color:#ef4444;background:#fff5f5;}
+    .report-reason label{font-size:14px;cursor:pointer;flex:1;}
+    .report-details{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:14px;color:var(--black);background:var(--white);outline:none;resize:vertical;min-height:72px;margin-bottom:14px;transition:border-color 0.2s;}
+    .report-details:focus{border-color:var(--black);}
+    .btn-report-submit{width:100%;padding:13px;background:#ef4444;color:white;border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
+    .btn-report-submit:hover{background:#dc2626;}
+    .btn-report-submit:disabled{background:#ccc;cursor:not-allowed;}
+    .report-msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;}
+    .report-msg.error{background:#FCEBEB;color:#A32D2D;display:block;}
+    .report-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -166,6 +184,24 @@
   </div>
 
   <div class="share-toast" id="share-toast">Link copied! 🔗</div>
+
+  <div class="report-modal" id="report-modal">
+    <div class="report-box">
+      <button style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);" onclick="closeReport()">✕</button>
+      <div class="report-title">🚩 Report this XEKIE</div>
+      <div class="report-sub">Help keep XEKIE safe. We'll review every report.</div>
+      <div class="report-reasons">
+        <div class="report-reason" onclick="selectReason(this, 'Prohibited item')"><label>🚫 Prohibited item</label></div>
+        <div class="report-reason" onclick="selectReason(this, 'Spam or fake listing')"><label>📢 Spam or fake listing</label></div>
+        <div class="report-reason" onclick="selectReason(this, 'Scam or fraud')"><label>💸 Scam or fraud</label></div>
+        <div class="report-reason" onclick="selectReason(this, 'Offensive content')"><label>⚠️ Offensive content</label></div>
+        <div class="report-reason" onclick="selectReason(this, 'Other')"><label>📝 Other</label></div>
+      </div>
+      <textarea class="report-details" id="report-details" placeholder="Any additional details? (optional)"></textarea>
+      <div class="report-msg" id="report-msg"></div>
+      <button class="btn-report-submit" id="btn-report-submit" onclick="submitReport()">Submit report</button>
+    </div>
+  </div>
 
   <footer>
     <div class="footer-inner">
@@ -278,6 +314,7 @@
           <div style="display:flex;gap:8px;margin-bottom:12px;">
             <button class="btn-save" id="btn-save" onclick="toggleSave()" style="flex:1;">🔖 Save XEKIE</button>
             <button class="btn-share-big" onclick="showQR()" style="flex:1;">📲 QR Code</button>
+            <button class="btn-share-big" onclick="openReport()" style="flex:1;color:#ef4444;border-color:rgba(239,68,68,0.3);">🚩 Report</button>
           </div>
           <div class="meta-row">
             <span>👁 ${x.view_count||0} views</span>
@@ -295,17 +332,9 @@
       checkSaved();
     }
 
-    function openLightbox(i) {
-      lightboxPhotos = currentXekie?.photos || [];
-      lightboxIndex = i;
-      document.getElementById('lightbox-img').src = lightboxPhotos[i];
-      document.getElementById('photo-lightbox').classList.add('open');
-    }
+    function openLightbox(i) { lightboxPhotos = currentXekie?.photos || []; lightboxIndex = i; document.getElementById('lightbox-img').src = lightboxPhotos[i]; document.getElementById('photo-lightbox').classList.add('open'); }
     function closeLightbox() { document.getElementById('photo-lightbox').classList.remove('open'); }
-    function lightboxNav(dir) {
-      lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length;
-      document.getElementById('lightbox-img').src = lightboxPhotos[lightboxIndex];
-    }
+    function lightboxNav(dir) { lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length; document.getElementById('lightbox-img').src = lightboxPhotos[lightboxIndex]; }
     document.getElementById('photo-lightbox').addEventListener('click', e => { if (e.target === document.getElementById('photo-lightbox')) closeLightbox(); });
 
     function openModal() {
@@ -327,18 +356,13 @@
       const msgEl = document.getElementById('modal-msg');
       if (!message) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Please write a message to the buyer.'; return; }
       btn.disabled = true; btn.textContent = 'Sending...';
-
-      // Save to offers table
       const { error } = await _sb.from('offers').insert({ xekie_id: xekieId, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
       if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send & open chat →'; return; }
-
-      // Seed first message to start a real chat thread
       const buyerId = currentXekie?.user_id;
       if (buyerId && buyerId !== currentUser.id) {
         const firstMsg = price ? `${message}\n\n💰 Asking price: $${Number(price).toLocaleString()}` : message;
         await _sb.from('messages').insert({ xekie_id: xekieId, sender_id: currentUser.id, recipient_id: buyerId, content: firstMsg });
       }
-
       msgEl.className='modal-msg success'; msgEl.style.display='block';
       msgEl.textContent='Sent! Opening your conversation...';
       btn.textContent='Sent ✓';
@@ -372,6 +396,40 @@
     }
     function closeQR() { document.getElementById('qr-modal').classList.remove('open'); }
     document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
+
+    let selectedReason = '';
+    function openReport() {
+      if (!currentUser) { window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href); return; }
+      selectedReason = '';
+      document.querySelectorAll('.report-reason').forEach(r => r.classList.remove('selected'));
+      document.getElementById('report-details').value = '';
+      document.getElementById('report-msg').className = 'report-msg';
+      document.getElementById('btn-report-submit').disabled = false;
+      document.getElementById('btn-report-submit').textContent = 'Submit report';
+      document.getElementById('report-modal').classList.add('open');
+    }
+    function closeReport() { document.getElementById('report-modal').classList.remove('open'); }
+    function selectReason(el, reason) {
+      selectedReason = reason;
+      document.querySelectorAll('.report-reason').forEach(r => r.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+    async function submitReport() {
+      if (!selectedReason) { const m = document.getElementById('report-msg'); m.className='report-msg error'; m.textContent='Please select a reason.'; return; }
+      const details = document.getElementById('report-details').value.trim();
+      const btn = document.getElementById('btn-report-submit');
+      btn.disabled = true; btn.textContent = 'Submitting...';
+      const { error } = await _sb.from('reports').insert({ reporter_id: currentUser.id, xekie_id: xekieId, reason: selectedReason, details: details || null, status: 'pending' });
+      if (error) { const m = document.getElementById('report-msg'); m.className='report-msg error'; m.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Submit report'; return; }
+      try {
+        await fetch('/.netlify/functions/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'report', to: 'zach@xekie.com', data: { xekieId, xekieTitle: currentXekie?.title, reason: selectedReason, details, reporterEmail: currentUser.email } }) });
+      } catch(e) {}
+      const m = document.getElementById('report-msg'); m.className='report-msg success'; m.textContent='Report submitted. Thank you for keeping XEKIE safe. ✓';
+      btn.textContent='Submitted ✓';
+      setTimeout(closeReport, 2000);
+    }
+    document.getElementById('report-modal').addEventListener('click', e => { if (e.target === document.getElementById('report-modal')) closeReport(); });
 
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (session) currentUser = session.user;
