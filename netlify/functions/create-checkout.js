@@ -1,8 +1,15 @@
 // create-checkout.js — creates a Stripe checkout session for promoted XEKIEs
 // Uses fetch directly — no npm packages needed
 
+const { rateLimit, getIP, limitedResponse } = require('./rate-limit');
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
+
+  // Rate limit: 10 checkout attempts per IP per 5 minutes
+  const ip = getIP(event);
+  const { limited } = rateLimit(ip, 'create-checkout', 10, 300000);
+  if (limited) return limitedResponse();
 
   let body;
   try { body = JSON.parse(event.body); } catch { return { statusCode: 400, body: 'Invalid JSON' }; }
