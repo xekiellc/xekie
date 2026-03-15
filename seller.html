@@ -204,8 +204,16 @@
     const params = new URLSearchParams(window.location.search);
     profileUserId = params.get('id');
 
-    const { data: { session } } = await supabase.auth.getSession();
-    currentUser = session?.user ?? null;
+    // Get session with a 3s timeout so we never hang
+    try {
+      const { data: { session } } = await Promise.race([
+        supabase.auth.getSession(),
+        new Promise(resolve => setTimeout(() => resolve({ data: { session: null } }), 3000))
+      ]);
+      currentUser = session?.user ?? null;
+    } catch(e) {
+      currentUser = null;
+    }
 
     if (currentUser) {
       document.getElementById('nav-login').style.display = 'none';
@@ -214,22 +222,25 @@
       document.getElementById('nav-profile').style.display = 'inline-flex';
     }
 
-    if (!profileUserId) {
-      if (currentUser) {
-        profileUserId = currentUser.id;
-      } else {
-        window.location.href = 'login.html';
-        return;
-      }
+    // If there's an ID in the URL, load that profile — no login required
+    if (profileUserId) {
+      isOwnProfile = currentUser?.id === profileUserId;
+      await loadProfile();
+      return;
     }
 
-    isOwnProfile = currentUser?.id === profileUserId;
-    await loadProfile();
+    // No ID in URL — need to be logged in to see own profile
+    if (currentUser) {
+      profileUserId = currentUser.id;
+      isOwnProfile = true;
+      await loadProfile();
+    } else {
+      window.location.href = 'login.html';
+    }
   }
 
   async function loadProfile() {
     try {
-      // Run all queries independently — don't let one failure block others
       const [ratingsRes, offersRes, verifiedRes, profileRes] = await Promise.all([
         supabase.from('ratings').select('stars, comment, xekie_id, created_at').eq('seller_id', profileUserId),
         supabase.from('offers').select('id').eq('seller_id', profileUserId),
@@ -237,7 +248,6 @@
         supabase.from('user_profiles').select('display_name, bio, created_at').eq('user_id', profileUserId).maybeSingle()
       ]);
 
-      // Always render — use empty arrays as fallback if queries errored
       renderProfile(
         profileRes.data || null,
         ratingsRes.data || [],
@@ -246,7 +256,6 @@
       );
     } catch (err) {
       console.error('loadProfile error:', err);
-      // Still try to render a basic profile rather than show not-found
       renderProfile(null, [], [], null);
     }
   }
