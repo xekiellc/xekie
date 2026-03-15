@@ -69,6 +69,12 @@
     .promoted-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;}
     .btn-delete{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:#A32D2D;border:1.5px solid rgba(163,45,45,0.2);cursor:pointer;transition:all 0.2s;}
     .btn-delete:hover{background:#FCEBEB;border-color:#A32D2D;}
+    .notif-banner{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+    .notif-banner-text{font-size:14px;color:var(--mid);}
+    .notif-banner-text strong{color:var(--black);font-weight:600;}
+    .btn-enable-notif{font-size:13px;font-weight:500;padding:8px 18px;border-radius:100px;background:var(--accent);color:var(--white);border:none;cursor:pointer;transition:all 0.2s;}
+    .btn-enable-notif:hover{opacity:0.88;}
+    .btn-enable-notif:disabled{background:#ccc;cursor:not-allowed;}
     .empty-state{text-align:center;padding:80px 20px;}
     .empty-icon{font-size:48px;margin-bottom:16px;}
     .empty-title{font-family:var(--font-display);font-size:24px;font-weight:700;margin-bottom:8px;}
@@ -130,6 +136,15 @@
       </div>
       <a href="request.html" class="btn-nav primary" style="align-self:flex-start;">+ XEKIE it</a>
     </div>
+
+    <!-- Push notification banner -->
+    <div class="notif-banner" id="notif-banner" style="display:none;">
+      <div class="notif-banner-text">
+        <strong>🔔 Get notified instantly</strong> when a seller responds to your XEKIE — even when the site is closed.
+      </div>
+      <button class="btn-enable-notif" id="btn-enable-notif" onclick="enableNotifications()">Enable Notifications</button>
+    </div>
+
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num" id="stat-xekies">—</div><div class="stat-label">Times XEKIE'd</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-offers">—</div><div class="stat-label">Responses received</div></div>
@@ -190,6 +205,54 @@
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null;
     const BETA_CUTOFF = new Date('2026-06-01');
+    const VAPID_PUBLIC_KEY = 'BMu4OTWBIY4cfPe6e2ZLfSr9w-kZy9tlkwN_CHfv4tPuXbhZvORDb-ihHNmvPagyWM-wTc7W2hYt7RLLcCN8qlM';
+
+    function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+      const rawData = window.atob(base64);
+      return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+    }
+
+    async function initNotifications() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+      const permission = Notification.permission;
+      if (permission === 'granted') {
+        document.getElementById('notif-banner').style.display = 'none';
+      } else if (permission === 'default') {
+        document.getElementById('notif-banner').style.display = 'flex';
+      }
+    }
+
+    async function enableNotifications() {
+      const btn = document.getElementById('btn-enable-notif');
+      btn.disabled = true; btn.textContent = 'Enabling...';
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          btn.textContent = 'Blocked — check browser settings';
+          return;
+        }
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+        });
+        await _sb.from('push_subscriptions').upsert({
+          user_id: currentUser.id,
+          subscription: sub.toJSON()
+        }, { onConflict: 'user_id' });
+        document.getElementById('notif-banner').style.display = 'none';
+        const t = document.getElementById('share-toast');
+        t.textContent = '🔔 Notifications enabled!';
+        t.classList.add('show');
+        setTimeout(() => { t.classList.remove('show'); t.textContent = 'Link copied! 🔗'; }, 3000);
+      } catch(err) {
+        console.error('Push subscription error:', err);
+        btn.disabled = false;
+        btn.textContent = 'Enable Notifications';
+      }
+    }
 
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
@@ -236,6 +299,12 @@
       document.getElementById('user-meta').textContent = 'Member since ' + joined.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
       if (joined < BETA_CUTOFF) document.getElementById('early-badge-container').innerHTML = '<div class="early-badge">⚡ Early Adopter</div>';
       document.getElementById('nav-profile').href = `seller.html?id=${session.user.id}`;
+
+      // Register service worker and check notification status
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(console.error);
+      }
+      initNotifications();
       loadDashboard();
     });
 
