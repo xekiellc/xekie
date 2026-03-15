@@ -1,7 +1,14 @@
+const { rateLimit, getIP, limitedResponse } = require('./rate-limit');
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
+
+  // Rate limit: 5 emails per IP per minute
+  const ip = getIP(event);
+  const { limited } = rateLimit(ip, 'send-email', 5, 60000);
+  if (limited) return limitedResponse();
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
   if (!RESEND_API_KEY) {
@@ -30,15 +37,13 @@ exports.handler = async (event) => {
 <tr><td align="center" style="padding:48px 20px 0;">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
   <tr><td style="padding-bottom:40px;text-align:center;">
-    <div style="font-size:36px;font-weight:900;letter-spacing:-0.04em;color:#fafaf8;line-height:1;">
-      <span style="color:#ff4d1c;">XE</span>KIE
-    </div>
+    <div style="font-size:36px;font-weight:900;letter-spacing:-0.04em;color:#fafaf8;line-height:1;"><span style="color:#ff4d1c;">XE</span>KIE</div>
     <div style="font-size:10px;letter-spacing:0.3em;color:#444;text-transform:uppercase;margin-top:6px;">TRADE DIFFERENT</div>
   </td></tr>
   <tr><td style="padding:0 0 20px 0;">
     <div style="font-size:13px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:#ff4d1c;margin-bottom:20px;">THE RETAIL REVOLUTION IS HERE</div>
     <div style="font-size:48px;font-weight:900;color:#fafaf8;line-height:1.05;letter-spacing:-0.03em;margin-bottom:24px;">For the first time in history,<br><span style="color:#ff4d1c;">YOU</span> set the terms.</div>
-    <div style="font-size:19px;font-weight:400;color:#888;line-height:1.6;margin-bottom:0;">Hi ${data.name ? `<strong style="color:#fafaf8;">${data.name}</strong>` : 'there'} — you just stepped into something that has never existed before.</div>
+    <div style="font-size:19px;font-weight:400;color:#888;line-height:1.6;">Hi ${data.name ? `<strong style="color:#fafaf8;">${data.name}</strong>` : 'there'} — you just stepped into something that has never existed before.</div>
   </td></tr>
   <tr><td style="padding:36px 0;"><div style="height:1px;background:linear-gradient(90deg,transparent,#333,transparent);"></div></td></tr>
   <tr><td style="padding-bottom:40px;">
@@ -47,9 +52,7 @@ exports.handler = async (event) => {
     <div style="font-size:18px;font-weight:700;color:#fafaf8;line-height:1.6;padding:24px;background:#111;border-radius:12px;border-left:4px solid #ff4d1c;margin-bottom:20px;">XEKIE flips the script. This is <span style="color:#ff4d1c;">demand-side retail</span> — where the buyer leads, and the market follows.</div>
     <div style="font-size:16px;color:#888;line-height:1.8;">You post what you want. You set your budget. You choose who to buy from.<br>Sellers <strong style="color:#fafaf8;">compete for your business.</strong> Not the other way around.</div>
   </td></tr>
-</table>
-</td></tr>
-</table>
+</table></td></tr></table>
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#ff4d1c;padding:0;">
 <tr><td align="center" style="padding:48px 20px;">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
@@ -58,9 +61,7 @@ exports.handler = async (event) => {
     <div style="font-size:38px;font-weight:900;color:#ffffff;letter-spacing:-0.03em;line-height:1.1;margin-bottom:16px;">The Retail Revolution</div>
     <div style="font-size:17px;color:rgba(255,255,255,0.85);line-height:1.6;max-width:440px;margin:0 auto;">An industry-first movement that puts power back in the hands of buyers — exactly where it belongs.</div>
   </td></tr>
-</table>
-</td></tr>
-</table>
+</table></td></tr></table>
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#111;padding:0;">
 <tr><td align="center" style="padding:48px 20px;">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
@@ -68,26 +69,20 @@ exports.handler = async (event) => {
     <div style="font-size:13px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:#ff4d1c;margin-bottom:12px;">HOW TO TRADE DIFFERENT</div>
     <div style="font-size:26px;font-weight:900;color:#fafaf8;letter-spacing:-0.02em;">Three steps. Zero compromise.</div>
   </td></tr>
-  <tr><td style="padding-bottom:20px;">
-    <table width="100%" cellpadding="0" cellspacing="0"><tr>
-      <td width="52" valign="top"><div style="width:44px;height:44px;background:#ff4d1c;border-radius:12px;text-align:center;line-height:44px;font-size:20px;font-weight:900;color:#fff;">1</div></td>
-      <td style="padding-left:16px;vertical-align:top;"><div style="font-size:17px;font-weight:800;color:#fafaf8;margin-bottom:4px;">Post Your XEKIE</div><div style="font-size:15px;color:#777;line-height:1.6;">Tell the market exactly what you want. Item, condition, budget, location. Your terms. Your rules.</div></td>
-    </tr></table>
-  </td></tr>
-  <tr><td style="padding-bottom:20px;">
-    <table width="100%" cellpadding="0" cellspacing="0"><tr>
-      <td width="52" valign="top"><div style="width:44px;height:44px;background:#ff4d1c;border-radius:12px;text-align:center;line-height:44px;font-size:20px;font-weight:900;color:#fff;">2</div></td>
-      <td style="padding-left:16px;vertical-align:top;"><div style="font-size:17px;font-weight:800;color:#fafaf8;margin-bottom:4px;">Sellers Come to You</div><div style="font-size:15px;color:#777;line-height:1.6;">Motivated sellers browse your XEKIE and respond with their best offers. No searching. The market moves to meet you.</div></td>
-    </tr></table>
-  </td></tr>
-  <tr><td style="padding-bottom:40px;">
-    <table width="100%" cellpadding="0" cellspacing="0"><tr>
-      <td width="52" valign="top"><div style="width:44px;height:44px;background:#ff4d1c;border-radius:12px;text-align:center;line-height:44px;font-size:20px;font-weight:900;color:#fff;">3</div></td>
-      <td style="padding-left:16px;vertical-align:top;"><div style="font-size:17px;font-weight:800;color:#fafaf8;margin-bottom:4px;">You Choose. You Win.</div><div style="font-size:15px;color:#777;line-height:1.6;">Review every offer. Pick the deal that's right for you. Connect directly. No middleman. No markup. Just results.</div></td>
-    </tr></table>
-  </td></tr>
+  <tr><td style="padding-bottom:20px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>
+    <td width="52" valign="top"><div style="width:44px;height:44px;background:#ff4d1c;border-radius:12px;text-align:center;line-height:44px;font-size:20px;font-weight:900;color:#fff;">1</div></td>
+    <td style="padding-left:16px;vertical-align:top;"><div style="font-size:17px;font-weight:800;color:#fafaf8;margin-bottom:4px;">Post Your XEKIE</div><div style="font-size:15px;color:#777;line-height:1.6;">Tell the market exactly what you want. Item, condition, budget, location. Your terms. Your rules.</div></td>
+  </tr></table></td></tr>
+  <tr><td style="padding-bottom:20px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>
+    <td width="52" valign="top"><div style="width:44px;height:44px;background:#ff4d1c;border-radius:12px;text-align:center;line-height:44px;font-size:20px;font-weight:900;color:#fff;">2</div></td>
+    <td style="padding-left:16px;vertical-align:top;"><div style="font-size:17px;font-weight:800;color:#fafaf8;margin-bottom:4px;">Sellers Come to You</div><div style="font-size:15px;color:#777;line-height:1.6;">Motivated sellers respond with their best offers. No searching. The market moves to meet you.</div></td>
+  </tr></table></td></tr>
+  <tr><td style="padding-bottom:40px;"><table width="100%" cellpadding="0" cellspacing="0"><tr>
+    <td width="52" valign="top"><div style="width:44px;height:44px;background:#ff4d1c;border-radius:12px;text-align:center;line-height:44px;font-size:20px;font-weight:900;color:#fff;">3</div></td>
+    <td style="padding-left:16px;vertical-align:top;"><div style="font-size:17px;font-weight:800;color:#fafaf8;margin-bottom:4px;">You Choose. You Win.</div><div style="font-size:15px;color:#777;line-height:1.6;">Review every offer. Pick the deal that's right for you. No middleman. No markup. Just results.</div></td>
+  </tr></table></td></tr>
   <tr><td style="text-align:center;padding-bottom:16px;">
-    <a href="https://xekie.com/request.html" style="display:inline-block;background:#ff4d1c;color:#ffffff;text-decoration:none;padding:18px 44px;border-radius:10px;font-size:17px;font-weight:800;letter-spacing:-0.01em;">Post Your First XEKIE →</a>
+    <a href="https://xekie.com/request.html" style="display:inline-block;background:#ff4d1c;color:#ffffff;text-decoration:none;padding:18px 44px;border-radius:10px;font-size:17px;font-weight:800;">Post Your First XEKIE →</a>
   </td></tr>
   <tr><td style="text-align:center;padding-bottom:40px;"><div style="font-size:13px;color:#555;">It takes 60 seconds. Sellers are waiting.</div></td></tr>
   <tr><td style="padding-bottom:36px;"><div style="height:1px;background:linear-gradient(90deg,transparent,#333,transparent);"></div></td></tr>
@@ -96,24 +91,18 @@ exports.handler = async (event) => {
     <div style="font-size:14px;color:#555;letter-spacing:0.15em;text-transform:uppercase;">Welcome to demand-side retail.</div>
   </td></tr>
   <tr><td style="border-top:1px solid #222;padding-top:24px;text-align:center;">
-    <div style="font-size:20px;font-weight:900;letter-spacing:-0.03em;color:#fafaf8;margin-bottom:4px;"><span style="color:#ff4d1c;">XE</span>KIE</div>
+    <div style="font-size:20px;font-weight:900;color:#fafaf8;margin-bottom:4px;"><span style="color:#ff4d1c;">XE</span>KIE</div>
     <div style="font-size:10px;letter-spacing:0.25em;color:#444;text-transform:uppercase;margin-bottom:16px;">TRADE DIFFERENT</div>
     <div style="font-size:12px;color:#444;line-height:1.8;">Questions? <a href="mailto:hello@xekie.com" style="color:#ff4d1c;text-decoration:none;">hello@xekie.com</a><br><a href="https://xekie.com/privacy.html" style="color:#444;text-decoration:none;">Privacy</a> &nbsp;·&nbsp; <a href="https://xekie.com/terms.html" style="color:#444;text-decoration:none;">Terms</a><br><br>© 2025 XEKIE LLC</div>
   </td></tr>
-</table>
-</td></tr>
-</table>
-</body>
-</html>`;
+</table></td></tr></table>
+</body></html>`;
 
   } else if (type === 'offer') {
     subject = `New offer on your XEKIE: "${data.xekieTitle}"`;
-    html = `<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+    html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f4f2ec;font-family:Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f2ec;padding:40px 20px;">
-<tr><td align="center">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f2ec;padding:40px 20px;"><tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 <tr><td style="background:#0a0a0a;border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
   <div style="font-size:28px;font-weight:900;color:#fafaf8;letter-spacing:-0.03em;"><span style="color:#ff4d1c;">XE</span>KIE</div>
@@ -135,27 +124,16 @@ exports.handler = async (event) => {
   <div style="text-align:center;margin:24px 0;">
     <a href="https://xekie.com/messages.html" style="display:inline-block;background:#ff4d1c;color:#fff;text-decoration:none;padding:15px 34px;border-radius:10px;font-size:15px;font-weight:700;">View response →</a>
   </div>
-  <div style="border-top:1px solid rgba(10,10,10,0.1);padding-top:20px;">
-    <p style="font-size:13px;color:#999;margin:0;">Questions? <a href="mailto:hello@xekie.com" style="color:#ff4d1c;">hello@xekie.com</a></p>
-  </div>
+  <p style="font-size:13px;color:#999;margin:0;">Questions? <a href="mailto:hello@xekie.com" style="color:#ff4d1c;">hello@xekie.com</a></p>
 </td></tr>
-<tr><td style="padding:20px 0;text-align:center;">
-  <p style="font-size:12px;color:#999;margin:0;">© 2025 XEKIE LLC · <a href="https://xekie.com/privacy.html" style="color:#999;">Privacy</a> · <a href="https://xekie.com/terms.html" style="color:#999;">Terms</a></p>
-</td></tr>
-</table>
-</td></tr>
-</table>
-</body>
-</html>`;
+<tr><td style="padding:20px 0;text-align:center;"><p style="font-size:12px;color:#999;margin:0;">© 2025 XEKIE LLC · <a href="https://xekie.com/privacy.html" style="color:#999;">Privacy</a> · <a href="https://xekie.com/terms.html" style="color:#999;">Terms</a></p></td></tr>
+</table></td></tr></table></body></html>`;
 
   } else if (type === 'expiring') {
     subject = `Your XEKIE expires in 24 hours: "${data.xekieTitle}"`;
-    html = `<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+    html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f4f2ec;font-family:Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f2ec;padding:40px 20px;">
-<tr><td align="center">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f2ec;padding:40px 20px;"><tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 <tr><td style="background:#0a0a0a;border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
   <div style="font-size:28px;font-weight:900;color:#fafaf8;letter-spacing:-0.03em;"><span style="color:#ff4d1c;">XE</span>KIE</div>
@@ -173,18 +151,10 @@ exports.handler = async (event) => {
     <a href="https://xekie.com/dashboard.html" style="display:inline-block;background:#ff4d1c;color:#fff;text-decoration:none;padding:15px 28px;border-radius:10px;font-size:15px;font-weight:700;margin-right:10px;">Renew my XEKIE →</a>
     <a href="https://xekie.com/dashboard.html" style="display:inline-block;background:#f4f2ec;color:#0a0a0a;text-decoration:none;padding:15px 28px;border-radius:10px;font-size:15px;font-weight:600;border:1px solid rgba(10,10,10,0.15);">Mark fulfilled</a>
   </div>
-  <div style="border-top:1px solid rgba(10,10,10,0.1);padding-top:20px;">
-    <p style="font-size:13px;color:#999;margin:0;">Questions? <a href="mailto:hello@xekie.com" style="color:#ff4d1c;">hello@xekie.com</a></p>
-  </div>
+  <p style="font-size:13px;color:#999;margin:0;">Questions? <a href="mailto:hello@xekie.com" style="color:#ff4d1c;">hello@xekie.com</a></p>
 </td></tr>
-<tr><td style="padding:20px 0;text-align:center;">
-  <p style="font-size:12px;color:#999;margin:0;">© 2025 XEKIE LLC · <a href="https://xekie.com/privacy.html" style="color:#999;">Privacy</a> · <a href="https://xekie.com/terms.html" style="color:#999;">Terms</a></p>
-</td></tr>
-</table>
-</td></tr>
-</table>
-</body>
-</html>`;
+<tr><td style="padding:20px 0;text-align:center;"><p style="font-size:12px;color:#999;margin:0;">© 2025 XEKIE LLC · <a href="https://xekie.com/privacy.html" style="color:#999;">Privacy</a> · <a href="https://xekie.com/terms.html" style="color:#999;">Terms</a></p></td></tr>
+</table></td></tr></table></body></html>`;
 
   } else if (type === 'report') {
     const { xekieId, xekieTitle, reason, details, reporterEmail } = data;
