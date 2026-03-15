@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XEKIE — Just XEKIE It.</title>
-  <meta name="description" content="Can't find it? Just XEKIE it. Post what you want to buy and let sellers come to you.">
+  <title>XEKIE — Trade Different</title>
+  <meta name="description" content="The demand-side marketplace. Post what you want to buy. Let sellers come to you.">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -42,7 +44,7 @@
     @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
     .hero-title { font-family: var(--font-display); font-weight: 800; font-size: clamp(52px, 9vw, 100px); line-height: 0.95; letter-spacing: -0.04em; color: var(--black); margin-bottom: 28px; animation: fadeUp 0.6s 0.1s ease both; }
     .hero-title .xe { color: var(--accent); }
-    .hero-title .line2 { display: block; color: var(--accent); font-size: 0.45em; font-weight: 800; letter-spacing: -0.02em; margin-top: 12px; }
+    .hero-title .line2 { display: block; color: var(--mid); font-size: 0.55em; font-weight: 700; letter-spacing: -0.02em; margin-top: 8px; }
     .hero-sub { font-size: clamp(17px, 2.5vw, 22px); font-weight: 300; color: var(--mid); line-height: 1.5; max-width: 520px; margin: 0 auto 40px; animation: fadeUp 0.6s 0.2s ease both; }
     .hero-sub strong { font-weight: 500; color: var(--black); }
     .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.6s 0.3s ease both; }
@@ -74,7 +76,7 @@
     .why-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.02em; }
     .why-desc { font-size: 14px; font-weight: 300; color: #666; line-height: 1.6; }
     .contrast { background: var(--accent); padding: 80px 24px; text-align: center; }
-    .contrast-title { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 6vw, 72px); letter-spacing: -0.04em; color: var(--white); line-height: 1; margin-bottom: 16px; }
+    .contrast-title { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 6vw, 64px); letter-spacing: -0.04em; color: var(--white); line-height: 1; margin-bottom: 16px; }
     .contrast-sub { font-size: 18px; font-weight: 300; color: rgba(255,255,255,0.75); margin-bottom: 36px; }
     .contrast .btn { font-size: 16px; padding: 16px 36px; background: var(--white); color: var(--black) !important; border: none !important; }
     .contrast .btn:hover { background: var(--black) !important; color: var(--white) !important; transform: translateY(-2px); }
@@ -158,7 +160,7 @@
         <div class="step">
           <div class="step-num">01</div>
           <div class="step-title">XEKIE what you want</div>
-          <div class="step-desc">Can't find it? XEKIE it. Tell sellers exactly what you want — item, condition, budget, location. Be as specific as you like.</div>
+          <div class="step-desc">Can't find it? XEKIE it. Tell sellers exactly what you want — item, condition, budget, location.</div>
           <div class="step-accent">📝</div>
         </div>
         <div class="step">
@@ -196,12 +198,12 @@
         <div class="why-item">
           <div class="why-icon">🔍</div>
           <div class="why-title">Find the unfindable</div>
-          <div class="why-desc">Looking for a first-edition book? A vintage guitar? A rare card? XEKIE it — if someone has it, they'll find you.</div>
+          <div class="why-desc">Post for rare, specific, or hard-to-find items. If someone has it, they'll find your XEKIE.</div>
         </div>
         <div class="why-item">
           <div class="why-icon">🤝</div>
           <div class="why-title">Local or anywhere</div>
-          <div class="why-desc">XEKIE locally in your city or open it up to sellers everywhere. Your XEKIE, your rules.</div>
+          <div class="why-desc">Buy local in your city or open it up to sellers everywhere. Your XEKIE, your rules.</div>
         </div>
       </div>
     </div>
@@ -216,8 +218,8 @@
   <section class="section recent">
     <div class="section-inner">
       <div class="section-label">Live on XEKIE</div>
-      <h2 class="section-title">People are XEKIE'ing right now</h2>
-      <p class="section-sub">Real buyers, real requests — find your next sale.</p>
+      <h2 class="section-title">Recent XEKIEs</h2>
+      <p class="section-sub">Real buyers, real requests — right now.</p>
       <div class="xekie-grid" id="recent-feed">
         <div class="feed-loading">Loading XEKIEs...</div>
       </div>
@@ -238,7 +240,7 @@
           <div class="footer-col-title">Platform</div>
           <a href="radar.html">Browse XEKIEs</a>
           <a href="categories.html">Categories</a>
-          <a href="request.html">XEKIE it</a>
+          <a href="request.html">Post a XEKIE</a>
           <a href="notifications.html">Seller Alerts</a>
           <a href="login.html">Sign in</a>
           <a href="dashboard.html">Dashboard</a>
@@ -257,7 +259,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-legal">© 2025 XEKIE LLC. All rights reserved. XEKIE is a platform connecting buyers and sellers. We are not responsible for the quality, safety, or legality of items listed, the truth or accuracy of listings, the ability of sellers to sell items, or the ability of buyers to pay for items.</div>
+      <div class="footer-legal">© 2025 XEKIE LLC. All rights reserved. XEKIE is a platform connecting buyers and sellers. We are not responsible for the quality, safety, or legality of items listed.</div>
       <div class="footer-copy">Akron, OH 🔶</div>
     </div>
   </footer>
@@ -290,7 +292,7 @@
     async function loadRecent() {
       const { data } = await _sb.from('xekies').select('*').eq('is_fulfilled', false).order('created_at', { ascending: false }).limit(6);
       const feed = document.getElementById('recent-feed');
-      if (!data || !data.length) { feed.innerHTML = '<div class="feed-loading">No XEKIEs yet — be the first to XEKIE it!</div>'; return; }
+      if (!data || !data.length) { feed.innerHTML = '<div class="feed-loading">No XEKIEs yet — be the first to post!</div>'; return; }
       const ids = data.map(x => x.id);
       const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
       const offerCounts = {};
@@ -300,6 +302,7 @@
         const cnt = offerCounts[x.id] || 0;
         const isPromoted = x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date();
         const isEarly = new Date(x.created_at) < BETA_CUTOFF;
+        const photoThumb = x.photos && x.photos.length ? `<img src="${x.photos[0]}" style="width:100%;height:140px;object-fit:cover;border-radius:10px;margin-bottom:12px;" loading="lazy" />` : '';
         return `
         <a href="xekie.html?id=${x.id}" style="text-decoration:none;color:inherit;">
           <div class="xekie-card" style="${isPromoted ? 'border:2px solid #7c3aed;background:linear-gradient(135deg,#faf5ff,#fff);' : ''}">
@@ -308,6 +311,7 @@
               ${isEarly ? '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;">⚡ Early Adopter</span>' : ''}
               ${x.category ? `<div class="xcard-cat" style="margin-bottom:0;">${x.category}</div>` : ''}
             </div>
+            ${photoThumb}
             <div class="xcard-title">${x.title}</div>
             ${x.description ? `<div class="xcard-desc">${x.description}</div>` : ''}
             <div class="xcard-footer">
