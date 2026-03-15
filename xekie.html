@@ -79,7 +79,8 @@
     .modal-overlay.open{display:flex;}
     .modal{background:var(--white);border-radius:20px;padding:36px;max-width:480px;width:100%;position:relative;}
     .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);}
-    .modal-title{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-0.02em;margin-bottom:20px;}
+    .modal-title{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+    .modal-sub{font-size:14px;color:var(--mid);margin-bottom:20px;}
     .modal label{display:block;font-size:13px;font-weight:500;margin-bottom:7px;color:var(--black);}
     .modal input,.modal textarea{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;color:var(--black);background:var(--white);outline:none;margin-bottom:16px;transition:border-color 0.2s;}
     .modal input:focus,.modal textarea:focus{border-color:var(--black);}
@@ -135,15 +136,16 @@
     <div class="modal">
       <button class="modal-close" onclick="closeModal()">✕</button>
       <h2 class="modal-title">Send your offer</h2>
+      <p class="modal-sub">Your message opens a direct chat with the buyer.</p>
       <label>Your message to the buyer</label>
       <textarea id="modal-message" placeholder="Hi! I have exactly what you're looking for..."></textarea>
-      <label>Your asking price</label>
+      <label>Your asking price <span style="font-size:12px;font-weight:400;color:var(--mid);">Optional</span></label>
       <div class="modal-budget-row">
         <div class="modal-prefix">$</div>
         <input type="number" id="modal-price" class="modal-prefix-input" placeholder="e.g. 650" />
       </div>
       <div class="modal-msg" id="modal-msg"></div>
-      <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send response</button>
+      <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send & open chat →</button>
     </div>
   </div>
 
@@ -188,7 +190,6 @@
     const BETA_CUTOFF = new Date('2026-06-01');
     let currentXekie = null, currentUser = null;
     let lightboxPhotos = [], lightboxIndex = 0;
-
     const params = new URLSearchParams(window.location.search);
     const xekieId = params.get('id');
 
@@ -241,16 +242,10 @@
         else expiryDisplay = `<span>⏱ ${Math.floor(hoursLeft/24)} days left</span>`;
       }
 
-      // Build photo gallery
       let photoGallery = '';
       if (x.photos && x.photos.length) {
         const cls = x.photos.length === 1 ? 'single' : x.photos.length === 3 ? 'three' : '';
-        photoGallery = `<div class="photo-gallery ${cls}">
-          ${x.photos.map((url, i) => `
-            <div class="photo-item" onclick="openLightbox(${i})">
-              <img src="${url}" alt="Photo ${i+1}" loading="lazy" />
-            </div>`).join('')}
-        </div>`;
+        photoGallery = `<div class="photo-gallery ${cls}">${x.photos.map((url, i) => `<div class="photo-item" onclick="openLightbox(${i})"><img src="${url}" alt="Photo ${i+1}" loading="lazy" /></div>`).join('')}</div>`;
       }
 
       document.getElementById('content').innerHTML = `
@@ -320,7 +315,7 @@
       document.getElementById('modal-msg').className = 'modal-msg';
       document.getElementById('modal-msg').style.display = 'none';
       document.getElementById('modal-submit').disabled = false;
-      document.getElementById('modal-submit').textContent = 'Send response';
+      document.getElementById('modal-submit').textContent = 'Send & open chat →';
       document.getElementById('modal-overlay').classList.add('open');
     }
     function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
@@ -332,9 +327,23 @@
       const msgEl = document.getElementById('modal-msg');
       if (!message) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Please write a message to the buyer.'; return; }
       btn.disabled = true; btn.textContent = 'Sending...';
+
+      // Save to offers table
       const { error } = await _sb.from('offers').insert({ xekie_id: xekieId, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
-      if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send response'; }
-      else { msgEl.className='modal-msg success'; msgEl.style.display='block'; msgEl.textContent='Response sent! The buyer will be notified. ✓'; btn.textContent='Sent ✓'; setTimeout(closeModal, 2000); }
+      if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send & open chat →'; return; }
+
+      // Seed first message to start a real chat thread
+      const buyerId = currentXekie?.user_id;
+      if (buyerId && buyerId !== currentUser.id) {
+        const firstMsg = price ? `${message}\n\n💰 Asking price: $${Number(price).toLocaleString()}` : message;
+        await _sb.from('messages').insert({ xekie_id: xekieId, sender_id: currentUser.id, recipient_id: buyerId, content: firstMsg });
+      }
+
+      msgEl.className='modal-msg success'; msgEl.style.display='block';
+      msgEl.textContent='Sent! Opening your conversation...';
+      btn.textContent='Sent ✓';
+      if (buyerId) setTimeout(() => { window.location.href = `messages.html?xekie=${xekieId}&other=${buyerId}`; }, 1200);
+      else setTimeout(closeModal, 2000);
     }
 
     function shareThis() {
@@ -358,8 +367,7 @@
       localStorage.setItem('savedXekies', JSON.stringify(saved));
     }
     function showQR() {
-      const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(window.location.href);
-      document.getElementById('qr-code').innerHTML = `<img src="${qrUrl}" style="width:200px;height:200px;border-radius:12px;" alt="QR Code" />`;
+      document.getElementById('qr-code').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.href)}" style="width:200px;height:200px;border-radius:12px;" />`;
       document.getElementById('qr-modal').classList.add('open');
     }
     function closeQR() { document.getElementById('qr-modal').classList.remove('open'); }
