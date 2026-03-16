@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE Pulse — Live Demand Feed</title>
+  <meta name="description" content="Real-time demand signals from XEKIE. See what buyers want right now, in your city and everywhere.">
+  <meta property="og:title" content="XEKIE Pulse — What people want right now">
+  <meta property="og:description" content="Live demand signals. Real buyers. Real budgets. No fluff.">
+  <meta property="og:image" content="https://xekie.com/icon-180x180.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff4d1c">
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;
+      --accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.1);
+      --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+    }
+    body{font-family:var(--font-body);background:var(--black);color:var(--white);min-height:100vh;}
+
+    /* NAV */
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.06);background:var(--black);position:sticky;top:0;z-index:100;}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--white);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:#444;font-family:var(--font-body);text-transform:uppercase;}
+    .nav-right{display:flex;align-items:center;gap:12px;}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid rgba(255,255,255,0.12);background:transparent;color:#888;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-nav:hover{border-color:var(--white);color:var(--white);}
+    .btn-nav.primary{background:var(--accent);color:var(--white);border-color:transparent;}
+    .btn-nav.primary:hover{background:#e03a0a;}
+
+    /* HERO */
+    .pulse-hero{padding:64px 40px 48px;text-align:center;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,0.06);}
+    .pulse-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,77,28,0.12) 0%,transparent 70%);}
+    .pulse-hero-content{position:relative;z-index:1;max-width:680px;margin:0 auto;}
+    .pulse-live-badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);background:rgba(255,77,28,0.12);border:1px solid rgba(255,77,28,0.25);padding:6px 16px;border-radius:100px;margin-bottom:24px;}
+    .pulse-live-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:livePulse 1.5s infinite;}
+    @keyframes livePulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,77,28,0.4)}70%{box-shadow:0 0 0 8px rgba(255,77,28,0)}}
+    .pulse-title{font-family:var(--font-display);font-size:clamp(40px,6vw,72px);font-weight:800;letter-spacing:-0.04em;line-height:1;margin-bottom:16px;}
+    .pulse-title .xe{color:var(--accent);}
+    .pulse-sub{font-size:18px;font-weight:300;color:#666;line-height:1.5;margin-bottom:32px;}
+    .pulse-stats{display:flex;gap:0;justify-content:center;flex-wrap:wrap;margin-bottom:0;}
+    .pulse-stat{padding:12px 32px;border-right:1px solid rgba(255,255,255,0.08);}
+    .pulse-stat:last-child{border-right:none;}
+    .pulse-stat-num{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--accent);}
+    .pulse-stat-label{font-size:11px;color:#444;text-transform:uppercase;letter-spacing:0.1em;margin-top:2px;}
+
+    /* FILTERS */
+    .pulse-filters{padding:20px 40px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#0d0d0d;position:sticky;top:64px;z-index:50;}
+    .filter-label{font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#444;margin-right:4px;}
+    .filter-btn{font-size:13px;font-weight:500;padding:6px 14px;border-radius:100px;border:1.5px solid rgba(255,255,255,0.08);background:transparent;color:#666;cursor:pointer;transition:all 0.2s;}
+    .filter-btn:hover{border-color:rgba(255,255,255,0.2);color:#ccc;}
+    .filter-btn.active{background:var(--accent);color:var(--white);border-color:transparent;}
+    .filter-divider{width:1px;height:20px;background:rgba(255,255,255,0.08);margin:0 4px;}
+    .filter-search{padding:7px 16px;border:1.5px solid rgba(255,255,255,0.08);border-radius:100px;font-family:var(--font-body);font-size:13px;color:var(--white);background:rgba(255,255,255,0.04);outline:none;width:200px;transition:all 0.2s;}
+    .filter-search:focus{border-color:var(--accent);background:rgba(255,77,28,0.05);}
+    .filter-search::placeholder{color:#444;}
+    .sort-select{padding:7px 14px;border:1.5px solid rgba(255,255,255,0.08);border-radius:100px;font-family:var(--font-body);font-size:13px;color:#888;background:rgba(255,255,255,0.04);outline:none;cursor:pointer;}
+    .sort-select option{background:#1a1a1a;color:var(--white);}
+
+    /* MAIN LAYOUT */
+    .pulse-layout{display:grid;grid-template-columns:1fr 320px;gap:0;min-height:calc(100vh - 64px);max-width:1300px;margin:0 auto;}
+    .pulse-feed{padding:24px 32px;border-right:1px solid rgba(255,255,255,0.06);}
+    .pulse-sidebar{padding:24px;position:sticky;top:128px;height:fit-content;}
+
+    /* FEED ITEMS */
+    .feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+    .feed-title{font-family:var(--font-display);font-size:16px;font-weight:700;color:#888;letter-spacing:-0.01em;}
+    .feed-count{font-size:13px;color:#444;}
+    .pulse-item{background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:22px 24px;margin-bottom:12px;cursor:pointer;transition:all 0.2s;display:block;text-decoration:none;color:inherit;position:relative;overflow:hidden;}
+    .pulse-item:hover{border-color:rgba(255,77,28,0.3);background:#161616;transform:translateY(-1px);}
+    .pulse-item.hot{border-color:rgba(255,77,28,0.4);background:linear-gradient(135deg,#161616,#1a0f0a);}
+    .pulse-item.hot::before{content:'🔥 HOT';position:absolute;top:12px;right:12px;font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--accent);background:rgba(255,77,28,0.15);padding:3px 8px;border-radius:100px;border:1px solid rgba(255,77,28,0.3);}
+    .pulse-item.new-item{animation:slideIn 0.4s ease both;}
+    @keyframes slideIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+    .pulse-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
+    .pulse-item-title{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.02em;color:var(--white);line-height:1.2;flex:1;}
+    .pulse-item-budget{font-family:var(--font-display);font-size:17px;font-weight:800;color:var(--accent);white-space:nowrap;}
+    .pulse-item-desc{font-size:14px;font-weight:300;color:#555;line-height:1.5;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .pulse-item-footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .pulse-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 10px;border-radius:100px;background:rgba(255,255,255,0.05);color:#666;border:1px solid rgba(255,255,255,0.06);}
+    .pulse-pill.accent{background:rgba(255,77,28,0.1);color:var(--accent);border-color:rgba(255,77,28,0.2);}
+    .pulse-pill.green{background:rgba(34,197,94,0.1);color:#22c55e;border-color:rgba(34,197,94,0.2);}
+    .pulse-item-time{font-size:11px;color:#333;margin-left:auto;}
+    .respond-btn{font-size:12px;font-weight:600;padding:5px 14px;border-radius:100px;background:var(--accent);color:white;border:none;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+    .respond-btn:hover{background:#e03a0a;transform:scale(1.03);}
+
+    /* NEW ITEM TOAST */
+    .new-item-toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:var(--accent);color:white;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:600;z-index:200;opacity:0;transition:opacity 0.3s;pointer-events:none;cursor:pointer;}
+    .new-item-toast.show{opacity:1;pointer-events:auto;}
+
+    /* EMPTY / LOADING */
+    .feed-empty{text-align:center;padding:80px 20px;color:#444;}
+    .feed-empty-icon{font-size:40px;margin-bottom:12px;}
+    .feed-loading{display:flex;flex-direction:column;gap:12px;}
+    .skeleton{background:linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:16px;height:100px;}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* SIDEBAR */
+    .sidebar-section{margin-bottom:28px;}
+    .sidebar-title{font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#444;margin-bottom:14px;}
+    .sidebar-stat{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+    .sidebar-stat:last-child{border-bottom:none;}
+    .sidebar-stat-label{font-size:13px;color:#666;}
+    .sidebar-stat-value{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--accent);}
+    .trending-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:color 0.15s;}
+    .trending-item:last-child{border-bottom:none;}
+    .trending-item:hover .trending-item-name{color:var(--white);}
+    .trending-rank{font-family:var(--font-display);font-size:16px;font-weight:800;color:rgba(255,77,28,0.3);width:20px;}
+    .trending-item-name{font-size:13px;color:#888;flex:1;}
+    .trending-item-count{font-size:12px;color:var(--accent);font-weight:600;}
+    .geo-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+    .geo-item:last-child{border-bottom:none;}
+    .geo-name{font-size:13px;color:#666;flex:1;}
+    .geo-bar-wrap{width:60px;height:3px;background:rgba(255,255,255,0.05);border-radius:100px;overflow:hidden;}
+    .geo-bar-fill{height:100%;background:var(--accent);border-radius:100px;}
+    .geo-count{font-size:12px;color:#444;}
+    .sidebar-cta{background:linear-gradient(135deg,rgba(255,77,28,0.15),rgba(255,140,0,0.1));border:1px solid rgba(255,77,28,0.25);border-radius:16px;padding:20px;text-align:center;}
+    .sidebar-cta-title{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:6px;}
+    .sidebar-cta-sub{font-size:13px;color:#666;margin-bottom:14px;line-height:1.5;}
+    .sidebar-cta-btn{display:block;width:100%;padding:10px;background:var(--accent);color:white;border:none;border-radius:10px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;transition:background 0.2s;}
+    .sidebar-cta-btn:hover{background:#e03a0a;}
+
+    /* BUDGET TICKER — scrolling demand signal */
+    .demand-ticker{background:#0d0d0d;border-top:1px solid rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.04);padding:10px 0;overflow:hidden;position:relative;}
+    .ticker-inner{display:flex;gap:32px;animation:ticker 30s linear infinite;white-space:nowrap;}
+    .ticker-inner:hover{animation-play-state:paused;}
+    @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#444;}
+    .ticker-item strong{color:#666;}
+    .ticker-item .t-budget{color:var(--accent);font-weight:600;}
+    .ticker-item .t-dot{width:3px;height:3px;background:#333;border-radius:50%;}
+
+    footer{background:#000;padding:32px 40px;border-top:1px solid rgba(255,255,255,0.04);text-align:center;}
+    .footer-logo{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--white);margin-bottom:4px;}
+    .footer-logo .xe{color:var(--accent);}
+    .footer-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:12px;}
+    .footer-links a{font-size:12px;color:#333;text-decoration:none;}
+    .footer-links a:hover{color:var(--white);}
+
+    @media(max-width:900px){
+      .pulse-layout{grid-template-columns:1fr;}
+      .pulse-sidebar{display:none;}
+      .pulse-filters{padding:16px 20px;}
+      nav{padding:0 20px;}
+      .pulse-hero{padding:40px 20px 32px;}
+      .pulse-feed{padding:16px;}
+      .pulse-stat{padding:10px 18px;}
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Pulse</span>
+    </a>
+    <div class="nav-right">
+      <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
+      <a href="dashboard.html" class="btn-nav">Dashboard</a>
+      <a href="request.html" class="btn-nav primary">XEKIE it →</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="pulse-hero">
+    <div class="pulse-hero-bg"></div>
+    <div class="pulse-hero-content">
+      <div class="pulse-live-badge">
+        <div class="pulse-live-dot"></div>
+        Live Demand Feed
+      </div>
+      <h1 class="pulse-title"><span class="xe">XE</span>KIE Pulse</h1>
+      <p class="pulse-sub">Real buyers. Real budgets. What people want — right now.</p>
+      <div class="pulse-stats">
+        <div class="pulse-stat">
+          <div class="pulse-stat-num" id="pulse-stat-active">—</div>
+          <div class="pulse-stat-label">Active XEKIEs</div>
+        </div>
+        <div class="pulse-stat">
+          <div class="pulse-stat-num" id="pulse-stat-budget">—</div>
+          <div class="pulse-stat-label">Avg Budget</div>
+        </div>
+        <div class="pulse-stat">
+          <div class="pulse-stat-num" id="pulse-stat-today">—</div>
+          <div class="pulse-stat-label">Posted Today</div>
+        </div>
+        <div class="pulse-stat">
+          <div class="pulse-stat-num" id="pulse-stat-cities">—</div>
+          <div class="pulse-stat-label">Cities</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEMAND TICKER -->
+  <div class="demand-ticker">
+    <div class="ticker-inner" id="ticker-inner">
+      <div class="ticker-item"><span class="t-dot"></span><strong>Loading demand signals...</strong></div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="pulse-filters">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('hot',this)">🔥 Hot</button>
+    <button class="filter-btn" onclick="setFilter('new',this)">⚡ New</button>
+    <button class="filter-btn" onclick="setFilter('local',this)">📍 Local</button>
+    <div class="filter-divider"></div>
+    <div id="cat-filters" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+    <div class="filter-divider"></div>
+    <input type="text" class="filter-search" id="pulse-search" placeholder="Search..." oninput="applyFilters()" />
+    <select class="sort-select" id="pulse-sort" onchange="applyFilters()">
+      <option value="new">Newest first</option>
+      <option value="budget">Highest budget</option>
+      <option value="hot">Most responses</option>
+    </select>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="pulse-layout">
+    <div class="pulse-feed">
+      <div class="feed-header">
+        <div class="feed-title">Demand Signals</div>
+        <div class="feed-count" id="feed-count">Loading...</div>
+      </div>
+      <div id="pulse-feed">
+        <div class="feed-loading">
+          <div class="skeleton"></div>
+          <div class="skeleton" style="height:80px;"></div>
+          <div class="skeleton" style="height:120px;"></div>
+          <div class="skeleton" style="height:90px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="pulse-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">📊 Market Stats</div>
+        <div id="sidebar-stats"></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">🏆 Trending Categories</div>
+        <div id="sidebar-trending"></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">📍 Top Markets</div>
+        <div id="sidebar-geo"></div>
+      </div>
+      <div class="sidebar-cta">
+        <div class="sidebar-cta-title">Have something to sell?</div>
+        <div class="sidebar-cta-sub">Sellers browse Pulse to find buyers. Create a free seller profile and respond to XEKIEs.</div>
+        <a href="request.html" class="sidebar-cta-btn">Start selling →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW ITEM TOAST -->
+  <div class="new-item-toast" id="new-toast" onclick="scrollToTop()">↑ New XEKIE just posted!</div>
+
+  <footer>
+    <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+    <div style="font-size:11px;color:#333;letter-spacing:0.15em;text-transform:uppercase;margin-top:4px;">The demand-side marketplace</div>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="radar.html">Browse</a>
+      <a href="request.html">Post a XEKIE</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+    </div>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const CATEGORY_EMOJIS = {
+      'Electronics':'📱','Trading Cards':'🃏','Vehicles':'🚗','Tools':'🔧',
+      'Services':'🛠','Household Items':'🏠','Clothes & Apparel':'👕',
+      'Books':'📚','Toys':'🧸','Music & Movies':'🎵','Collectibles':'🏆','Other':'📦'
+    };
+
+    let allXekies = [], offerCounts = {}, activeFilter = 'all', activeCat = null;
+    let userCity = null;
+
+    function formatBudget(x) {
+      if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
+      if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
+      if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
+      if (x.budget) return '$'+Number(x.budget).toLocaleString();
+      return null;
+    }
+
+    function getBudgetNum(x) {
+      return x.budget_max || x.budget || x.budget_min || 0;
+    }
+
+    function timeAgo(ts) {
+      const s = Math.floor((new Date()-new Date(ts))/1000);
+      for (const [l,sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
+        const c = Math.floor(s/sec); if (c>=1) return c+" "+l+(c>1?"s":"")+" ago";
+      }
+      return "just now";
+    }
+
+    async function loadAll() {
+      const [xekiesRes, offersRes] = await Promise.all([
+        _sb.from('xekies').select('*').eq('is_fulfilled', false).order('created_at', { ascending: false }).limit(200),
+        _sb.from('offers').select('xekie_id')
+      ]);
+
+      allXekies = (xekiesRes.data || []).filter(x => !x.expires_at || new Date(x.expires_at) > new Date());
+      offerCounts = {};
+      (offersRes.data || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id]||0)+1; });
+
+      buildStats();
+      buildTicker();
+      buildCategoryFilters();
+      buildSidebar();
+      applyFilters();
+
+      // Try geolocation for local filter
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          // Simple heuristic — just enable the local button more visibly
+          document.querySelector('[onclick*="local"]').style.display = 'block';
+        }, () => {});
+      }
+    }
+
+    function buildStats() {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const todayCount = allXekies.filter(x => new Date(x.created_at) >= today).length;
+      const budgets = allXekies.map(getBudgetNum).filter(Boolean);
+      const avgBudget = budgets.length ? Math.round(budgets.reduce((a,b)=>a+b,0)/budgets.length) : 0;
+      const cities = new Set(allXekies.map(x => x.location?.split(',')[0]?.trim()).filter(Boolean));
+
+      animateNum('pulse-stat-active', allXekies.length);
+      document.getElementById('pulse-stat-budget').textContent = avgBudget > 0 ? '$'+avgBudget.toLocaleString() : '—';
+      animateNum('pulse-stat-today', todayCount);
+      animateNum('pulse-stat-cities', cities.size);
+    }
+
+    function animateNum(id, target) {
+      const el = document.getElementById(id);
+      if (!target) { el.textContent = '0'; return; }
+      let cur = 0;
+      const inc = Math.ceil(target/30);
+      const t = setInterval(() => { cur = Math.min(cur+inc, target); el.textContent = cur.toLocaleString(); if(cur>=target) clearInterval(t); }, 40);
+    }
+
+    function buildTicker() {
+      const items = allXekies.slice(0, 20);
+      if (!items.length) return;
+      // Duplicate for seamless loop
+      const html = [...items, ...items].map(x => {
+        const bud = formatBudget(x);
+        return `<span class="ticker-item">
+          <span class="t-dot"></span>
+          <strong>${x.title.slice(0,40)}${x.title.length>40?'…':''}</strong>
+          ${bud ? `· <span class="t-budget">${bud}</span>` : ''}
+          ${x.location ? `· 📍 ${x.location.split(',')[0]}` : ''}
+        </span>`;
+      }).join('');
+      document.getElementById('ticker-inner').innerHTML = html;
+    }
+
+    function buildCategoryFilters() {
+      const cats = {};
+      allXekies.forEach(x => { if(x.category) cats[x.category] = (cats[x.category]||0)+1; });
+      const sorted = Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,6);
+      document.getElementById('cat-filters').innerHTML = sorted.map(([cat]) =>
+        `<button class="filter-btn" onclick="setCatFilter('${cat}',this)">${CATEGORY_EMOJIS[cat]||'📦'} ${cat}</button>`
+      ).join('');
+    }
+
+    function buildSidebar() {
+      // Market stats
+      const fulfilled = allXekies.filter(x => x.is_fulfilled).length;
+      const withOffers = allXekies.filter(x => (offerCounts[x.id]||0)>0).length;
+      const budgets = allXekies.map(getBudgetNum).filter(Boolean);
+      const maxBudget = Math.max(...budgets);
+      const totalDemand = budgets.reduce((a,b)=>a+b,0);
+
+      document.getElementById('sidebar-stats').innerHTML = [
+        ['Active XEKIEs', allXekies.length.toLocaleString()],
+        ['Total Demand Value', totalDemand > 0 ? '$'+Math.round(totalDemand/1000)+'k' : '—'],
+        ['Highest Budget', maxBudget > 0 ? '$'+maxBudget.toLocaleString() : '—'],
+        ['Response Rate', allXekies.length > 0 ? Math.round(withOffers/allXekies.length*100)+'%' : '—'],
+      ].map(([l,v]) => `
+        <div class="sidebar-stat">
+          <span class="sidebar-stat-label">${l}</span>
+          <span class="sidebar-stat-value">${v}</span>
+        </div>`).join('');
+
+      // Trending cats
+      const cats = {};
+      allXekies.forEach(x => { if(x.category) cats[x.category]=(cats[x.category]||0)+1; });
+      const topCats = Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,7);
+      document.getElementById('sidebar-trending').innerHTML = topCats.map(([cat,count],i) => `
+        <div class="trending-item" onclick="setCatFilterByName('${cat}')">
+          <span class="trending-rank">${i+1}</span>
+          <span class="trending-item-name">${CATEGORY_EMOJIS[cat]||'📦'} ${cat}</span>
+          <span class="trending-item-count">${count}</span>
+        </div>`).join('');
+
+      // Geo
+      const locs = {};
+      allXekies.forEach(x => {
+        if (!x.location || x.location.toLowerCase()==='ships anywhere') return;
+        const city = x.location.split(',')[0].trim();
+        locs[city] = (locs[city]||0)+1;
+      });
+      const topLocs = Object.entries(locs).sort((a,b)=>b[1]-a[1]).slice(0,7);
+      const maxLoc = topLocs[0]?.[1]||1;
+      document.getElementById('sidebar-geo').innerHTML = topLocs.map(([loc,count]) => `
+        <div class="geo-item">
+          <span class="geo-name">📍 ${loc}</span>
+          <div class="geo-bar-wrap"><div class="geo-bar-fill" style="width:${Math.round(count/maxLoc*100)}%"></div></div>
+          <span class="geo-count">${count}</span>
+        </div>`).join('');
+    }
+
+    function setFilter(f, btn) {
+      activeFilter = f;
+      activeCat = null;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    }
+
+    function setCatFilter(cat, btn) {
+      activeCat = activeCat === cat ? null : cat;
+      activeFilter = 'all';
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      if (activeCat) btn.classList.add('active');
+      applyFilters();
+    }
+
+    function setCatFilterByName(cat) {
+      activeCat = cat;
+      activeFilter = 'all';
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const q = (document.getElementById('pulse-search')?.value||'').toLowerCase();
+      const sort = document.getElementById('pulse-sort')?.value||'new';
+      const today = new Date(); today.setHours(0,0,0,0);
+      const hourAgo = new Date(Date.now()-3600000);
+
+      let filtered = allXekies.filter(x => {
+        if (activeCat && x.category !== activeCat) return false;
+        if (q && !(x.title||'').toLowerCase().includes(q) && !(x.description||'').toLowerCase().includes(q) && !(x.location||'').toLowerCase().includes(q)) return false;
+        if (activeFilter === 'hot' && (offerCounts[x.id]||0) < 2) return false;
+        if (activeFilter === 'new' && new Date(x.created_at) < hourAgo) return false;
+        if (activeFilter === 'local') {
+          // Show XEKIEs with location data
+          if (!x.location || x.location.toLowerCase() === 'ships anywhere') return false;
+        }
+        return true;
+      });
+
+      if (sort === 'budget') filtered.sort((a,b) => getBudgetNum(b)-getBudgetNum(a));
+      else if (sort === 'hot') filtered.sort((a,b) => (offerCounts[b.id]||0)-(offerCounts[a.id]||0));
+      else filtered.sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
+
+      document.getElementById('feed-count').textContent = filtered.length.toLocaleString() + ' demand signals';
+      renderFeed(filtered);
+    }
+
+    function renderFeed(items) {
+      const container = document.getElementById('pulse-feed');
+      if (!items.length) {
+        container.innerHTML = `<div class="feed-empty"><div class="feed-empty-icon">📭</div><div style="font-size:16px;color:#444;margin-bottom:8px;">No XEKIEs match this filter</div><div style="font-size:13px;color:#333;">Try a different category or clear the filter</div></div>`;
+        return;
+      }
+      container.innerHTML = items.map(x => {
+        const budget = formatBudget(x);
+        const cnt = offerCounts[x.id]||0;
+        const isHot = cnt >= 3;
+        const isNew = new Date(x.created_at) > new Date(Date.now()-3600000);
+        return `<a href="xekie.html?id=${x.id}" class="pulse-item${isHot?' hot':''}">
+          <div class="pulse-item-top">
+            <div class="pulse-item-title">${x.title}</div>
+            ${budget ? `<div class="pulse-item-budget">${budget}</div>` : ''}
+          </div>
+          ${x.description ? `<div class="pulse-item-desc">${x.description}</div>` : ''}
+          <div class="pulse-item-footer">
+            ${x.category ? `<span class="pulse-pill accent">${CATEGORY_EMOJIS[x.category]||'📦'} ${x.category}</span>` : ''}
+            ${x.location ? `<span class="pulse-pill">📍 ${x.location}</span>` : ''}
+            ${cnt > 0 ? `<span class="pulse-pill green">💬 ${cnt} response${cnt!==1?'s':''}</span>` : ''}
+            ${isNew ? `<span class="pulse-pill accent">⚡ New</span>` : ''}
+            ${x.is_flexible ? `<span class="pulse-pill">💰 Flexible</span>` : ''}
+            <span class="pulse-item-time">${timeAgo(x.created_at)}</span>
+            <button class="respond-btn" onclick="event.preventDefault();window.location.href='xekie.html?id=${x.id}'">Respond →</button>
+          </div>
+        </a>`;
+      }).join('');
+    }
+
+    // REAL-TIME — new XEKIEs pop in live
+    let pendingNew = [];
+    function subscribeRealtime() {
+      _sb.channel('pulse-live')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'xekies' }, payload => {
+          const x = payload.new;
+          if (x.is_fulfilled) return;
+          allXekies.unshift(x);
+          pendingNew.push(x.id);
+          const toast = document.getElementById('new-toast');
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 4000);
+          buildTicker();
+          buildStats();
+          buildSidebar();
+          buildCategoryFilters();
+          applyFilters();
+        })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'offers' }, payload => {
+          const o = payload.new;
+          offerCounts[o.xekie_id] = (offerCounts[o.xekie_id]||0)+1;
+          buildSidebar();
+          applyFilters();
+        })
+        .subscribe();
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.getElementById('new-toast').classList.remove('show');
+    }
+
+    loadAll().then(subscribeRealtime);
+  </script>
+</body>
+</html>
