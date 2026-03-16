@@ -145,7 +145,7 @@
 
     async function sendWelcomeEmail(email, name) {
       try {
-        await fetch('/.netlify/functions/send-email', {
+        return await fetch('/.netlify/functions/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: 'welcome', to: email, data: { name } })
@@ -172,15 +172,15 @@
       if (!name || !email || !password) return showMessage('signup-msg', 'Please fill in all fields.', 'error');
       if (password.length < 6) return showMessage('signup-msg', 'Password must be at least 6 characters.', 'error');
       btn.disabled = true; btn.textContent = 'Creating account...';
-      const { data, error } = await _sb.auth.signUp({ email, password, options: { data: { full_name: name } } });
+      const { error } = await _sb.auth.signUp({ email, password, options: { data: { full_name: name } } });
       if (error) {
         showMessage('signup-msg', error.message, 'error');
         btn.disabled = false; btn.textContent = 'Create account';
       } else {
-        sendWelcomeEmail(email, name);
+        await sendWelcomeEmail(email, name);
         showToast();
         btn.textContent = 'Account created ✓';
-        if (data.session) setTimeout(() => window.location.href = 'dashboard.html', 1800);
+        setTimeout(() => window.location.href = 'dashboard.html', 1800);
       }
     }
 
