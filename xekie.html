@@ -74,6 +74,13 @@
     .btn-save.saved{background:#EAF3DE;color:#3B6D11;border-color:#c0dd97;}
     .btn-story{width:100%;padding:14px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:white;border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-bottom:8px;}
     .btn-story:hover{opacity:0.9;transform:translateY(-1px);}
+    .btn-waitlist{width:100%;padding:16px;background:transparent;color:#1d4ed8;border:1.5px solid rgba(29,78,216,0.3);border-radius:12px;font-family:var(--font-body);font-size:16px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-bottom:12px;}
+    .btn-waitlist:hover{background:#eff6ff;border-color:#1d4ed8;transform:translateY(-1px);}
+    .btn-waitlist.joined{background:#eff6ff;color:#1d4ed8;border-color:#1d4ed8;cursor:default;}
+    .waitlist-banner{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid rgba(29,78,216,0.2);border-radius:12px;padding:20px 24px;margin-bottom:16px;text-align:center;}
+    .waitlist-banner-title{font-family:var(--font-display);font-size:18px;font-weight:700;color:#1d4ed8;margin-bottom:6px;}
+    .waitlist-banner-sub{font-size:14px;color:#3b82f6;font-weight:300;}
+    .waitlist-count{font-size:13px;color:#6b6b6b;text-align:center;margin-bottom:12px;}
     .meta-row{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mid);margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
     .cta-band{background:var(--black);border-radius:16px;padding:32px;text-align:center;margin-top:16px;}
     .cta-band h3{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--white);margin-bottom:8px;}
@@ -116,8 +123,6 @@
     .report-msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;}
     .report-msg.error{background:#FCEBEB;color:#A32D2D;display:block;}
     .report-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
-
-    /* STORY MODAL */
     .story-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:400;align-items:center;justify-content:center;padding:20px;flex-direction:column;gap:16px;}
     .story-modal.open{display:flex;}
     .story-preview{border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);max-height:70vh;}
@@ -128,7 +133,6 @@
     .btn-story-close{padding:14px 28px;background:rgba(255,255,255,0.15);color:white;border:1.5px solid rgba(255,255,255,0.3);border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s;}
     .btn-story-close:hover{background:rgba(255,255,255,0.25);}
     .story-hint{font-size:13px;color:rgba(255,255,255,0.6);text-align:center;}
-
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -186,7 +190,6 @@
 
   <div class="share-toast" id="share-toast">Link copied! 🔗</div>
 
-  <!-- STORY MODAL -->
   <div class="story-modal" id="story-modal">
     <div class="story-preview">
       <canvas id="story-canvas"></canvas>
@@ -276,61 +279,108 @@
       }
     }
 
+    // ---- WAITLIST ----
+    async function joinWaitlist() {
+      if (!currentUser) { window.location.href = 'login.html'; return; }
+      const btn = document.getElementById('btn-waitlist');
+      btn.disabled = true;
+      btn.textContent = 'Creating your XEKIE...';
+
+      const x = currentXekie;
+
+      // Clone the fulfilled XEKIE as a new active one for this user
+      const newXekie = {
+        title: x.title,
+        description: x.description || null,
+        budget: x.budget || null,
+        budget_min: x.budget_min || null,
+        budget_max: x.budget_max || null,
+        is_flexible: x.is_flexible || false,
+        location: x.location || null,
+        category: x.category || null,
+        user_id: currentUser.id,
+        view_count: 0,
+        is_fulfilled: false,
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+      };
+
+      const { data: created, error } = await _sb.from('xekies').insert(newXekie).select().single();
+
+      if (error) {
+        btn.disabled = false;
+        btn.textContent = '🙋 I want this too';
+        showToast('Something went wrong — please try again.');
+        return;
+      }
+
+      // Notify sellers who might have this item
+      if (created) {
+        fetch('/.netlify/functions/notify-sellers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(created)
+        }).catch(() => {});
+      }
+
+      // Update button to success state
+      btn.classList.add('joined');
+      btn.textContent = '✓ Your XEKIE is live!';
+      btn.disabled = false;
+
+      // Update waitlist count
+      const countEl = document.getElementById('waitlist-count');
+      if (countEl) {
+        const current = parseInt(countEl.dataset.count || '0') + 1;
+        countEl.dataset.count = current;
+        countEl.textContent = `${current} ${current === 1 ? 'person' : 'people'} looking for this`;
+      }
+
+      showToast('🎉 Your XEKIE is live — sellers will find you!');
+
+      // Redirect to their new XEKIE after a moment
+      setTimeout(() => {
+        window.location.href = `xekie.html?id=${created.id}`;
+      }, 2000);
+    }
+
     // ---- STORY CARD GENERATOR ----
     async function generateStoryCard(xekie) {
       const canvas = document.getElementById('story-canvas');
       const ctx = canvas.getContext('2d');
       const W = 1080, H = 1920;
       canvas.width = W; canvas.height = H;
-
-      // Background gradient
       const grad = ctx.createLinearGradient(0, 0, 0, H);
       grad.addColorStop(0, '#0a0a0a');
       grad.addColorStop(0.5, '#1a0a05');
       grad.addColorStop(1, '#0a0a0a');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
-
-      // Accent orb
       const orbGrad = ctx.createRadialGradient(W*0.8, H*0.2, 0, W*0.8, H*0.2, 500);
       orbGrad.addColorStop(0, 'rgba(255,77,28,0.25)');
       orbGrad.addColorStop(1, 'rgba(255,77,28,0)');
       ctx.fillStyle = orbGrad;
       ctx.fillRect(0, 0, W, H);
-
-      // Second orb bottom
       const orbGrad2 = ctx.createRadialGradient(W*0.2, H*0.8, 0, W*0.2, H*0.8, 400);
       orbGrad2.addColorStop(0, 'rgba(255,140,0,0.15)');
       orbGrad2.addColorStop(1, 'rgba(255,140,0,0)');
       ctx.fillStyle = orbGrad2;
       ctx.fillRect(0, 0, W, H);
-
-      // XEKIE logo top
       ctx.font = '900 72px Arial';
       ctx.fillStyle = '#fafaf8';
       ctx.textAlign = 'center';
       ctx.fillText('XEKIE', W/2, 140);
-
-      // Tagline
       ctx.font = '300 28px Arial';
       ctx.fillStyle = 'rgba(255,255,255,0.4)';
-      ctx.letterSpacing = '8px';
       ctx.fillText('TRADE DIFFERENT', W/2, 185);
-
-      // Divider line
       ctx.strokeStyle = 'rgba(255,77,28,0.4)';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(80, 220); ctx.lineTo(W-80, 220);
       ctx.stroke();
-
-      // "LOOKING FOR" label
       ctx.font = '600 26px Arial';
       ctx.fillStyle = '#ff4d1c';
       ctx.textAlign = 'left';
       ctx.fillText('LOOKING FOR', 80, 300);
-
-      // Title - word wrap
       ctx.font = '800 72px Arial';
       ctx.fillStyle = '#fafaf8';
       const titleWords = xekie.title.split(' ');
@@ -341,13 +391,8 @@
         else titleLine = test;
       }
       if (titleLine) titleLines.push(titleLine);
-      titleLines.slice(0, 3).forEach((line, i) => {
-        ctx.fillText(line, 80, 390 + i * 88);
-      });
-
+      titleLines.slice(0, 3).forEach((line, i) => { ctx.fillText(line, 80, 390 + i * 88); });
       const titleBottom = 390 + Math.min(titleLines.length, 3) * 88;
-
-      // Description if available
       let descBottom = titleBottom + 40;
       if (xekie.description) {
         ctx.font = '300 36px Arial';
@@ -361,147 +406,79 @@
           if (descLines.length >= 2) break;
         }
         if (descLine && descLines.length < 2) descLines.push(descLine);
-        descLines.slice(0, 2).forEach((line, i) => {
-          ctx.fillText(line + (i === 1 && descWords.length > descLines.join(' ').split(' ').length ? '…' : ''), 80, descBottom + i * 50);
-        });
+        descLines.slice(0, 2).forEach((line, i) => { ctx.fillText(line, 80, descBottom + i * 50); });
         descBottom += descLines.length * 50 + 20;
       }
-
-      // Details cards
       const cardY = Math.max(descBottom + 40, titleBottom + 140);
-      const cardH = 140;
-      const cardGap = 20;
+      const cardH = 140, cardGap = 20;
       const cardW = (W - 160 - cardGap) / 2;
-
-      // Budget card
       roundRect(ctx, 80, cardY, cardW, cardH, 20);
-      ctx.fillStyle = 'rgba(255,77,28,0.15)';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255,77,28,0.4)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.font = '500 24px Arial';
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
-      ctx.textAlign = 'left';
+      ctx.fillStyle = 'rgba(255,77,28,0.15)'; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,77,28,0.4)'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.font = '500 24px Arial'; ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.textAlign = 'left';
       ctx.fillText('BUDGET', 80 + 24, cardY + 44);
-      ctx.font = '800 42px Arial';
-      ctx.fillStyle = '#ff4d1c';
+      ctx.font = '800 42px Arial'; ctx.fillStyle = '#ff4d1c';
       ctx.fillText(formatBudget(xekie), 80 + 24, cardY + 100);
-
-      // Location card
       if (xekie.location) {
         roundRect(ctx, 80 + cardW + cardGap, cardY, cardW, cardH, 20);
-        ctx.fillStyle = 'rgba(255,255,255,0.06)';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.font = '500 24px Arial';
-        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.font = '500 24px Arial'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
         ctx.fillText('LOCATION', 80 + cardW + cardGap + 24, cardY + 44);
-        ctx.font = '700 36px Arial';
-        ctx.fillStyle = '#fafaf8';
+        ctx.font = '700 36px Arial'; ctx.fillStyle = '#fafaf8';
         const locText = xekie.location.length > 16 ? xekie.location.slice(0, 16) + '…' : xekie.location;
         ctx.fillText(locText, 80 + cardW + cardGap + 24, cardY + 100);
       }
-
-      // Category pill
       if (xekie.category) {
         const pillY = cardY + cardH + 32;
-        ctx.font = '600 28px Arial';
-        ctx.fillStyle = '#ff4d1c';
-        ctx.textAlign = 'center';
+        ctx.font = '600 28px Arial'; ctx.fillStyle = '#ff4d1c'; ctx.textAlign = 'center';
         const pillW = ctx.measureText(xekie.category).width + 60;
         roundRect(ctx, W/2 - pillW/2, pillY - 36, pillW, 56, 28);
-        ctx.fillStyle = 'rgba(255,77,28,0.15)';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255,77,28,0.5)';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.fillStyle = '#ff4d1c';
-        ctx.fillText(xekie.category, W/2, pillY + 8);
+        ctx.fillStyle = 'rgba(255,77,28,0.15)'; ctx.fill();
+        ctx.strokeStyle = 'rgba(255,77,28,0.5)'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.fillStyle = '#ff4d1c'; ctx.fillText(xekie.category, W/2, pillY + 8);
       }
-
-      // Bottom CTA section
       const ctaY = H - 420;
-
-      // Divider
-      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(80, ctaY); ctx.lineTo(W-80, ctaY);
-      ctx.stroke();
-
-      // CTA text
-      ctx.font = '700 40px Arial';
-      ctx.fillStyle = '#fafaf8';
-      ctx.textAlign = 'center';
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(80, ctaY); ctx.lineTo(W-80, ctaY); ctx.stroke();
+      ctx.font = '700 40px Arial'; ctx.fillStyle = '#fafaf8'; ctx.textAlign = 'center';
       ctx.fillText('Can you help?', W/2, ctaY + 70);
-      ctx.font = '300 32px Arial';
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '300 32px Arial'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.fillText('Respond with your best offer at', W/2, ctaY + 120);
-
-      // URL badge
       roundRect(ctx, W/2 - 240, ctaY + 148, 480, 72, 36);
-      ctx.fillStyle = '#ff4d1c';
-      ctx.fill();
-      ctx.font = '700 36px Arial';
-      ctx.fillStyle = '#ffffff';
-      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ff4d1c'; ctx.fill();
+      ctx.font = '700 36px Arial'; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
       ctx.fillText('xekie.com', W/2, ctaY + 195);
-
-      // QR code area - generate and draw
       await drawQRCode(ctx, `https://xekie.com/xekie.html?id=${xekie.id}`, W/2 - 100, ctaY + 250, 200);
-
-      ctx.font = '300 26px Arial';
-      ctx.fillStyle = 'rgba(255,255,255,0.4)';
-      ctx.textAlign = 'center';
+      ctx.font = '300 26px Arial'; ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.textAlign = 'center';
       ctx.fillText('Scan to respond', W/2, ctaY + 490);
     }
 
     function roundRect(ctx, x, y, w, h, r) {
       ctx.beginPath();
-      ctx.moveTo(x + r, y);
-      ctx.lineTo(x + w - r, y);
-      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-      ctx.lineTo(x + w, y + h - r);
-      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-      ctx.lineTo(x + r, y + h);
-      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-      ctx.lineTo(x, y + r);
-      ctx.quadraticCurveTo(x, y, x + r, y);
-      ctx.closePath();
+      ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+      ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+      ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+      ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
     }
 
     async function drawQRCode(ctx, url, x, y, size) {
       try {
         const qrDiv = document.createElement('div');
-        qrDiv.style.position = 'absolute';
-        qrDiv.style.left = '-9999px';
+        qrDiv.style.position = 'absolute'; qrDiv.style.left = '-9999px';
         document.body.appendChild(qrDiv);
         new QRCode(qrDiv, { text: url, width: size, height: size, colorDark: '#0a0a0a', colorLight: '#fafaf8' });
         await new Promise(r => setTimeout(r, 200));
         const qrImg = qrDiv.querySelector('img') || qrDiv.querySelector('canvas');
         if (qrImg) {
           if (qrImg.tagName === 'IMG') {
-            await new Promise((resolve) => {
-              const img = new Image();
-              img.onload = () => { ctx.drawImage(img, x, y, size, size); resolve(); };
-              img.src = qrImg.src;
-            });
-          } else {
-            ctx.drawImage(qrImg, x, y, size, size);
-          }
+            await new Promise((resolve) => { const img = new Image(); img.onload = () => { ctx.drawImage(img, x, y, size, size); resolve(); }; img.src = qrImg.src; });
+          } else { ctx.drawImage(qrImg, x, y, size, size); }
         }
         document.body.removeChild(qrDiv);
       } catch(e) {
-        // Fallback — just draw a placeholder box
-        roundRect(ctx, x, y, size, size, 12);
-        ctx.fillStyle = '#fafaf8';
-        ctx.fill();
-        ctx.font = '500 20px Arial';
-        ctx.fillStyle = '#0a0a0a';
-        ctx.textAlign = 'center';
+        roundRect(ctx, x, y, size, size, 12); ctx.fillStyle = '#fafaf8'; ctx.fill();
+        ctx.font = '500 20px Arial'; ctx.fillStyle = '#0a0a0a'; ctx.textAlign = 'center';
         ctx.fillText('xekie.com', x + size/2, y + size/2);
       }
     }
@@ -512,9 +489,7 @@
       await generateStoryCard(currentXekie);
     }
 
-    function closeStoryModal() {
-      document.getElementById('story-modal').classList.remove('open');
-    }
+    function closeStoryModal() { document.getElementById('story-modal').classList.remove('open'); }
 
     function downloadStory() {
       const canvas = document.getElementById('story-canvas');
@@ -534,6 +509,13 @@
       const { data: userMeta } = await _sb.from('user_profiles').select('display_name').eq('user_id', x.user_id).single().catch(() => ({ data: null }));
       x.owner_name = userMeta?.display_name || null;
 
+      // Get waitlist count — how many active XEKIEs with same title exist
+      const { count: waitlistCount } = await _sb.from('xekies')
+        .select('*', { count: 'exact', head: true })
+        .eq('title', x.title)
+        .eq('is_fulfilled', false)
+        .neq('id', x.id);
+
       document.title = `XEKIE — ${x.title}`;
       document.querySelector('meta[property="og:title"]').setAttribute('content', `${x.title} — XEKIE`);
       document.querySelector('meta[property="og:description"]').setAttribute('content', x.description || `Budget: ${formatBudget(x)}. Respond with your best offer on XEKIE.`);
@@ -549,6 +531,7 @@
       const isFulfilled = x.is_fulfilled;
       const isEarly = new Date(x.created_at) < BETA_CUTOFF;
       const canRespond = !isFulfilled && !isExpired;
+      const isOwn = currentUser && currentUser.id === x.user_id;
 
       let statusBadge = '';
       if (isFulfilled) statusBadge = '<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
@@ -570,9 +553,25 @@
 
       const { data: savedItems } = await _sb.from('saved_xekies').select('id').eq('xekie_id', xekieId).eq('user_id', currentUser?.id || '').limit(1).catch(() => ({ data: [] }));
       const isSaved = savedItems && savedItems.length > 0;
-
       const { data: existingOffer } = await _sb.from('offers').select('id').eq('xekie_id', xekieId).eq('seller_id', currentUser?.id || '').limit(1).catch(() => ({ data: [] }));
       const hasResponded = existingOffer && existingOffer.length > 0;
+
+      // Build fulfilled section with waitlist
+      let fulfilledSection = '';
+      if (isFulfilled && !isOwn) {
+        const wCount = waitlistCount || 0;
+        fulfilledSection = `
+          <div class="waitlist-banner">
+            <div class="waitlist-banner-title">✓ This XEKIE has been fulfilled!</div>
+            <div class="waitlist-banner-sub">But the demand is real — want one too?</div>
+          </div>
+          ${wCount > 0 ? `<div class="waitlist-count" id="waitlist-count" data-count="${wCount}">🙋 ${wCount} ${wCount === 1 ? 'person is' : 'people are'} also looking for this</div>` : `<div class="waitlist-count" id="waitlist-count" data-count="0"></div>`}
+          <button class="btn-waitlist" id="btn-waitlist" onclick="joinWaitlist()">🙋 I want this too — post my own XEKIE</button>`;
+      } else if (isFulfilled && isOwn) {
+        fulfilledSection = `<div style="text-align:center;padding:16px;color:#3B6D11;background:#EAF3DE;border-radius:12px;font-size:15px;font-weight:500;">✓ You marked this XEKIE as fulfilled. Deal done! 🎉</div>`;
+      } else if (isExpired) {
+        fulfilledSection = `<div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">⏰ This XEKIE has expired.</div>`;
+      }
 
       document.getElementById('content').innerHTML = `
         <div class="xekie-card">
@@ -598,9 +597,7 @@
             ${hasResponded ? `<div style="text-align:center;padding:14px;background:#EAF3DE;border-radius:12px;color:#3B6D11;font-size:15px;font-weight:500;margin-bottom:12px;">✓ You've already responded to this XEKIE</div>` : ''}
             <button class="btn-respond-big" onclick="openModal()" ${hasResponded ? 'style="background:#666;"' : ''}>
               ${hasResponded ? 'Send another offer →' : 'Respond with an offer →'}
-            </button>` :
-            `<div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">${isFulfilled ? '✓ This XEKIE has been fulfilled.' : '⏰ This XEKIE has expired.'}</div>`
-          }
+            </button>` : fulfilledSection}
           <button class="btn-save ${isSaved ? 'saved' : ''}" id="btn-save" onclick="toggleSave()">
             ${isSaved ? '🔖 Saved' : '🔖 Save this XEKIE'}
           </button>
@@ -636,13 +633,8 @@
       if (!currentUser) { window.location.href = 'login.html'; return; }
       const btn = document.getElementById('btn-save');
       const isSaved = btn.classList.contains('saved');
-      if (isSaved) {
-        await _sb.from('saved_xekies').delete().eq('xekie_id', xekieId).eq('user_id', currentUser.id);
-        btn.classList.remove('saved'); btn.textContent = '🔖 Save this XEKIE';
-      } else {
-        await _sb.from('saved_xekies').insert({ xekie_id: xekieId, user_id: currentUser.id });
-        btn.classList.add('saved'); btn.textContent = '🔖 Saved';
-      }
+      if (isSaved) { await _sb.from('saved_xekies').delete().eq('xekie_id', xekieId).eq('user_id', currentUser.id); btn.classList.remove('saved'); btn.textContent = '🔖 Save this XEKIE'; }
+      else { await _sb.from('saved_xekies').insert({ xekie_id: xekieId, user_id: currentUser.id }); btn.classList.add('saved'); btn.textContent = '🔖 Saved'; }
     }
 
     function openModal() {
