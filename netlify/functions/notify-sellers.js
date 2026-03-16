@@ -1,6 +1,5 @@
 // notify-sellers.js — fires when a new XEKIE is posted
-// Called from request.html after successful insert
-// Finds matching subscriptions and emails each one
+// Finds matching subscriptions and emails + texts each one
 
 const { createClient } = require('@supabase/supabase-js');
 const { rateLimit, getIP, limitedResponse } = require('./rate-limit');
@@ -8,7 +7,6 @@ const { rateLimit, getIP, limitedResponse } = require('./rate-limit');
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
-  // Rate limit: 10 per IP per minute
   const ip = getIP(event);
   const { limited } = rateLimit(ip, 'notify-sellers', 10, 60000);
   if (limited) return limitedResponse();
@@ -23,7 +21,6 @@ exports.handler = async (event) => {
     process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA'
   );
 
-  // Find all subscriptions that match this XEKIE
   const { data: subs } = await _sb.from('subscriptions').select('*');
   if (!subs || !subs.length) return { statusCode: 200, body: 'No subscribers' };
 
@@ -38,6 +35,10 @@ exports.handler = async (event) => {
   if (!matching.length) return { statusCode: 200, body: 'No matching subscribers' };
 
   const RESEND_KEY = process.env.RESEND_API_KEY;
+  const TWILIO_SID = process.env.TWILIO_ACCOUNT_SID;
+  const TWILIO_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+  const TWILIO_PHONE = process.env.TWILIO_PHONE_NUMBER;
+
   const xekieUrl = `https://xekie.com/xekie.html?id=${id}`;
 
   const formatBudget = (x) => {
@@ -50,8 +51,33 @@ exports.handler = async (event) => {
 
   const budgetStr = formatBudget(xekie);
 
-  const results = await Promise.allSettled(matching.map(sub =>
-    fetch('https://api.resend.com/emails', {
+  // Send SMS via Twilio
+  async function sendSMS(to, body) {
+    if (!TWILIO_SID || !TWILIO_TOKEN || !TWILIO_PHONE) return;
+    try {
+      const credentials = Buffer.from(`${TWILIO_SID}:${TWILIO_TOKEN}`).toString('base64');
+      await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_SID}/Messages.json`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${credentials}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({ To: to, From: TWILIO_PHONE, Body: body }).toString()
+      });
+    } catch(e) {}
+  }
+
+  const results = await Promise.allSettled(matching.map(async sub => {
+    const smsBody = `🔶 XEKIE Alert: "${title}" — ${budgetStr}${location ? ' · ' + location : ''}\nRespond: ${xekieUrl}`;
+
+    // Send SMS if subscriber has a phone number and opted in
+    if (sub.phone && sub.sms_alerts) {
+      await sendSMS(sub.phone, smsBody);
+    }
+
+    // Send email
+    if (!sub.email) return;
+    return fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -90,7 +116,6 @@ exports.handler = async (event) => {
   </td></tr>
   <tr><td style="background:#0a0a0a;border-radius:0 0 16px 16px;padding:28px 40px;">
     <p style="font-size:12px;color:#444;margin:0 0 8px;">You're receiving this because you subscribed to XEKIE alerts.</p>
-    <a href="https://xekie.com/watches.html" style="font-size:12px;color:#666;">Manage your alerts & watches</a>
     <p style="font-size:11px;color:#333;margin:12px 0 0;">© 2025 XEKIE LLC</p>
   </td></tr>
 </table>
@@ -99,8 +124,8 @@ exports.handler = async (event) => {
 </body>
 </html>`
       })
-    })
-  ));
+    });
+  }));
 
   const sent = results.filter(r => r.status === 'fulfilled').length;
   return { statusCode: 200, body: JSON.stringify({ sent, total: matching.length }) };
