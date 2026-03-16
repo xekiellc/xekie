@@ -58,6 +58,8 @@
     .btn-view-offers{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:var(--black);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;}
     .btn-view-offers:hover{border-color:var(--black);}
     .offers-badge{display:inline-block;background:var(--accent);color:white;border-radius:100px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px;}
+    .new-offers-badge{display:inline-block;background:#22c55e;color:white;border-radius:100px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px;animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.7}}
     .btn-share-xekie{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:var(--mid);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;}
     .btn-share-xekie:hover{border-color:var(--black);color:var(--black);}
     .btn-fulfill{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:#3B6D11;border:1.5px solid #c0dd97;cursor:pointer;transition:all 0.2s;}
@@ -69,12 +71,6 @@
     .promoted-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;}
     .btn-delete{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:#A32D2D;border:1.5px solid rgba(163,45,45,0.2);cursor:pointer;transition:all 0.2s;}
     .btn-delete:hover{background:#FCEBEB;border-color:#A32D2D;}
-    .notif-banner{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-    .notif-banner-text{font-size:14px;color:var(--mid);}
-    .notif-banner-text strong{color:var(--black);font-weight:600;}
-    .btn-enable-notif{font-size:13px;font-weight:500;padding:8px 18px;border-radius:100px;background:var(--accent);color:var(--white);border:none;cursor:pointer;transition:all 0.2s;}
-    .btn-enable-notif:hover{opacity:0.88;}
-    .btn-enable-notif:disabled{background:#ccc;cursor:not-allowed;}
     .empty-state{text-align:center;padding:80px 20px;}
     .empty-icon{font-size:48px;margin-bottom:16px;}
     .empty-title{font-family:var(--font-display);font-size:24px;font-weight:700;margin-bottom:8px;}
@@ -97,18 +93,6 @@
     .modal-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
     .btn-modal-submit{width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
     .btn-modal-submit:hover{background:var(--accent);}
-    /* Share modal */
-    .share-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;padding:0;}
-    .share-modal.open{display:flex;}
-    .share-sheet{background:var(--white);border-radius:24px 24px 0 0;padding:32px 24px 40px;width:100%;max-width:520px;}
-    .share-sheet-title{font-family:var(--font-display);font-size:18px;font-weight:800;margin-bottom:6px;}
-    .share-sheet-sub{font-size:13px;color:var(--mid);margin-bottom:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .share-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-    .share-option{display:flex;align-items:center;gap:10px;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;background:var(--white);font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--black);}
-    .share-option:hover{border-color:var(--black);background:var(--cream);}
-    .share-option-icon{font-size:20px;width:28px;text-align:center;}
-    .share-cancel{width:100%;padding:14px;background:var(--cream);border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;color:var(--mid);transition:all 0.2s;margin-top:4px;}
-    .share-cancel:hover{background:var(--border);color:var(--black);}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
@@ -120,7 +104,7 @@
     .footer-links a{font-size:13px;color:#666;text-decoration:none;}
     .footer-links a:hover{color:var(--white);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
-    @media(max-width:600px){nav{padding:0 20px;}.stats-row{grid-template-columns:1fr 1fr;}.share-options{grid-template-columns:1fr 1fr;}}
+    @media(max-width:600px){nav{padding:0 20px;}.stats-row{grid-template-columns:1fr 1fr;}}
   </style>
 </head>
 <body>
@@ -133,7 +117,7 @@
       <a href="saved.html" class="btn-nav">🔖 Saved</a>
       <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
       <a href="messages.html" class="btn-nav">💬 Messages</a>
-      <a href="seller.html" class="btn-nav" id="nav-profile">👤 Profile</a>
+      <a href="request.html" class="btn-nav primary">XEKIE it →</a>
       <button class="btn-nav" onclick="signOut()">Sign out</button>
     </div>
   </nav>
@@ -147,14 +131,6 @@
       </div>
       <a href="request.html" class="btn-nav primary" style="align-self:flex-start;">+ XEKIE it</a>
     </div>
-
-    <div class="notif-banner" id="notif-banner" style="display:none;">
-      <div class="notif-banner-text">
-        <strong>🔔 Get notified instantly</strong> when a seller responds to your XEKIE — even when the site is closed.
-      </div>
-      <button class="btn-enable-notif" id="btn-enable-notif" onclick="enableNotifications()">Enable Notifications</button>
-    </div>
-
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num" id="stat-xekies">—</div><div class="stat-label">Times XEKIE'd</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-offers">—</div><div class="stat-label">Responses received</div></div>
@@ -191,23 +167,6 @@
     </div>
   </div>
 
-  <!-- SHARE MODAL -->
-  <div class="share-modal" id="share-modal" onclick="if(event.target===this)closeShareModal()">
-    <div class="share-sheet">
-      <div class="share-sheet-title">Share XEKIE</div>
-      <div class="share-sheet-sub" id="share-sheet-sub"></div>
-      <div class="share-options">
-        <button class="share-option" onclick="doShare('copy')"><span class="share-option-icon">🔗</span>Copy Link</button>
-        <button class="share-option" onclick="doShare('sms')"><span class="share-option-icon">💬</span>iMessage</button>
-        <button class="share-option" onclick="doShare('facebook')"><span class="share-option-icon">📘</span>Facebook</button>
-        <button class="share-option" onclick="doShare('x')"><span class="share-option-icon">𝕏</span>Post on X</button>
-        <button class="share-option" onclick="doShare('whatsapp')"><span class="share-option-icon">💚</span>WhatsApp</button>
-        <button class="share-option" onclick="doShare('email')"><span class="share-option-icon">📧</span>Email</button>
-      </div>
-      <button class="share-cancel" onclick="closeShareModal()">Cancel</button>
-    </div>
-  </div>
-
   <div class="share-toast" id="share-toast">Link copied! 🔗</div>
 
   <footer>
@@ -232,68 +191,16 @@
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null;
     const BETA_CUTOFF = new Date('2026-06-01');
-    const VAPID_PUBLIC_KEY = 'BMu4OTWBIY4cfPe6e2ZLfSr9w-kZy9tlkwN_CHfv4tPuXbhZvORDb-ihHNmvPagyWM-wTc7W2hYt7RLLcCN8qlM';
-    let shareUrl = '', shareTitle = '';
 
-    function urlBase64ToUint8Array(base64String) {
-      const padding = '='.repeat((4 - base64String.length % 4) % 4);
-      const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-      const rawData = window.atob(base64);
-      return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+    // Track seen offer counts in localStorage so we know what's "new"
+    function getSeenCounts() {
+      try { return JSON.parse(localStorage.getItem('xekie_seen_offers') || '{}'); } catch { return {}; }
     }
-
-    async function initNotifications() {
-      if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-      if (Notification.permission === 'default') {
-        document.getElementById('notif-banner').style.display = 'flex';
-      }
+    function saveSeenCounts(counts) {
+      try { localStorage.setItem('xekie_seen_offers', JSON.stringify(counts)); } catch {}
     }
-
-    async function enableNotifications() {
-      const btn = document.getElementById('btn-enable-notif');
-      btn.disabled = true; btn.textContent = 'Enabling...';
-      try {
-        const permission = await Notification.requestPermission();
-        if (permission !== 'granted') { btn.textContent = 'Blocked — check browser settings'; return; }
-        const reg = await navigator.serviceWorker.ready;
-        const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
-        await _sb.from('push_subscriptions').upsert({ user_id: currentUser.id, subscription: sub.toJSON() }, { onConflict: 'user_id' });
-        document.getElementById('notif-banner').style.display = 'none';
-        const t = document.getElementById('share-toast');
-        t.textContent = '🔔 Notifications enabled!';
-        t.classList.add('show');
-        setTimeout(() => { t.classList.remove('show'); t.textContent = 'Link copied! 🔗'; }, 3000);
-      } catch(err) { console.error(err); btn.disabled = false; btn.textContent = 'Enable Notifications'; }
-    }
-
-    // Share modal
-    function openShareModal(id, title) {
-      shareUrl = `${window.location.origin}/xekie.html?id=${id}`;
-      shareTitle = title;
-      document.getElementById('share-sheet-sub').textContent = title;
-      document.getElementById('share-modal').classList.add('open');
-    }
-
-    function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
-
-    function doShare(type) {
-      const encoded = encodeURIComponent(shareUrl);
-      const text = encodeURIComponent(`Check out this XEKIE: ${shareTitle}`);
-      closeShareModal();
-      switch(type) {
-        case 'copy':
-          navigator.clipboard.writeText(shareUrl).then(() => {
-            const t = document.getElementById('share-toast');
-            t.textContent = 'Link copied! 🔗';
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2500);
-          }); break;
-        case 'sms': window.open(`sms:&body=${text}%20${encoded}`); break;
-        case 'facebook': window.open(`https://www.facebook.com/sharer/sharer.php?u=${encoded}`, '_blank'); break;
-        case 'x': window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encoded}`, '_blank'); break;
-        case 'whatsapp': window.open(`https://wa.me/?text=${text}%20${encoded}`, '_blank'); break;
-        case 'email': window.open(`mailto:?subject=${encodeURIComponent('Check out this XEKIE: ' + shareTitle)}&body=${text}%20${encoded}`); break;
-      }
+    function updateTabTitle(totalNewOffers) {
+      document.title = totalNewOffers > 0 ? `(${totalNewOffers}) XEKIE — Dashboard` : 'XEKIE — Dashboard';
     }
 
     function timeAgo(ts) {
@@ -340,9 +247,6 @@
       const joined = new Date(session.user.created_at);
       document.getElementById('user-meta').textContent = 'Member since ' + joined.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
       if (joined < BETA_CUTOFF) document.getElementById('early-badge-container').innerHTML = '<div class="early-badge">⚡ Early Adopter</div>';
-      document.getElementById('nav-profile').href = `seller.html?id=${session.user.id}`;
-      if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(console.error);
-      initNotifications();
       loadDashboard();
     });
 
@@ -355,6 +259,20 @@
         const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
         (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
       }
+
+      // Calculate new offers since last visit
+      const seenCounts = getSeenCounts();
+      let totalNewOffers = 0;
+      const newOfferCounts = {};
+      ids.forEach(id => {
+        const current = offerCounts[id] || 0;
+        const seen = seenCounts[id] || 0;
+        const newCount = Math.max(0, current - seen);
+        newOfferCounts[id] = newCount;
+        totalNewOffers += newCount;
+      });
+      updateTabTitle(totalNewOffers);
+
       document.getElementById('stat-xekies').textContent = list.length;
       document.getElementById('stat-offers').textContent = Object.values(offerCounts).reduce((a,b)=>a+b,0);
       document.getElementById('stat-views').textContent = list.reduce((a,x)=>a+(x.view_count||0),0);
@@ -368,6 +286,7 @@
         const budget = formatBudget(x);
         const flexTag = x.is_flexible ? '<span class="card-budget-flex">flexible</span>' : '';
         const offerCount = offerCounts[x.id] || 0;
+        const newCount = newOfferCounts[x.id] || 0;
         const isFulfilled = x.is_fulfilled;
         const expiryDisplay = getExpiryDisplay(x);
         const isExpired = !isFulfilled && x.expires_at && new Date(x.expires_at) < new Date();
@@ -391,10 +310,10 @@
               ${expiryDisplay}
             </div>
             <div class="card-actions">
-              <button class="btn-view-offers" onclick="viewOffers('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">
-                Responses${offerCount?`<span class="offers-badge">${offerCount}</span>`:''}
+              <button class="btn-view-offers" onclick="viewOffers('${x.id}','${(x.title||'').replace(/'/g,"\\'")}', ${offerCount}, '${x.id}')">
+                Responses${offerCount ? `<span class="offers-badge">${offerCount}</span>` : ''}${newCount > 0 ? `<span class="new-offers-badge">+${newCount} new</span>` : ''}
               </button>
-              <button class="btn-share-xekie" onclick="openShareModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
+              <button class="btn-share-xekie" onclick="shareXekie('${x.id}')">Share</button>
               ${!isFulfilled && !isExpired ? `<button class="btn-fulfill" onclick="markFulfilled('${x.id}')">✓ Fulfilled</button>` : ''}
               ${isExpired ? `<button class="btn-repost" onclick="repostXekie('${x.id}')">🔁 Repost</button>` : ''}
               ${!isPromoted && !isFulfilled ? `<button class="btn-promote" onclick="promoteXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">⚡ Promote $5</button>` : isPromoted ? '<span class="promoted-badge">⚡ Promoted</span>' : ''}
@@ -462,7 +381,34 @@
       loadDashboard();
     }
 
-    async function viewOffers(xekieId, title) {
+    function shareXekie(id) {
+      const url = `${window.location.origin}/xekie.html?id=${id}`;
+      if (navigator.share) { navigator.share({ url }).catch(() => {}); }
+      else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
+    }
+
+    async function viewOffers(xekieId, title, totalCount, cardId) {
+      // Mark this XEKIE's offers as seen
+      const seenCounts = getSeenCounts();
+      seenCounts[cardId] = totalCount;
+      saveSeenCounts(seenCounts);
+
+      // Recalculate total new offers and update tab
+      let totalNew = 0;
+      document.querySelectorAll('[id^="card-"]').forEach(card => {
+        const id = card.id.replace('card-', '');
+        const badge = card.querySelector('.new-offers-badge');
+        if (badge && id !== cardId) {
+          const match = badge.textContent.match(/\d+/);
+          if (match) totalNew += parseInt(match[0]);
+        }
+      });
+      updateTabTitle(totalNew);
+
+      // Remove the green "new" badge from this card
+      const cardEl = document.getElementById('card-' + cardId);
+      if (cardEl) { const nb = cardEl.querySelector('.new-offers-badge'); if (nb) nb.remove(); }
+
       document.getElementById('offers-modal-title').textContent = 'Responses: ' + title;
       document.getElementById('offers-list').innerHTML = '<div class="no-offers">Loading...</div>';
       document.getElementById('offers-modal').classList.add('open');
@@ -474,10 +420,7 @@
           <div class="offer-msg">${o.message}</div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
             <div class="offer-time">${timeAgo(o.created_at)}</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <a href="seller.html?id=${o.seller_id}" style="font-size:12px;font-weight:600;color:var(--mid);text-decoration:none;padding:4px 12px;border:1.5px solid var(--border);border-radius:100px;">👤 Profile</a>
-              <a href="messages.html?xekie=${xekieId}&other=${o.seller_id}" style="font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;padding:4px 12px;border:1.5px solid var(--accent);border-radius:100px;">💬 Open Chat</a>
-            </div>
+            <a href="messages.html?xekie=${xekieId}&other=${o.seller_id}" style="font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;padding:4px 12px;border:1.5px solid var(--accent);border-radius:100px;">💬 Open Chat</a>
           </div>
         </div>`).join('');
     }
