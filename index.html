@@ -55,14 +55,31 @@
     @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
 
     /* STATS BAR */
-    .stats-bar { background: var(--black); padding: 20px 24px; overflow: hidden; }
+    .stats-bar { background: var(--black); padding: 20px 24px; }
     .stats-bar-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; }
     .stat-item { display: flex; align-items: center; gap: 10px; padding: 8px 32px; border-right: 1px solid #222; }
     .stat-item:last-child { border-right: none; }
     .stat-num { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--accent); letter-spacing: -0.03em; line-height: 1; }
     .stat-label { font-size: 12px; font-weight: 400; color: #555; text-transform: uppercase; letter-spacing: 0.1em; line-height: 1.3; }
     .stat-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; flex-shrink: 0; }
-    @media(max-width: 600px) { .stat-item { border-right: none; padding: 8px 20px; } }
+
+    /* TRENDING CATEGORIES */
+    .trending { background: var(--cream); padding: 32px 24px; border-bottom: 1px solid var(--border); }
+    .trending-inner { max-width: 960px; margin: 0 auto; }
+    .trending-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .trending-label { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid); }
+    .trending-divider { flex: 1; height: 1px; background: var(--border); }
+    .trending-cards { display: flex; gap: 10px; flex-wrap: wrap; }
+    .trending-card { display: flex; align-items: center; gap: 10px; background: var(--white); border: 1px solid var(--border); border-radius: 100px; padding: 8px 16px 8px 10px; text-decoration: none; color: var(--black); transition: all 0.2s; cursor: pointer; }
+    .trending-card:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    .trending-card.top { border-color: var(--accent); background: var(--accent-dim); }
+    .trending-emoji { font-size: 18px; width: 32px; height: 32px; background: var(--cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .trending-card.top .trending-emoji { background: rgba(255,77,28,0.15); }
+    .trending-info { display: flex; flex-direction: column; }
+    .trending-name { font-size: 13px; font-weight: 600; line-height: 1.2; }
+    .trending-count { font-size: 11px; color: var(--mid); }
+    .trending-card.top .trending-count { color: var(--accent); font-weight: 600; }
+    .trending-rank { font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; }
 
     .section { padding: 100px 24px; }
     .section-inner { max-width: 960px; margin: 0 auto; }
@@ -77,8 +94,6 @@
     .step-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
     .step-desc { font-size: 15px; font-weight: 300; color: var(--mid); line-height: 1.6; }
     .step-accent { position: absolute; bottom: -20px; right: -20px; font-size: 80px; opacity: 0.07; }
-
-    /* SAMPLE XEKIE DEMO */
     .demo-section { background: var(--white); padding: 100px 24px; }
     .demo-inner { max-width: 960px; margin: 0 auto; }
     .demo-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
@@ -103,7 +118,6 @@
     .demo-cta-row { margin-top: 60px; text-align: center; }
     .demo-cta-text { font-size: 17px; font-weight: 300; color: var(--mid); margin-bottom: 20px; }
     .demo-cta-text strong { color: var(--black); font-weight: 500; }
-
     .why { background: var(--black); color: var(--white); }
     .why .section-label { color: var(--accent); }
     .why .section-title { color: var(--white); }
@@ -150,9 +164,9 @@
       .step:last-child { border-radius: 0 0 20px 20px; }
       .why-grid { grid-template-columns: 1fr; }
       .demo-layout { grid-template-columns: 1fr; }
-      .demo-arrow { padding-top: 0; transform: rotate(90deg); }
       footer { padding: 48px 24px 32px; }
       .footer-top { flex-direction: column; }
+      .stat-item { border-right: none; padding: 8px 20px; }
     }
     @media (max-width: 480px) {
       .hero-cta { flex-direction: column; align-items: center; }
@@ -236,6 +250,20 @@
     </div>
   </div>
 
+  <!-- TRENDING CATEGORIES -->
+  <div class="trending">
+    <div class="trending-inner">
+      <div class="trending-header">
+        <span class="trending-label">🔥 Trending this week</span>
+        <div class="trending-divider"></div>
+        <a href="radar.html" style="font-size:12px;color:var(--mid);text-decoration:none;white-space:nowrap;">See all →</a>
+      </div>
+      <div class="trending-cards" id="trending-cards">
+        <div style="font-size:13px;color:var(--mid);">Loading...</div>
+      </div>
+    </div>
+  </div>
+
   <section class="section">
     <div class="section-inner">
       <div class="section-label">How it works</div>
@@ -270,7 +298,6 @@
       <div class="section-label">See it in action</div>
       <h2 class="section-title">Post once. Sellers come to you.</h2>
       <p class="section-sub" style="margin-bottom:48px;">Here's what happens when you post a XEKIE — a real example of how it works.</p>
-
       <div class="demo-layout">
         <div>
           <div class="demo-card">
@@ -287,7 +314,6 @@
             <div class="demo-budget-label">Buyer's budget</div>
           </div>
         </div>
-
         <div>
           <div style="margin-bottom:12px;font-size:13px;font-weight:500;color:var(--mid);letter-spacing:0.05em;">3 sellers responded within 2 hours ↓</div>
           <div class="demo-response">
@@ -306,7 +332,6 @@
           </div>
         </div>
       </div>
-
       <div class="demo-cta-row">
         <div class="demo-cta-text">Ready to try it? <strong>Post your first XEKIE free in under 2 minutes.</strong></div>
         <a href="request.html" class="btn btn-accent" style="font-size:16px;padding:16px 36px;">XEKIE it — it's free →</a>
@@ -404,6 +429,13 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    const CATEGORY_EMOJIS = {
+      'Electronics': '📱', 'Trading Cards': '🃏', 'Vehicles': '🚗',
+      'Tools': '🔧', 'Services': '🛠', 'Household Items': '🏠',
+      'Clothes & Apparel': '👕', 'Books': '📚', 'Toys': '🧸',
+      'Music & Movies': '🎵', 'Collectibles': '🏆', 'Other': '📦'
+    };
+
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         document.getElementById('nav-signin').style.display = 'none';
@@ -436,7 +468,6 @@
           _sb.from('offers').select('*', { count: 'exact', head: true }),
           _sb.from('user_profiles').select('*', { count: 'exact', head: true })
         ]);
-
         function animateCount(el, target) {
           if (!target) { el.textContent = '0'; return; }
           let current = 0;
@@ -447,14 +478,45 @@
             if (current >= target) clearInterval(timer);
           }, 30);
         }
-
         animateCount(document.getElementById('stat-xekies'), xekieCount || 0);
         animateCount(document.getElementById('stat-offers'), offerCount || 0);
         animateCount(document.getElementById('stat-users'), userCount || 0);
       } catch(e) {
-        document.getElementById('stat-xekies').textContent = '—';
-        document.getElementById('stat-offers').textContent = '—';
-        document.getElementById('stat-users').textContent = '—';
+        ['stat-xekies','stat-offers','stat-users'].forEach(id => document.getElementById(id).textContent = '—');
+      }
+    }
+
+    async function loadTrending() {
+      try {
+        const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const { data } = await _sb.from('xekies')
+          .select('category')
+          .eq('is_fulfilled', false)
+          .gte('created_at', since)
+          .not('category', 'is', null);
+
+        if (!data || !data.length) {
+          document.getElementById('trending-cards').innerHTML = '<div style="font-size:13px;color:var(--mid);">No data yet — be the first to post!</div>';
+          return;
+        }
+
+        // Count by category
+        const counts = {};
+        data.forEach(x => { if (x.category) counts[x.category] = (counts[x.category] || 0) + 1; });
+
+        // Sort and take top 5
+        const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+        document.getElementById('trending-cards').innerHTML = sorted.map(([cat, count], i) => `
+          <a href="radar.html?category=${encodeURIComponent(cat)}" class="trending-card ${i === 0 ? 'top' : ''}">
+            <div class="trending-emoji">${CATEGORY_EMOJIS[cat] || '📦'}</div>
+            <div class="trending-info">
+              <div class="trending-name">${cat}</div>
+              <div class="trending-count">${count} XEKIE${count !== 1 ? 's' : ''} this week</div>
+            </div>
+          </a>`).join('');
+      } catch(e) {
+        document.getElementById('trending-cards').innerHTML = '';
       }
     }
 
@@ -497,6 +559,7 @@
     }
 
     loadStats();
+    loadTrending();
     loadRecent();
   </script>
 </body>
