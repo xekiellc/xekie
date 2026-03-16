@@ -21,10 +21,12 @@
     .nav-logo .xe{color:var(--accent);}
     .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
     .nav-right{display:flex;align-items:center;gap:12px;}
-    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;position:relative;}
     .btn-nav:hover{border-color:var(--black);color:var(--black);}
     .btn-nav.primary{background:var(--black);color:var(--white);border-color:transparent;}
     .btn-nav.primary:hover{background:var(--accent);}
+    .msg-badge{position:absolute;top:-4px;right:-4px;background:var(--accent);color:white;border-radius:100px;font-size:10px;font-weight:700;padding:2px 5px;min-width:16px;text-align:center;line-height:14px;display:none;}
+    .msg-badge.show{display:block;}
     .container{max-width:860px;margin:0 auto;padding:48px 20px;flex:1;}
     .page-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:36px;}
     .user-info{display:flex;flex-direction:column;gap:6px;}
@@ -95,11 +97,7 @@
     .btn-modal-submit:hover{background:var(--accent);}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
-
-    /* CONFETTI CANVAS */
     #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;display:none;}
-
-    /* CELEBRATION OVERLAY */
     #celebration-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:none;opacity:0;transition:opacity 0.4s;}
     #celebration-overlay.show{opacity:1;}
     .celebration-box{background:rgba(10,10,10,0.85);backdrop-filter:blur(8px);border-radius:24px;padding:48px 56px;text-align:center;border:1px solid rgba(255,255,255,0.1);}
@@ -107,7 +105,11 @@
     @keyframes celebBounce{from{transform:scale(0) rotate(-10deg)}to{transform:scale(1) rotate(0deg)}}
     .celebration-title{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#fafaf8;letter-spacing:-0.02em;margin-bottom:8px;}
     .celebration-sub{font-size:16px;color:#888;font-weight:300;}
-
+    /* WHERE DID YOU FIND IT modal */
+    .found-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0;}
+    .found-option{padding:14px;border:1.5px solid var(--border);border-radius:12px;background:var(--cream);font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;text-align:center;transition:all 0.2s;}
+    .found-option:hover{border-color:var(--black);}
+    .found-option.selected{background:var(--black);color:var(--white);border-color:var(--black);}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -122,7 +124,6 @@
 </head>
 <body>
   <canvas id="confetti-canvas"></canvas>
-
   <div id="celebration-overlay">
     <div class="celebration-box">
       <span class="celebration-emoji">🎉</span>
@@ -139,7 +140,10 @@
     <div class="nav-right">
       <a href="saved.html" class="btn-nav">🔖 Saved</a>
       <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
-      <a href="messages.html" class="btn-nav">💬 Messages</a>
+      <a href="messages.html" class="btn-nav" id="nav-messages">
+        💬 Messages
+        <span class="msg-badge" id="msg-badge">0</span>
+      </a>
       <a href="request.html" class="btn-nav primary">XEKIE it →</a>
       <button class="btn-nav" onclick="signOut()">Sign out</button>
     </div>
@@ -162,6 +166,7 @@
     <div id="xekie-list"><div style="text-align:center;padding:40px;color:var(--mid);">Loading...</div></div>
   </div>
 
+  <!-- OFFERS MODAL -->
   <div class="modal-overlay" id="offers-modal">
     <div class="modal">
       <button class="modal-close" onclick="closeOffersModal()">✕</button>
@@ -170,6 +175,7 @@
     </div>
   </div>
 
+  <!-- RATING MODAL -->
   <div class="modal-overlay" id="rating-modal">
     <div class="modal" style="text-align:center;">
       <button class="modal-close" onclick="closeRatingModal()">✕</button>
@@ -186,6 +192,27 @@
       <div class="modal-msg" id="rating-msg"></div>
       <button class="btn-modal-submit" id="rating-submit" onclick="submitRating()">Submit rating</button>
       <button onclick="closeRatingModal()" style="width:100%;padding:12px;background:transparent;border:none;color:var(--mid);font-family:var(--font-body);font-size:14px;cursor:pointer;margin-top:8px;">Skip for now</button>
+    </div>
+  </div>
+
+  <!-- WHERE DID YOU FIND IT MODAL -->
+  <div class="modal-overlay" id="found-modal">
+    <div class="modal" style="text-align:center;">
+      <h2 class="modal-title">Where did you find it? 🔍</h2>
+      <p style="font-size:15px;color:var(--mid);margin-bottom:4px;">Help us understand the market.</p>
+      <p style="font-size:13px;color:#bbb;margin-bottom:8px;">This is anonymous data that helps XEKIE improve.</p>
+      <div class="found-options">
+        <button class="found-option" onclick="selectFound(this, 'XEKIE seller')">🔶 XEKIE seller</button>
+        <button class="found-option" onclick="selectFound(this, 'eBay')">🛒 eBay</button>
+        <button class="found-option" onclick="selectFound(this, 'Facebook Marketplace')">📘 Facebook Marketplace</button>
+        <button class="found-option" onclick="selectFound(this, 'Craigslist')">📋 Craigslist</button>
+        <button class="found-option" onclick="selectFound(this, 'Local store')">🏪 Local store</button>
+        <button class="found-option" onclick="selectFound(this, 'Amazon')">📦 Amazon</button>
+        <button class="found-option" onclick="selectFound(this, 'Friend / Word of mouth')">🤝 Friend / Word of mouth</button>
+        <button class="found-option" onclick="selectFound(this, 'Other')">📝 Other</button>
+      </div>
+      <button class="btn-modal-submit" id="found-submit" onclick="submitFoundElsewhere()" disabled style="opacity:0.5;">Save & Continue</button>
+      <button onclick="skipFoundElsewhere()" style="width:100%;padding:12px;background:transparent;border:none;color:var(--mid);font-family:var(--font-body);font-size:13px;cursor:pointer;margin-top:8px;">Skip</button>
     </div>
   </div>
 
@@ -213,217 +240,190 @@
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null;
     const BETA_CUTOFF = new Date('2026-06-01');
+    let pendingFulfillId = null, selectedStar = 0, ratingXekieId = null;
+    let selectedFoundElsewhere = null, pendingFulfillXekieId = null;
 
-    function getSeenCounts() {
-      try { return JSON.parse(localStorage.getItem('xekie_seen_offers') || '{}'); } catch { return {}; }
-    }
-    function saveSeenCounts(counts) {
-      try { localStorage.setItem('xekie_seen_offers', JSON.stringify(counts)); } catch {}
-    }
-    function updateTabTitle(totalNewOffers) {
-      document.title = totalNewOffers > 0 ? `(${totalNewOffers}) XEKIE — Dashboard` : 'XEKIE — Dashboard';
+    function getSeenCounts() { try { return JSON.parse(localStorage.getItem('xekie_seen_offers') || '{}'); } catch { return {}; } }
+    function saveSeenCounts(counts) { try { localStorage.setItem('xekie_seen_offers', JSON.stringify(counts)); } catch {} }
+    function updateTabTitle(totalNewOffers) { document.title = totalNewOffers > 0 ? `(${totalNewOffers}) XEKIE — Dashboard` : 'XEKIE — Dashboard'; }
+
+    // ---- UNREAD MESSAGE BADGE ----
+    async function checkUnreadMessages() {
+      if (!currentUser) return;
+      const { count } = await _sb.from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('recipient_id', currentUser.id)
+        .eq('is_read', false);
+      const badge = document.getElementById('msg-badge');
+      if (count && count > 0) {
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.classList.add('show');
+        document.title = document.title.includes('(') ? document.title : `(${count}) ${document.title}`;
+      } else {
+        badge.classList.remove('show');
+      }
     }
 
-    // ---- CELEBRATION SOUND (Web Audio API) ----
+    // ---- CELEBRATION SOUND ----
     function playCelebrationSound() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const notes = [523, 659, 784, 1047]; // C, E, G, C — major chord arpeggio
+        const notes = [523, 659, 784, 1047];
         notes.forEach((freq, i) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = freq;
+          osc.type = 'sine'; osc.frequency.value = freq;
           gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
           gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + i * 0.12 + 0.05);
           gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.6);
           osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(ctx.currentTime + i * 0.12);
-          osc.stop(ctx.currentTime + i * 0.12 + 0.6);
+          osc.start(ctx.currentTime + i * 0.12); osc.stop(ctx.currentTime + i * 0.12 + 0.6);
         });
-        // Final sparkle burst
-        setTimeout(() => {
-          const bufferSize = ctx.sampleRate * 0.3;
-          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-          const data = buffer.getChannelData(0);
-          for (let j = 0; j < bufferSize; j++) {
-            data[j] = (Math.random() * 2 - 1) * Math.pow(1 - j / bufferSize, 3) * 0.3;
-          }
-          const source = ctx.createBufferSource();
-          source.buffer = buffer;
-          const filter = ctx.createBiquadFilter();
-          filter.type = 'highpass';
-          filter.frequency.value = 3000;
-          const gain = ctx.createGain();
-          gain.gain.value = 0.4;
-          source.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
-          source.start(ctx.currentTime);
-        }, 500);
-      } catch(e) { /* silent fail */ }
+      } catch(e) {}
     }
 
-    // ---- CONFETTI ----
     function launchConfetti() {
       const canvas = document.getElementById('confetti-canvas');
       canvas.style.display = 'block';
       const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
       const pieces = [];
       const colors = ['#ff4d1c','#ffd700','#ff69b4','#00cfff','#7fff00','#ff8c00','#a855f7','#fafaf8'];
       for (let i = 0; i < 150; i++) {
-        pieces.push({
-          x: Math.random() * canvas.width,
-          y: -10 - Math.random() * 200,
-          w: 8 + Math.random() * 8,
-          h: 4 + Math.random() * 4,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          rotation: Math.random() * Math.PI * 2,
-          rotSpeed: (Math.random() - 0.5) * 0.15,
-          vy: 2 + Math.random() * 4,
-          vx: (Math.random() - 0.5) * 3,
-          alpha: 1
-        });
+        pieces.push({ x: Math.random()*canvas.width, y: -10-Math.random()*200, w: 8+Math.random()*8, h: 4+Math.random()*4, color: colors[Math.floor(Math.random()*colors.length)], rotation: Math.random()*Math.PI*2, rotSpeed: (Math.random()-0.5)*0.15, vy: 2+Math.random()*4, vx: (Math.random()-0.5)*3, alpha: 1 });
       }
       let frame = 0;
       function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        pieces.forEach(p => {
-          p.y += p.vy; p.x += p.vx; p.rotation += p.rotSpeed;
-          if (frame > 90) p.alpha -= 0.015;
-          ctx.save();
-          ctx.globalAlpha = Math.max(0, p.alpha);
-          ctx.translate(p.x, p.y);
-          ctx.rotate(p.rotation);
-          ctx.fillStyle = p.color;
-          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-          ctx.restore();
-        });
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        pieces.forEach(p => { p.y+=p.vy; p.x+=p.vx; p.rotation+=p.rotSpeed; if(frame>90)p.alpha-=0.015; ctx.save(); ctx.globalAlpha=Math.max(0,p.alpha); ctx.translate(p.x,p.y); ctx.rotate(p.rotation); ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore(); });
         frame++;
-        if (frame < 160) requestAnimationFrame(animate);
-        else { canvas.style.display = 'none'; }
+        if(frame<160)requestAnimationFrame(animate);
+        else canvas.style.display='none';
       }
       animate();
     }
 
     function launchCelebration() {
-      playCelebrationSound();
-      launchConfetti();
+      playCelebrationSound(); launchConfetti();
       const overlay = document.getElementById('celebration-overlay');
       overlay.classList.add('show');
       setTimeout(() => overlay.classList.remove('show'), 3000);
     }
 
     function timeAgo(ts) {
-      const s = Math.floor((new Date() - new Date(ts)) / 1000);
-      for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
-        const c = Math.floor(s/sec); if (c>=1) return c+" "+l+(c>1?"s":"")+" ago";
-      }
+      const s = Math.floor((new Date()-new Date(ts))/1000);
+      for(const [l,sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]){const c=Math.floor(s/sec);if(c>=1)return c+" "+l+(c>1?"s":"")+" ago";}
       return "just now";
     }
 
     function formatBudget(x) {
-      if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
-      if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
-      if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
-      if (x.budget) return '$'+Number(x.budget).toLocaleString();
-      return '$—';
+      if(x.budget_min&&x.budget_max)return'$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
+      if(x.budget_min)return'$'+Number(x.budget_min).toLocaleString()+'+';
+      if(x.budget_max)return'Up to $'+Number(x.budget_max).toLocaleString();
+      if(x.budget)return'$'+Number(x.budget).toLocaleString();
+      return'$—';
     }
 
     function getExpiryDisplay(x) {
-      if (x.is_fulfilled) return '';
-      if (!x.expires_at) return '<span class="expiry-info">♾️ No expiry</span>';
-      const exp = new Date(x.expires_at), now = new Date();
-      if (exp < now) return '<span class="status-badge status-expired">⏰ Expired</span>';
-      const hoursLeft = Math.floor((exp - now) / 3600000);
-      if (hoursLeft < 24) return `<span class="expiry-info urgent">⚠️ Expires in ${hoursLeft}h</span>`;
-      const daysLeft = Math.floor(hoursLeft / 24);
-      return `<span class="expiry-info">⏱ ${daysLeft} day${daysLeft!==1?'s':''} left</span>`;
+      if(x.is_fulfilled)return'';
+      if(!x.expires_at)return'<span class="expiry-info">♾️ No expiry</span>';
+      const exp=new Date(x.expires_at),now=new Date();
+      if(exp<now)return'<span class="status-badge status-expired">⏰ Expired</span>';
+      const hoursLeft=Math.floor((exp-now)/3600000);
+      if(hoursLeft<24)return`<span class="expiry-info urgent">⚠️ Expires in ${hoursLeft}h</span>`;
+      const daysLeft=Math.floor(hoursLeft/24);
+      return`<span class="expiry-info">⏱ ${daysLeft} day${daysLeft!==1?'s':''} left</span>`;
     }
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('promoted') === 'success') {
-      const t = document.getElementById('share-toast');
-      t.textContent = '⚡ Your XEKIE is now promoted!';
+    if(urlParams.get('promoted')==='success'){
+      const t=document.getElementById('share-toast');
+      t.textContent='⚡ Your XEKIE is now promoted!';
       t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 4000);
-      window.history.replaceState({}, '', 'dashboard.html');
+      setTimeout(()=>t.classList.remove('show'),4000);
+      window.history.replaceState({},'','dashboard.html');
     }
 
-    _sb.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) { window.location.href = 'login.html'; return; }
-      currentUser = session.user;
-      const name = session.user.user_metadata?.full_name || session.user.email;
-      document.getElementById('user-name').textContent = name;
-      const joined = new Date(session.user.created_at);
-      document.getElementById('user-meta').textContent = 'Member since ' + joined.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      if (joined < BETA_CUTOFF) document.getElementById('early-badge-container').innerHTML = '<div class="early-badge">⚡ Early Adopter</div>';
+    _sb.auth.getSession().then(async({data:{session}})=>{
+      if(!session){window.location.href='login.html';return;}
+      currentUser=session.user;
+      const name=session.user.user_metadata?.full_name||session.user.email;
+      document.getElementById('user-name').textContent=name;
+      const joined=new Date(session.user.created_at);
+      document.getElementById('user-meta').textContent='Member since '+joined.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+      if(joined<BETA_CUTOFF)document.getElementById('early-badge-container').innerHTML='<div class="early-badge">⚡ Early Adopter</div>';
       loadDashboard();
+      checkUnreadMessages();
+      // Check unread messages every 30 seconds
+      setInterval(checkUnreadMessages, 30000);
+      // Real-time unread badge update
+      _sb.channel('unread-badge').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`recipient_id=eq.${session.user.id}`},()=>checkUnreadMessages()).subscribe();
     });
 
     async function loadDashboard() {
-      const { data: xekies } = await _sb.from('xekies').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-      const list = xekies || [];
-      const ids = list.map(x => x.id);
-      let offerCounts = {};
-      if (ids.length) {
-        const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
-        (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
+      const{data:xekies}=await _sb.from('xekies').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+      const list=xekies||[];
+      const ids=list.map(x=>x.id);
+      let offerCounts={};
+      if(ids.length){
+        const{data:offers}=await _sb.from('offers').select('xekie_id').in('xekie_id',ids);
+        (offers||[]).forEach(o=>{offerCounts[o.xekie_id]=(offerCounts[o.xekie_id]||0)+1;});
       }
-      const seenCounts = getSeenCounts();
-      let totalNewOffers = 0;
-      const newOfferCounts = {};
-      ids.forEach(id => {
-        const current = offerCounts[id] || 0;
-        const seen = seenCounts[id] || 0;
-        const newCount = Math.max(0, current - seen);
-        newOfferCounts[id] = newCount;
-        totalNewOffers += newCount;
+      const seenCounts=getSeenCounts();
+      let totalNewOffers=0;
+      const newOfferCounts={};
+      ids.forEach(id=>{
+        const current=offerCounts[id]||0;
+        const seen=seenCounts[id]||0;
+        const newCount=Math.max(0,current-seen);
+        newOfferCounts[id]=newCount;
+        totalNewOffers+=newCount;
       });
       updateTabTitle(totalNewOffers);
-      document.getElementById('stat-xekies').textContent = list.length;
-      document.getElementById('stat-offers').textContent = Object.values(offerCounts).reduce((a,b)=>a+b,0);
-      document.getElementById('stat-views').textContent = list.reduce((a,x)=>a+(x.view_count||0),0);
-      const container = document.getElementById('xekie-list');
-      if (!list.length) {
-        container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Nothing XEKIE'd yet</div><p class="empty-sub">Can't find something? Just XEKIE it — tell sellers what you want and let them come to you.</p><a href="request.html" class="btn-nav primary" style="display:inline-block;">XEKIE something →</a></div>`;
+      document.getElementById('stat-xekies').textContent=list.length;
+      document.getElementById('stat-offers').textContent=Object.values(offerCounts).reduce((a,b)=>a+b,0);
+      document.getElementById('stat-views').textContent=list.reduce((a,x)=>a+(x.view_count||0),0);
+      const container=document.getElementById('xekie-list');
+      if(!list.length){
+        container.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Nothing XEKIE'd yet</div><p class="empty-sub">Can't find something? Just XEKIE it — tell sellers what you want and let them come to you.</p><a href="request.html" class="btn-nav primary" style="display:inline-block;">XEKIE something →</a></div>`;
         return;
       }
-      container.innerHTML = list.map(x => {
-        const budget = formatBudget(x);
-        const flexTag = x.is_flexible ? '<span class="card-budget-flex">flexible</span>' : '';
-        const offerCount = offerCounts[x.id] || 0;
-        const newCount = newOfferCounts[x.id] || 0;
-        const isFulfilled = x.is_fulfilled;
-        const expiryDisplay = getExpiryDisplay(x);
-        const isExpired = !isFulfilled && x.expires_at && new Date(x.expires_at) < new Date();
-        const cardClass = isFulfilled ? 'fulfilled' : isExpired ? 'expired' : '';
-        const isPromoted = x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date();
-        return `<div class="xekie-card ${cardClass}" id="card-${x.id}">
+      container.innerHTML=list.map(x=>{
+        const budget=formatBudget(x);
+        const flexTag=x.is_flexible?'<span class="card-budget-flex">flexible</span>':'';
+        const offerCount=offerCounts[x.id]||0;
+        const newCount=newOfferCounts[x.id]||0;
+        const isFulfilled=x.is_fulfilled;
+        const expiryDisplay=getExpiryDisplay(x);
+        const isExpired=!isFulfilled&&x.expires_at&&new Date(x.expires_at)<new Date();
+        const cardClass=isFulfilled?'fulfilled':isExpired?'expired':'';
+        const isPromoted=x.is_promoted&&x.promoted_until&&new Date(x.promoted_until)>new Date();
+        const foundElsewhere=x.found_elsewhere;
+        return`<div class="xekie-card ${cardClass}" id="card-${x.id}">
           <div class="card-header">
             <div>
-              ${isFulfilled ? '<span class="status-badge status-fulfilled">✓ Fulfilled</span>' : ''}
+              ${isFulfilled?`<span class="status-badge status-fulfilled">✓ Fulfilled${foundElsewhere?' via '+foundElsewhere:''}</span>`:''}
               <div class="card-title">${x.title}</div>
             </div>
             <div class="card-budget">${budget}${flexTag}</div>
           </div>
-          ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
+          ${x.description?`<div class="card-desc">${x.description}</div>`:''}
           <div class="card-footer">
             <div class="card-meta">
-              ${x.location ? `<span>📍 ${x.location}</span>` : ''}
+              ${x.location?`<span>📍 ${x.location}</span>`:''}
               <span>⏱ ${timeAgo(x.created_at)}</span>
-              ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
+              ${x.category?`<span class="category-pill">${x.category}</span>`:''}
               <span class="view-count">👁 ${x.view_count||0} views</span>
               ${expiryDisplay}
             </div>
             <div class="card-actions">
-              <button class="btn-view-offers" onclick="viewOffers('${x.id}','${(x.title||'').replace(/'/g,"\\'")}', ${offerCount}, '${x.id}')">
-                Responses${offerCount ? `<span class="offers-badge">${offerCount}</span>` : ''}${newCount > 0 ? `<span class="new-offers-badge">+${newCount} new</span>` : ''}
+              <button class="btn-view-offers" onclick="viewOffers('${x.id}','${(x.title||'').replace(/'/g,"\\'")}',${offerCount},'${x.id}')">
+                Responses${offerCount?`<span class="offers-badge">${offerCount}</span>`:''}${newCount>0?`<span class="new-offers-badge">+${newCount} new</span>`:''}
               </button>
               <button class="btn-share-xekie" onclick="shareXekie('${x.id}')">Share</button>
-              ${!isFulfilled && !isExpired ? `<button class="btn-fulfill" onclick="markFulfilled('${x.id}')">✓ Fulfilled</button>` : ''}
-              ${isExpired ? `<button class="btn-repost" onclick="repostXekie('${x.id}')">🔁 Repost</button>` : ''}
-              ${!isPromoted && !isFulfilled ? `<button class="btn-promote" onclick="promoteXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">⚡ Promote $5</button>` : isPromoted ? '<span class="promoted-badge">⚡ Promoted</span>' : ''}
+              ${!isFulfilled&&!isExpired?`<button class="btn-fulfill" onclick="markFulfilled('${x.id}')">✓ Fulfilled</button>`:''}
+              ${isExpired?`<button class="btn-repost" onclick="repostXekie('${x.id}')">🔁 Repost</button>`:''}
+              ${!isPromoted&&!isFulfilled?`<button class="btn-promote" onclick="promoteXekie('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">⚡ Promote $5</button>`:isPromoted?'<span class="promoted-badge">⚡ Promoted</span>':''}
               <button class="btn-delete" onclick="deleteXekie('${x.id}')">Delete</button>
             </div>
           </div>
@@ -431,94 +431,111 @@
       }).join('');
     }
 
-    let pendingFulfillId = null, selectedStar = 0, ratingXekieId = null;
-
+    // ---- FULFILLED + WHERE DID YOU FIND IT ----
     async function markFulfilled(id) {
-      if (!confirm('Mark this XEKIE as fulfilled?')) return;
-      const { error } = await _sb.from('xekies').update({ is_fulfilled: true }).eq('id', id).eq('user_id', currentUser.id);
-      if (!error) {
+      if(!confirm('Mark this XEKIE as fulfilled?'))return;
+      const{error}=await _sb.from('xekies').update({is_fulfilled:true}).eq('id',id).eq('user_id',currentUser.id);
+      if(!error){
         launchCelebration();
-        setTimeout(() => {
-          loadDashboard();
-          const { data: offers } = _sb.from('offers').select('seller_id').eq('xekie_id', id).limit(1).then(({ data: offers }) => {
-            if (offers && offers.length) {
-              ratingXekieId = id; pendingFulfillId = offers[0].seller_id; selectedStar = 0;
-              document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('active'));
-              document.getElementById('rating-comment').value = '';
-              document.getElementById('rating-msg').className = 'modal-msg';
-              document.getElementById('rating-msg').style.display = 'none';
-              document.getElementById('rating-submit').disabled = false;
-              document.getElementById('rating-submit').textContent = 'Submit rating';
-              setTimeout(() => document.getElementById('rating-modal').classList.add('open'), 600);
-            }
-          });
-        }, 3200);
+        pendingFulfillXekieId = id;
+        // Show "where did you find it" modal after celebration
+        setTimeout(()=>{
+          document.getElementById('found-modal').classList.add('open');
+        }, 1500);
       }
     }
 
-    function setStar(n) {
-      selectedStar = n;
-      document.querySelectorAll('.star-btn').forEach((b, i) => b.classList.toggle('active', i < n));
+    function selectFound(btn, value) {
+      document.querySelectorAll('.found-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedFoundElsewhere = value;
+      document.getElementById('found-submit').disabled = false;
+      document.getElementById('found-submit').style.opacity = '1';
     }
 
-    async function submitRating() {
-      if (!selectedStar) { const m = document.getElementById('rating-msg'); m.className='modal-msg error'; m.style.display='block'; m.textContent='Please select a star rating.'; return; }
-      const comment = document.getElementById('rating-comment').value.trim();
-      const btn = document.getElementById('rating-submit');
-      btn.disabled = true; btn.textContent = 'Submitting...';
-      const { error } = await _sb.from('ratings').insert({ xekie_id: ratingXekieId, buyer_id: currentUser.id, seller_id: pendingFulfillId, stars: selectedStar, comment: comment || null });
-      if (error) { const m = document.getElementById('rating-msg'); m.className='modal-msg error'; m.style.display='block'; m.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Submit rating'; }
-      else { const m = document.getElementById('rating-msg'); m.className='modal-msg success'; m.style.display='block'; m.textContent='Rating submitted! Thank you. ✓'; btn.textContent='Submitted ✓'; setTimeout(closeRatingModal, 1500); }
+    async function submitFoundElsewhere() {
+      if (!selectedFoundElsewhere || !pendingFulfillXekieId) { proceedToRating(); return; }
+      await _sb.from('xekies').update({ found_elsewhere: selectedFoundElsewhere }).eq('id', pendingFulfillXekieId);
+      document.getElementById('found-modal').classList.remove('open');
+      proceedToRating();
     }
 
-    function closeRatingModal() { document.getElementById('rating-modal').classList.remove('open'); }
+    function skipFoundElsewhere() {
+      document.getElementById('found-modal').classList.remove('open');
+      proceedToRating();
+    }
 
-    async function repostXekie(id) {
-      if (!confirm('Repost this XEKIE for another week?')) return;
-      const newExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-      const { error } = await _sb.from('xekies').update({ expires_at: newExpiry, is_fulfilled: false, view_count: 0 }).eq('id', id).eq('user_id', currentUser.id);
-      if (!error) {
-        loadDashboard();
-        const t = document.getElementById('share-toast');
-        t.textContent = '🔁 XEKIE reposted for another week!';
-        t.classList.add('show');
-        setTimeout(() => { t.classList.remove('show'); t.textContent = 'Link copied! 🔗'; }, 3000);
+    async function proceedToRating() {
+      loadDashboard();
+      const{data:offers}=await _sb.from('offers').select('seller_id').eq('xekie_id',pendingFulfillXekieId).limit(1);
+      if(offers&&offers.length){
+        ratingXekieId=pendingFulfillXekieId;
+        pendingFulfillId=offers[0].seller_id;
+        selectedStar=0;
+        document.querySelectorAll('.star-btn').forEach(b=>b.classList.remove('active'));
+        document.getElementById('rating-comment').value='';
+        document.getElementById('rating-msg').className='modal-msg';
+        document.getElementById('rating-msg').style.display='none';
+        document.getElementById('rating-submit').disabled=false;
+        document.getElementById('rating-submit').textContent='Submit rating';
+        setTimeout(()=>document.getElementById('rating-modal').classList.add('open'),400);
       }
     }
 
-    async function deleteXekie(id) {
-      if (!confirm('Delete this XEKIE? This cannot be undone.')) return;
-      await _sb.from('xekies').delete().eq('id', id).eq('user_id', currentUser.id);
+    function setStar(n){selectedStar=n;document.querySelectorAll('.star-btn').forEach((b,i)=>b.classList.toggle('active',i<n));}
+
+    async function submitRating(){
+      if(!selectedStar){const m=document.getElementById('rating-msg');m.className='modal-msg error';m.style.display='block';m.textContent='Please select a star rating.';return;}
+      const comment=document.getElementById('rating-comment').value.trim();
+      const btn=document.getElementById('rating-submit');
+      btn.disabled=true;btn.textContent='Submitting...';
+      const{error}=await _sb.from('ratings').insert({xekie_id:ratingXekieId,buyer_id:currentUser.id,seller_id:pendingFulfillId,stars:selectedStar,comment:comment||null});
+      if(error){const m=document.getElementById('rating-msg');m.className='modal-msg error';m.style.display='block';m.textContent='Error: '+error.message;btn.disabled=false;btn.textContent='Submit rating';}
+      else{const m=document.getElementById('rating-msg');m.className='modal-msg success';m.style.display='block';m.textContent='Rating submitted! Thank you. ✓';btn.textContent='Submitted ✓';setTimeout(closeRatingModal,1500);}
+    }
+
+    function closeRatingModal(){document.getElementById('rating-modal').classList.remove('open');}
+
+    async function repostXekie(id){
+      if(!confirm('Repost this XEKIE for another week?'))return;
+      const newExpiry=new Date(Date.now()+7*24*60*60*1000).toISOString();
+      const{error}=await _sb.from('xekies').update({expires_at:newExpiry,is_fulfilled:false,view_count:0}).eq('id',id).eq('user_id',currentUser.id);
+      if(!error){loadDashboard();const t=document.getElementById('share-toast');t.textContent='🔁 XEKIE reposted for another week!';t.classList.add('show');setTimeout(()=>{t.classList.remove('show');t.textContent='Link copied! 🔗';},3000);}
+    }
+
+    async function deleteXekie(id){
+      if(!confirm('Delete this XEKIE? This cannot be undone.'))return;
+      await _sb.from('xekies').delete().eq('id',id).eq('user_id',currentUser.id);
       loadDashboard();
     }
 
-    function shareXekie(id) {
-      const url = `${window.location.origin}/xekie.html?id=${id}`;
-      if (navigator.share) { navigator.share({ url }).catch(() => {}); }
-      else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
+    function shareXekie(id){
+      const url=`${window.location.origin}/xekie.html?id=${id}`;
+      if(navigator.share){navigator.share({url}).catch(()=>{});}
+      else{navigator.clipboard.writeText(url).then(()=>{const t=document.getElementById('share-toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);});}
     }
 
-    async function viewOffers(xekieId, title, totalCount, cardId) {
-      const seenCounts = getSeenCounts();
-      seenCounts[cardId] = totalCount;
+    async function viewOffers(xekieId,title,totalCount,cardId){
+      const seenCounts=getSeenCounts();
+      seenCounts[cardId]=totalCount;
       saveSeenCounts(seenCounts);
-      let totalNew = 0;
-      document.querySelectorAll('[id^="card-"]').forEach(card => {
-        const id = card.id.replace('card-', '');
-        const badge = card.querySelector('.new-offers-badge');
-        if (badge && id !== cardId) { const match = badge.textContent.match(/\d+/); if (match) totalNew += parseInt(match[0]); }
+      let totalNew=0;
+      document.querySelectorAll('[id^="card-"]').forEach(card=>{
+        const id=card.id.replace('card-','');
+        const badge=card.querySelector('.new-offers-badge');
+        if(badge&&id!==cardId){const match=badge.textContent.match(/\d+/);if(match)totalNew+=parseInt(match[0]);}
       });
       updateTabTitle(totalNew);
-      const cardEl = document.getElementById('card-' + cardId);
-      if (cardEl) { const nb = cardEl.querySelector('.new-offers-badge'); if (nb) nb.remove(); }
-      document.getElementById('offers-modal-title').textContent = 'Responses: ' + title;
-      document.getElementById('offers-list').innerHTML = '<div class="no-offers">Loading...</div>';
+      const cardEl=document.getElementById('card-'+cardId);
+      if(cardEl){const nb=cardEl.querySelector('.new-offers-badge');if(nb)nb.remove();}
+      document.getElementById('offers-modal-title').textContent='Responses: '+title;
+      document.getElementById('offers-list').innerHTML='<div class="no-offers">Loading...</div>';
       document.getElementById('offers-modal').classList.add('open');
-      const { data: offers } = await _sb.from('offers').select('*').eq('xekie_id', xekieId).order('created_at', { ascending: false });
-      if (!offers || !offers.length) { document.getElementById('offers-list').innerHTML = '<div class="no-offers">No responses yet. Share your XEKIE to get more visibility!</div>'; return; }
-      document.getElementById('offers-list').innerHTML = offers.map(o => `
+      const{data:offers}=await _sb.from('offers').select('*').eq('xekie_id',xekieId).order('created_at',{ascending:false});
+      if(!offers||!offers.length){document.getElementById('offers-list').innerHTML='<div class="no-offers">No responses yet. Share your XEKIE to get more visibility!</div>';return;}
+      document.getElementById('offers-list').innerHTML=offers.map(o=>`
         <div class="offer-item">
-          ${o.price ? `<div class="offer-price">$${Number(o.price).toLocaleString()}</div>` : ''}
+          ${o.price?`<div class="offer-price">$${Number(o.price).toLocaleString()}</div>`:''}
           <div class="offer-msg">${o.message}</div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
             <div class="offer-time">${timeAgo(o.created_at)}</div>
@@ -527,22 +544,23 @@
         </div>`).join('');
     }
 
-    function closeOffersModal() { document.getElementById('offers-modal').classList.remove('open'); }
-    document.getElementById('offers-modal').addEventListener('click', e => { if (e.target === document.getElementById('offers-modal')) closeOffersModal(); });
-    document.getElementById('rating-modal').addEventListener('click', e => { if (e.target === document.getElementById('rating-modal')) closeRatingModal(); });
+    function closeOffersModal(){document.getElementById('offers-modal').classList.remove('open');}
+    document.getElementById('offers-modal').addEventListener('click',e=>{if(e.target===document.getElementById('offers-modal'))closeOffersModal();});
+    document.getElementById('rating-modal').addEventListener('click',e=>{if(e.target===document.getElementById('rating-modal'))closeRatingModal();});
+    document.getElementById('found-modal').addEventListener('click',e=>{if(e.target===document.getElementById('found-modal'))skipFoundElsewhere();});
 
-    async function promoteXekie(id, title) {
-      const btn = event.target;
-      btn.disabled = true; btn.textContent = 'Loading...';
-      try {
-        const res = await fetch('/.netlify/functions/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ xekieId: id, xekieTitle: title, userId: currentUser.id }) });
-        const data = await res.json();
-        if (data.url) window.location.href = data.url;
-        else { btn.disabled = false; btn.textContent = '⚡ Promote $5'; alert('Error: ' + (data.error || 'Unknown')); }
-      } catch(e) { btn.disabled = false; btn.textContent = '⚡ Promote $5'; }
+    async function promoteXekie(id,title){
+      const btn=event.target;
+      btn.disabled=true;btn.textContent='Loading...';
+      try{
+        const res=await fetch('/.netlify/functions/create-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xekieId:id,xekieTitle:title,userId:currentUser.id})});
+        const data=await res.json();
+        if(data.url)window.location.href=data.url;
+        else{btn.disabled=false;btn.textContent='⚡ Promote $5';alert('Error: '+(data.error||'Unknown'));}
+      }catch(e){btn.disabled=false;btn.textContent='⚡ Promote $5';}
     }
 
-    async function signOut() { await _sb.auth.signOut(); window.location.href = 'login.html'; }
+    async function signOut(){await _sb.auth.signOut();window.location.href='login.html';}
   </script>
 </body>
 </html>
