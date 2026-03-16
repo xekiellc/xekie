@@ -101,6 +101,18 @@
     .modal-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
     .btn-modal-submit{width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
     .btn-modal-submit:hover{background:var(--accent);}
+    /* Share modal */
+    .share-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;padding:0;}
+    .share-modal.open{display:flex;}
+    .share-sheet{background:var(--white);border-radius:24px 24px 0 0;padding:32px 24px 40px;width:100%;max-width:480px;}
+    .share-sheet-title{font-family:var(--font-display);font-size:18px;font-weight:800;margin-bottom:6px;}
+    .share-sheet-sub{font-size:13px;color:var(--mid);margin-bottom:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .share-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+    .share-option{display:flex;align-items:center;gap:10px;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;background:var(--white);font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--black);}
+    .share-option:hover{border-color:var(--black);background:var(--cream);}
+    .share-option-icon{font-size:20px;width:28px;text-align:center;}
+    .share-cancel{width:100%;padding:14px;background:var(--cream);border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;color:var(--mid);transition:all 0.2s;margin-top:4px;}
+    .share-cancel:hover{background:var(--border);color:var(--black);}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;font-weight:500;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
@@ -112,7 +124,7 @@
     .footer-links a{font-size:13px;color:#666;text-decoration:none;}
     .footer-links a:hover{color:var(--white);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
-    @media(max-width:600px){nav{padding:0 20px;}.card-top{flex-direction:column;}.swipe-tip{display:block;}.filter-grid{grid-template-columns:1fr 1fr;}}
+    @media(max-width:600px){nav{padding:0 20px;}.card-top{flex-direction:column;}.swipe-tip{display:block;}.filter-grid{grid-template-columns:1fr 1fr;}.share-options{grid-template-columns:1fr 1fr;}}
   </style>
 </head>
 <body>
@@ -180,6 +192,23 @@
     </div>
   </div>
 
+  <!-- SHARE MODAL -->
+  <div class="share-modal" id="share-modal" onclick="if(event.target===this)closeShareModal()">
+    <div class="share-sheet">
+      <div class="share-sheet-title">Share XEKIE</div>
+      <div class="share-sheet-sub" id="share-sheet-sub"></div>
+      <div class="share-options">
+        <button class="share-option" onclick="doShare('copy')"><span class="share-option-icon">🔗</span>Copy Link</button>
+        <button class="share-option" onclick="doShare('sms')"><span class="share-option-icon">💬</span>iMessage</button>
+        <button class="share-option" onclick="doShare('facebook')"><span class="share-option-icon">📘</span>Facebook</button>
+        <button class="share-option" onclick="doShare('x')"><span class="share-option-icon">𝕏</span>Post on X</button>
+        <button class="share-option" onclick="doShare('whatsapp')"><span class="share-option-icon">💚</span>WhatsApp</button>
+        <button class="share-option" onclick="doShare('email')"><span class="share-option-icon">📧</span>Email</button>
+      </div>
+      <button class="share-cancel" onclick="closeShareModal()">Cancel</button>
+    </div>
+  </div>
+
   <div class="share-toast" id="share-toast">Link copied! 🔗</div>
 
   <footer>
@@ -204,6 +233,7 @@
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let allXekies = [], activeCategory = '', currentUser = null, activeXekieId = null, activeXekieOwner = null;
     let offerCounts = {};
+    let shareUrl = '', shareTitle = '';
     const BETA_CUTOFF = new Date('2026-06-01');
 
     const radarParams = new URLSearchParams(window.location.search);
@@ -322,7 +352,7 @@
               ${cnt > 0 ? `<span class="response-badge ${cnt >= 5 ? 'hot-badge' : ''}">${cnt >= 5 ? '🔥' : '💬'} ${cnt} response${cnt!==1?'s':''}</span>` : ''}
             </div>
             <div class="card-actions">
-              <button class="btn-share" onclick="shareXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
+              <button class="btn-share" onclick="openShareModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
               ${canRespond ? `<button class="btn-respond" onclick="openModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}', '${x.user_id}')">Respond</button>` : ''}
             </div>
           </div>
@@ -353,10 +383,47 @@
       window.location.href = 'watches.html?' + params.toString();
     }
 
-    function shareXekie(id, title) {
-      const url = `${window.location.origin}/xekie.html?id=${id}`;
-      if (navigator.share) { navigator.share({ title: 'XEKIE — ' + title, url }).catch(() => {}); }
-      else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
+    // Share modal
+    function openShareModal(id, title) {
+      shareUrl = `${window.location.origin}/xekie.html?id=${id}`;
+      shareTitle = title;
+      document.getElementById('share-sheet-sub').textContent = title;
+      document.getElementById('share-modal').classList.add('open');
+    }
+
+    function closeShareModal() {
+      document.getElementById('share-modal').classList.remove('open');
+    }
+
+    function doShare(type) {
+      const encoded = encodeURIComponent(shareUrl);
+      const text = encodeURIComponent(`Check out this XEKIE: ${shareTitle}`);
+      closeShareModal();
+      switch(type) {
+        case 'copy':
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            const t = document.getElementById('share-toast');
+            t.textContent = 'Link copied! 🔗';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+          });
+          break;
+        case 'sms':
+          window.open(`sms:&body=${text}%20${encoded}`);
+          break;
+        case 'facebook':
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encoded}`, '_blank');
+          break;
+        case 'x':
+          window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encoded}`, '_blank');
+          break;
+        case 'whatsapp':
+          window.open(`https://wa.me/?text=${text}%20${encoded}`, '_blank');
+          break;
+        case 'email':
+          window.open(`mailto:?subject=${encodeURIComponent('Check out this XEKIE: ' + shareTitle)}&body=${text}%20${encoded}`);
+          break;
+      }
     }
 
     function openModal(xekieId, title, ownerId) {
