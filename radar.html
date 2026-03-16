@@ -71,11 +71,14 @@
     .card-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
     .card-meta{font-size:13px;color:var(--mid);display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
     .category-pill{display:inline-block;font-size:12px;font-weight:500;padding:3px 10px;border-radius:100px;background:var(--cream);color:var(--mid);border:1px solid var(--border);}
-    .card-actions{display:flex;gap:8px;align-items:center;}
+    .card-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
     .btn-respond{font-size:13px;font-weight:500;padding:9px 18px;border-radius:100px;background:var(--black);color:var(--white);border:none;cursor:pointer;transition:background 0.2s,transform 0.15s;}
     .btn-respond:hover{background:var(--accent);transform:translateY(-1px);}
     .btn-share{font-size:13px;font-weight:500;padding:9px 14px;border-radius:100px;background:transparent;color:var(--mid);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;}
     .btn-share:hover{border-color:var(--black);color:var(--black);}
+    .btn-have-this{font-size:13px;font-weight:500;padding:9px 14px;border-radius:100px;background:transparent;color:#3B6D11;border:1.5px solid #c0dd97;cursor:pointer;transition:all 0.2s;}
+    .btn-have-this:hover{background:#EAF3DE;}
+    .btn-have-this.bookmarked{background:#EAF3DE;color:#3B6D11;border-color:#c0dd97;}
     .view-count{font-size:12px;color:var(--mid);}
     .response-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:#EAF3DE;color:#3B6D11;}
     .early-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;letter-spacing:0.03em;}
@@ -205,7 +208,7 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let allXekies = [], activeCategory = '', currentUser = null, activeXekieId = null, activeXekieOwner = null;
-    let offerCounts = {};
+    let offerCounts = {}, bookmarkedIds = new Set();
     const BETA_CUTOFF = new Date('2026-06-01');
 
     const radarParams = new URLSearchParams(window.location.search);
@@ -243,6 +246,12 @@
         const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
         offerCounts = {};
         (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
+
+        // Load seller bookmarks if logged in
+        if (currentUser) {
+          const { data: bookmarks } = await _sb.from('seller_bookmarks').select('xekie_id').eq('seller_id', currentUser.id);
+          bookmarkedIds = new Set((bookmarks || []).map(b => b.xekie_id));
+        }
       }
       if (urlCategory) {
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -298,6 +307,8 @@
         const isPromoted = x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date();
         const cnt = offerCounts[x.id] || 0;
         const isHot = cnt >= 3 && !fulfilled && !expired;
+        const isBookmarked = bookmarkedIds.has(x.id);
+        const isOwn = currentUser && currentUser.id === x.user_id;
         let statusBadge = '';
         if (fulfilled) statusBadge = '<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
         else if (expired) statusBadge = '<span class="status-badge status-expired">⏰ Expired</span>';
@@ -329,6 +340,10 @@
             </div>
             <div class="card-actions">
               <button class="btn-share" onclick="shareXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
+              ${canRespond && !isOwn && currentUser ? `
+                <button class="btn-have-this ${isBookmarked ? 'bookmarked' : ''}" id="bookmark-${x.id}" onclick="toggleBookmark('${x.id}', this)">
+                  ${isBookmarked ? '✓ I have this' : '🙋 I have this'}
+                </button>` : ''}
               ${canRespond ? `<button class="btn-respond" onclick="openModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}', '${x.user_id}')">Respond</button>` : ''}
             </div>
           </div>
@@ -336,6 +351,31 @@
       }).join('');
       xekies.forEach(x => { _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {}); });
       document.querySelectorAll('.xekie-card').forEach(card => addSwipe(card));
+    }
+
+    async function toggleBookmark(xekieId, btn) {
+      if (!currentUser) { window.location.href = 'login.html'; return; }
+      const isBookmarked = bookmarkedIds.has(xekieId);
+      if (isBookmarked) {
+        await _sb.from('seller_bookmarks').delete().eq('xekie_id', xekieId).eq('seller_id', currentUser.id);
+        bookmarkedIds.delete(xekieId);
+        btn.classList.remove('bookmarked');
+        btn.textContent = '🙋 I have this';
+        showToast('Bookmark removed');
+      } else {
+        await _sb.from('seller_bookmarks').insert({ xekie_id: xekieId, seller_id: currentUser.id });
+        bookmarkedIds.add(xekieId);
+        btn.classList.add('bookmarked');
+        btn.textContent = '✓ I have this';
+        showToast('Saved! Find it in your Profile → I Have This 🙋');
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('share-toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => { t.classList.remove('show'); t.textContent = 'Link copied! 🔗'; }, 3000);
     }
 
     function addSwipe(card) {
@@ -362,7 +402,7 @@
     function shareXekie(id, title) {
       const url = `${window.location.origin}/xekie.html?id=${id}`;
       if (navigator.share) { navigator.share({ title: 'XEKIE — ' + title, url }).catch(() => {}); }
-      else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
+      else { navigator.clipboard.writeText(url).then(() => showToast('Link copied! 🔗')); }
     }
 
     function openModal(xekieId, title, ownerId) {
