@@ -253,6 +253,53 @@
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
+    // ---- FIREWORKS SOUND (Web Audio API) ----
+    function playFireworksSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const colors = ['#ff4d1c','#ffd700','#ff69b4','#00cfff','#7fff00'];
+
+        // Fire multiple burst sounds
+        [0, 0.3, 0.6, 1.0, 1.4].forEach((delay, i) => {
+          setTimeout(() => {
+            // Explosion burst
+            const bufferSize = ctx.sampleRate * 0.3;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let j = 0; j < bufferSize; j++) {
+              data[j] = (Math.random() * 2 - 1) * Math.pow(1 - j / bufferSize, 2);
+            }
+            const source = ctx.createBufferSource();
+            source.buffer = buffer;
+            const gainNode = ctx.createGain();
+            gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 800 + Math.random() * 1200;
+            filter.Q.value = 0.5;
+            source.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            source.start(ctx.currentTime);
+
+            // Whistle up sound
+            const osc = ctx.createOscillator();
+            const oscGain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.2);
+            oscGain.gain.setValueAtTime(0.15, ctx.currentTime);
+            oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+            osc.connect(oscGain);
+            oscGain.connect(ctx.destination);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.25);
+          }, delay * 1000);
+        });
+      } catch(e) { /* silent fail */ }
+    }
+
     function launchFireworks() {
       const canvas = document.getElementById('fireworks-canvas');
       canvas.style.display = 'block';
@@ -277,6 +324,7 @@
         else { canvas.style.display='none'; ctx.clearRect(0,0,canvas.width,canvas.height); }
       }
       animate();
+      playFireworksSound();
     }
 
     function handleDragOver(e) { e.preventDefault(); document.getElementById('photo-drop-zone').classList.add('dragover'); }
@@ -354,7 +402,8 @@
         if (photoUrls.length) await _sb.from('xekies').update({ photos: photoUrls }).eq('id', newXekie.id);
       }
       showMessage('🎆 Your XEKIE is live! Sellers will find you.', 'success');
-      launchFireworks(); btn.textContent = 'XEKIE\'d! ✓';
+      launchFireworks();
+      btn.textContent = 'XEKIE\'d! ✓';
       if (newXekie) { fetch('/.netlify/functions/notify-sellers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newXekie) }).catch(() => {}); }
       setTimeout(() => window.location.href = 'dashboard.html', 2500);
     }
