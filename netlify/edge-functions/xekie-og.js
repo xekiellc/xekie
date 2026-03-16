@@ -6,53 +6,74 @@ export default async function handler(request, context) {
   const xekieId = url.searchParams.get('id');
   if (!xekieId) return context.next();
 
-  try {
-    const pageUrl = `https://xekie.com/xekie.html?id=${xekieId}`;
-    let title = 'XEKIE — Trade Different';
-    let description = 'Someone is looking to buy this on XEKIE. Respond with your best offer.';
-    let ogImage = 'https://xekie.com/icon-180x180.png';
+  const pageUrl = `https://xekie.com/xekie.html?id=${xekieId}`;
+  let title = 'XEKIE — Trade Different';
+  let description = 'Someone is looking to buy this on XEKIE. Respond with your best offer.';
+  let ogImage = 'https://xekie.com/icon-512x512.png';
 
-    // Try to get XEKIE data
-    try {
-      const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/xekies?id=eq.${xekieId}&select=title,description,budget,budget_min,budget_max,location,category&limit=1`,
-        { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
-      );
-      const data = await res.json();
-      const x = data?.[0];
-      if (x) {
+  try {
+    const supaRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/xekies?id=eq.${encodeURIComponent(xekieId)}&select=title,description,budget,budget_min,budget_max,location,category&limit=1`,
+      {
+        method: 'GET',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Accept': 'application/json',
+        }
+      }
+    );
+
+    if (supaRes.ok) {
+      const data = await supaRes.json();
+      const x = Array.isArray(data) ? data[0] : null;
+      if (x && x.title) {
         let budget = '';
         if (x.budget_min && x.budget_max) budget = `$${Number(x.budget_min).toLocaleString()} – $${Number(x.budget_max).toLocaleString()}`;
         else if (x.budget_min) budget = `$${Number(x.budget_min).toLocaleString()}+`;
         else if (x.budget_max) budget = `Up to $${Number(x.budget_max).toLocaleString()}`;
         else if (x.budget) budget = `$${Number(x.budget).toLocaleString()}`;
+
         title = `${x.title} — XEKIE`;
         description = x.description
           ? `${x.description.slice(0, 120)}${x.description.length > 120 ? '...' : ''} | Budget: ${budget}`
           : `Looking to buy: ${x.title}. Budget: ${budget}. Respond with your best offer on XEKIE.`;
-        const ogParams = new URLSearchParams({ title: x.title, budget, location: x.location || '', category: x.category || '' });
-        ogImage = `https://xekie.com/.netlify/functions/og-image?${ogParams}`;
-      }
-    } catch(e) {}
 
-    // Inject OG tags right after <head> — this overrides anything that comes later
-    const injection = `
-<title>${escHtml(title)}</title>
+        const ogParams = new URLSearchParams({
+          title: x.title, budget,
+          location: x.location || '',
+          category: x.category || ''
+        });
+        ogImage = `https://xekie.com/.netlify/functions/og-image?${ogParams.toString()}`;
+      }
+    }
+  } catch(e) {}
+
+  // Build clean head injection — replaces ALL og tags at once
+  const injection = `
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="XEKIE">
 <meta property="og:title" content="${escHtml(title)}">
 <meta property="og:description" content="${escHtml(description)}">
 <meta property="og:url" content="${pageUrl}">
 <meta property="og:image" content="${ogImage}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escHtml(title)}">
 <meta name="twitter:description" content="${escHtml(description)}">
 <meta name="twitter:image" content="${ogImage}">`;
 
+  try {
     const originalResponse = await context.next();
     let html = await originalResponse.text();
 
-    // Inject right after <head> tag
+    // Remove all existing og/twitter meta tags to avoid duplicates
+    html = html.replace(/<meta property="og:[^"]*"[^>]*>/g, '');
+    html = html.replace(/<meta name="twitter:[^"]*"[^>]*>/g, '');
+    html = html.replace(/<title>.*?<\/title>/s, `<title>${escHtml(title)}</title>`);
+
+    // Inject clean tags right after <head>
     html = html.replace('<head>', `<head>${injection}`);
 
     return new Response(html, {
@@ -63,7 +84,6 @@ export default async function handler(request, context) {
         'cache-control': 'public, max-age=300',
       }
     });
-
   } catch(e) {
     return context.next();
   }
