@@ -34,7 +34,8 @@
     .profile-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; line-height: 1.1; margin-bottom: 8px; }
     .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
     .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.3px; }
-    .badge-verified { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+    .badge-verified-seller { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+    .badge-verified-buyer { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
     .badge-early { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
     .badge-member { background: var(--cream); color: var(--mid); border: 1px solid var(--border); }
     .profile-bio { color: #444; font-size: 0.95rem; line-height: 1.6; margin-bottom: 16px; }
@@ -45,10 +46,13 @@
     .btn-primary:hover { opacity: 0.88; }
     .btn-outline { background: transparent; color: var(--black); border: 1.5px solid var(--border); }
     .btn-outline:hover { border-color: var(--black); background: var(--cream); }
-    .stats-row { display: flex; gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }
-    .stat { flex: 1; background: var(--white); padding: 20px 16px; text-align: center; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }
+    .stat { background: var(--white); padding: 20px 16px; text-align: center; }
     .stat-value { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; line-height: 1; margin-bottom: 4px; }
     .stat-label { font-size: 0.78rem; color: var(--mid); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value.green { color: #2e7d32; }
+    .stat-value.blue { color: #1565c0; }
+    .stat-value.orange { color: var(--accent); }
     .stars-display { display: flex; gap: 2px; justify-content: center; margin-bottom: 4px; }
     .star { color: #ddd; font-size: 1rem; }
     .star.filled { color: #ffc107; }
@@ -64,13 +68,20 @@
     .review-text { font-size: 0.9rem; color: #444; line-height: 1.5; }
     .review-xekie { font-size: 0.8rem; color: var(--mid); margin-top: 6px; }
     .review-xekie a { color: var(--accent); text-decoration: none; }
-    .review-xekie a:hover { text-decoration: underline; }
+    .bookmark-item { padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .bookmark-item:last-child { border-bottom: none; }
+    .bookmark-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; color: var(--black); text-decoration: none; }
+    .bookmark-title:hover { color: var(--accent); }
+    .bookmark-meta { font-size: 0.8rem; color: var(--mid); margin-top: 3px; }
+    .bookmark-budget { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); font-size: 0.95rem; white-space: nowrap; }
     .empty { padding: 40px 24px; text-align: center; color: var(--mid); }
     .empty-icon { font-size: 2rem; margin-bottom: 8px; }
+    .response-rate-bar { height: 6px; background: var(--border); border-radius: 100px; margin-top: 8px; overflow: hidden; }
+    .response-rate-fill { height: 100%; background: linear-gradient(90deg, #ff4d1c, #ff8c00); border-radius: 100px; transition: width 0.8s ease; }
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 24px; }
     .modal-overlay.open { display: flex; }
     .modal { background: var(--white); border-radius: var(--radius); width: 100%; max-width: 480px; padding: 32px; animation: slideUp 0.2s ease; }
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
     .modal-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: 24px; }
     .form-group { margin-bottom: 16px; }
     .form-label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--mid); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
@@ -91,15 +102,11 @@
     .footer-logo span { color: var(--accent); }
     @media (max-width: 600px) {
       .profile-top { flex-direction: column; }
-      .avatar { margin-top: -44px; }
-      .stats-row { flex-direction: column; gap: 0; }
-      .stat { border-bottom: 1px solid var(--border); }
-      .stat:last-child { border-bottom: none; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
-
 <nav>
   <a class="nav-logo" href="index.html">X<span>E</span>KIE</a>
   <div class="nav-links">
@@ -124,6 +131,7 @@
     <p style="color:var(--mid);margin-bottom:24px">This user doesn't exist or their profile is private.</p>
     <a href="radar.html" class="btn btn-primary">Browse XEKIEs</a>
   </div>
+
   <div id="profile-content" style="display:none">
     <div class="profile-card">
       <div class="profile-top">
@@ -136,7 +144,9 @@
         </div>
       </div>
     </div>
-    <div class="stats-row">
+
+    <!-- STATS GRID -->
+    <div class="stats-grid" id="stats-grid">
       <div class="stat">
         <div class="stars-display" id="stars-display"></div>
         <div class="stat-value" id="stat-rating">—</div>
@@ -147,10 +157,25 @@
         <div class="stat-label">Reviews</div>
       </div>
       <div class="stat">
-        <div class="stat-value" id="stat-offers">0</div>
+        <div class="stat-value orange" id="stat-offers">0</div>
         <div class="stat-label">Offers Made</div>
       </div>
+      <div class="stat">
+        <div class="stat-value green" id="stat-traded">0</div>
+        <div class="stat-label">Deals Done ✓</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value blue" id="stat-xekies-posted">0</div>
+        <div class="stat-label">XEKIEs Posted</div>
+      </div>
+      <div class="stat" id="stat-response-rate-cell">
+        <div class="stat-value" id="stat-response-rate">—</div>
+        <div class="response-rate-bar"><div class="response-rate-fill" id="response-rate-fill" style="width:0%"></div></div>
+        <div class="stat-label">Response Rate</div>
+      </div>
     </div>
+
+    <!-- REVIEWS -->
     <div class="section">
       <div class="section-header">
         <span class="section-title">Reviews</span>
@@ -158,9 +183,20 @@
       </div>
       <div id="reviews-list"></div>
     </div>
+
+    <!-- I HAVE THIS BOOKMARKS (own profile only) -->
+    <div class="section" id="bookmarks-section" style="display:none">
+      <div class="section-header">
+        <span class="section-title">🙋 I Have This</span>
+        <span class="section-count" id="bookmarks-count"></span>
+      </div>
+      <div id="bookmarks-list"></div>
+    </div>
+
   </div>
 </div>
 
+<!-- EDIT MODAL -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
     <div class="modal-title">Edit Profile</div>
@@ -197,79 +233,71 @@
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const EARLY_ADOPTER_CUTOFF = new Date('2026-06-01');
 
-  let currentUser = null;
-  let profileUserId = null;
-  let isOwnProfile = false;
-  let profileLoaded = false;
+  let currentUser = null, profileUserId = null, isOwnProfile = false;
 
-  const params = new URLSearchParams(window.location.search);
-  profileUserId = params.get('id');
-
-  // Load profile immediately if we have an ID — no auth needed
-  if (profileUserId) {
-    loadProfile();
-  }
-
-  // Auth runs in parallel — just updates nav + edit button
-  sb.auth.onAuthStateChange((event, session) => {
+  async function init() {
+    const params = new URLSearchParams(window.location.search);
+    profileUserId = params.get('id');
+    const { data: { session } } = await sb.auth.getSession();
     currentUser = session?.user ?? null;
-
     if (currentUser) {
       document.getElementById('nav-login').style.display = 'none';
       document.getElementById('nav-dashboard').style.display = 'inline-flex';
       document.getElementById('nav-profile').href = `seller.html?id=${currentUser.id}`;
       document.getElementById('nav-profile').style.display = 'inline-flex';
-
-      if (!profileUserId) {
-        profileUserId = currentUser.id;
-        isOwnProfile = true;
-        if (!profileLoaded) loadProfile();
-      } else {
-        isOwnProfile = currentUser.id === profileUserId;
-        if (isOwnProfile && profileLoaded) {
-          document.getElementById('profile-actions').innerHTML =
-            `<button class="btn btn-outline" onclick="openEditModal()">✏️ Edit Profile</button>`;
-        }
-      }
-    } else {
-      if (!profileUserId && !profileLoaded) {
-        window.location.href = 'login.html';
-      }
     }
-  });
-
-  // Fallback timeout — if no ID and no auth after 3s, redirect to login
-  setTimeout(() => {
-    if (!profileLoaded && !profileUserId) {
-      window.location.href = 'login.html';
+    if (!profileUserId) {
+      if (currentUser) { profileUserId = currentUser.id; }
+      else { window.location.href = 'login.html'; return; }
     }
-  }, 3000);
+    isOwnProfile = currentUser?.id === profileUserId;
+    await loadProfile();
+  }
 
   async function loadProfile() {
-    if (profileLoaded) return;
-    profileLoaded = true;
-
     try {
-      const [ratingsRes, offersRes, verifiedRes, profileRes] = await Promise.all([
+      const [ratingsRes, offersRes, verifiedSellerRes, verifiedBuyerRes, profileRes, xekiesRes, bookmarksRes] = await Promise.all([
         sb.from('ratings').select('stars, comment, xekie_id, created_at').eq('seller_id', profileUserId),
-        sb.from('offers').select('id').eq('seller_id', profileUserId),
+        sb.from('offers').select('id, created_at').eq('seller_id', profileUserId),
         sb.from('verified_sellers').select('verified_at').eq('user_id', profileUserId).maybeSingle(),
-        sb.from('user_profiles').select('display_name, bio, created_at').eq('user_id', profileUserId).maybeSingle()
+        sb.from('verified_buyers').select('verified_at').eq('user_id', profileUserId).maybeSingle(),
+        sb.from('user_profiles').select('display_name, bio, created_at').eq('user_id', profileUserId).maybeSingle(),
+        sb.from('xekies').select('id, title, is_fulfilled, created_at, budget_min, budget_max, budget').eq('user_id', profileUserId),
+        isOwnProfile ? sb.from('seller_bookmarks').select('xekie_id, created_at').eq('seller_id', profileUserId) : Promise.resolve({ data: [] })
       ]);
 
+      // Get bookmarked xekie details
+      let bookmarkedXekies = [];
+      if (isOwnProfile && bookmarksRes.data?.length) {
+        const bookmarkIds = bookmarksRes.data.map(b => b.xekie_id);
+        const { data: bxData } = await sb.from('xekies').select('id, title, budget_min, budget_max, budget, category, is_fulfilled').in('id', bookmarkIds);
+        bookmarkedXekies = bxData || [];
+      }
+
       renderProfile(
-        profileRes.data || null,
+        profileRes.data,
         ratingsRes.data || [],
         offersRes.data || [],
-        verifiedRes.data || null
+        verifiedSellerRes.data,
+        verifiedBuyerRes.data,
+        xekiesRes.data || [],
+        bookmarkedXekies
       );
     } catch (err) {
-      console.error('loadProfile error:', err);
-      renderProfile(null, [], [], null);
+      console.error(err);
+      showNotFound();
     }
   }
 
-  function renderProfile(meta, ratings, offers, verified) {
+  function formatBudget(x) {
+    if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
+    if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
+    if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
+    if (x.budget) return '$'+Number(x.budget).toLocaleString();
+    return '$—';
+  }
+
+  function renderProfile(meta, ratings, offers, verifiedSeller, verifiedBuyer, xekies, bookmarkedXekies) {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('profile-content').style.display = 'block';
 
@@ -288,32 +316,43 @@
       bioEl.classList.add('placeholder');
     }
 
+    // Badges
     const badgesEl = document.getElementById('profile-badges');
-    if (verified) {
-      badgesEl.innerHTML += `<span class="badge badge-verified">✓ Verified Seller</span>`;
-    }
+    if (verifiedSeller) badgesEl.innerHTML += `<span class="badge badge-verified-seller">✓ Verified Seller</span>`;
+    if (verifiedBuyer) badgesEl.innerHTML += `<span class="badge badge-verified-buyer">✓ Verified Buyer</span>`;
     const joinDate = meta?.created_at ? new Date(meta.created_at) : null;
-    if (joinDate && joinDate < EARLY_ADOPTER_CUTOFF) {
-      badgesEl.innerHTML += `<span class="badge badge-early">⚡ Early Adopter</span>`;
-    }
+    if (joinDate && joinDate < EARLY_ADOPTER_CUTOFF) badgesEl.innerHTML += `<span class="badge badge-early">⚡ Early Adopter</span>`;
     if (joinDate) {
       const mo = joinDate.toLocaleString('default', { month: 'short', year: 'numeric' });
       badgesEl.innerHTML += `<span class="badge badge-member">Joined ${mo}</span>`;
     }
 
     if (isOwnProfile) {
-      document.getElementById('profile-actions').innerHTML =
-        `<button class="btn btn-outline" onclick="openEditModal()">✏️ Edit Profile</button>`;
+      document.getElementById('profile-actions').innerHTML = `<button class="btn btn-outline" onclick="openEditModal()">✏️ Edit Profile</button>`;
     }
 
-    const totalOffers  = offers.length;
+    // Stats
+    const totalOffers = offers.length;
     const totalReviews = ratings.length;
-    const avgRating    = totalReviews > 0
-      ? (ratings.reduce((s, r) => s + r.stars, 0) / totalReviews).toFixed(1)
-      : null;
+    const avgRating = totalReviews > 0 ? (ratings.reduce((s, r) => s + r.stars, 0) / totalReviews).toFixed(1) : null;
+    const totalDeals = xekies.filter(x => x.is_fulfilled).length;
+    const totalPosted = xekies.length;
 
-    document.getElementById('stat-offers').textContent  = totalOffers;
+    // Buyer response rate — % of XEKIEs that received at least 1 offer response read
+    // Simplified: ratio of fulfilled XEKIEs to total posted (as a proxy for engagement)
+    const responseRate = totalPosted > 0 ? Math.round((totalDeals / totalPosted) * 100) : null;
+
+    document.getElementById('stat-offers').textContent = totalOffers;
     document.getElementById('stat-reviews').textContent = totalReviews;
+    document.getElementById('stat-traded').textContent = totalDeals;
+    document.getElementById('stat-xekies-posted').textContent = totalPosted;
+
+    if (responseRate !== null) {
+      document.getElementById('stat-response-rate').textContent = responseRate + '%';
+      document.getElementById('response-rate-fill').style.width = responseRate + '%';
+    } else {
+      document.getElementById('stat-response-rate').textContent = '—';
+    }
 
     if (avgRating) {
       document.getElementById('stat-rating').textContent = avgRating;
@@ -323,48 +362,64 @@
       }
     } else {
       document.getElementById('stat-rating').textContent = '—';
-      document.getElementById('stars-display').innerHTML =
-        `<span style="color:var(--mid);font-size:0.8rem">No ratings yet</span>`;
+      document.getElementById('stars-display').innerHTML = `<span style="color:var(--mid);font-size:0.8rem">No ratings yet</span>`;
     }
 
-    document.getElementById('reviews-count').textContent =
-      totalReviews > 0 ? `${totalReviews} review${totalReviews !== 1 ? 's' : ''}` : '';
-
+    // Reviews
+    document.getElementById('reviews-count').textContent = totalReviews > 0 ? `${totalReviews} review${totalReviews !== 1 ? 's' : ''}` : '';
     const listEl = document.getElementById('reviews-list');
     if (totalReviews === 0) {
       listEl.innerHTML = `<div class="empty"><div class="empty-icon">⭐</div><p>No reviews yet</p></div>`;
     } else {
       const sorted = [...ratings].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       listEl.innerHTML = sorted.map(r => {
-        const stars = Array.from({ length: 5 }, (_, i) =>
-          `<span class="star ${i < r.stars ? 'filled' : ''}">★</span>`).join('');
-        const date = new Date(r.created_at).toLocaleDateString('en-US',
-          { month: 'short', day: 'numeric', year: 'numeric' });
-        return `
-          <div class="review-item">
-            <div class="review-top">
-              <div class="review-stars">${stars}</div>
-              <span class="review-date">${date}</span>
-            </div>
-            ${r.comment ? `<div class="review-text">${esc(r.comment)}</div>` : ''}
-            <div class="review-xekie">on <a href="xekie.html?id=${r.xekie_id}">View XEKIE →</a></div>
-          </div>`;
+        const stars = Array.from({ length: 5 }, (_, i) => `<span class="star ${i < r.stars ? 'filled' : ''}">★</span>`).join('');
+        const date = new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        return `<div class="review-item">
+          <div class="review-top"><div class="review-stars">${stars}</div><span class="review-date">${date}</span></div>
+          ${r.comment ? `<div class="review-text">${esc(r.comment)}</div>` : ''}
+          <div class="review-xekie">on <a href="xekie.html?id=${r.xekie_id}">View XEKIE →</a></div>
+        </div>`;
       }).join('');
     }
+
+    // Bookmarks (own profile only)
+    if (isOwnProfile) {
+      const bookmarksSection = document.getElementById('bookmarks-section');
+      const bookmarksList = document.getElementById('bookmarks-list');
+      const bookmarksCount = document.getElementById('bookmarks-count');
+      bookmarksSection.style.display = 'block';
+      if (bookmarkedXekies.length === 0) {
+        bookmarksList.innerHTML = `<div class="empty"><div class="empty-icon">🙋</div><p>No bookmarks yet — browse XEKIEs and click "I have this" when you can fulfill a request.</p></div>`;
+      } else {
+        bookmarksCount.textContent = `${bookmarkedXekies.length} saved`;
+        bookmarksList.innerHTML = bookmarkedXekies.map(x => `
+          <div class="bookmark-item">
+            <div>
+              <a href="xekie.html?id=${x.id}" class="bookmark-title">${x.title}</a>
+              <div class="bookmark-meta">${x.category || ''} ${x.is_fulfilled ? '· ✓ Fulfilled' : ''}</div>
+            </div>
+            <div class="bookmark-budget">${formatBudget(x)}</div>
+          </div>`).join('');
+      }
+    }
+  }
+
+  function showNotFound() {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('not-found').style.display = 'block';
   }
 
   function openEditModal() {
     const name = document.getElementById('profile-name').textContent;
-    const bio  = document.getElementById('profile-bio').textContent;
+    const bio = document.getElementById('profile-bio').textContent;
     document.getElementById('edit-name').value = name === 'Your Profile' ? '' : name;
-    document.getElementById('edit-bio').value  = bio.includes('Add a bio') ? '' : bio;
+    document.getElementById('edit-bio').value = bio.includes('Add a bio') ? '' : bio;
     updateBioCount();
     document.getElementById('edit-modal').classList.add('open');
   }
 
-  function closeEditModal() {
-    document.getElementById('edit-modal').classList.remove('open');
-  }
+  function closeEditModal() { document.getElementById('edit-modal').classList.remove('open'); }
 
   function updateBioCount() {
     document.getElementById('bio-chars').textContent = document.getElementById('edit-bio').value.length;
@@ -373,34 +428,21 @@
 
   async function saveProfile() {
     const name = document.getElementById('edit-name').value.trim();
-    const bio  = document.getElementById('edit-bio').value.trim();
+    const bio = document.getElementById('edit-bio').value.trim();
     if (!name) { alert('Please enter a display name.'); return; }
-
     const btn = document.querySelector('#edit-modal .btn-primary');
     btn.textContent = 'Saving…'; btn.disabled = true;
-
     try {
-      const { error } = await sb.from('user_profiles').upsert({
-        user_id:      profileUserId,
-        display_name: name,
-        bio:          bio,
-        updated_at:   new Date().toISOString()
-      }, { onConflict: 'user_id' });
-
+      const { error } = await sb.from('user_profiles').upsert({ user_id: profileUserId, display_name: name, bio, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
       if (error) throw error;
-
       document.getElementById('profile-name').textContent = name;
       document.title = `${name} | XEKIE`;
       const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
       document.getElementById('profile-avatar').textContent = initials || '?';
       const bioEl = document.getElementById('profile-bio');
       bioEl.classList.remove('placeholder');
-      if (bio) {
-        bioEl.textContent = bio;
-      } else {
-        bioEl.textContent = 'Add a bio to let buyers know who you are.';
-        bioEl.classList.add('placeholder');
-      }
+      if (bio) { bioEl.textContent = bio; }
+      else { bioEl.textContent = 'Add a bio to let buyers know who you are.'; bioEl.classList.add('placeholder'); }
       closeEditModal();
     } catch (err) {
       console.error(err);
@@ -410,13 +452,13 @@
     }
   }
 
-  document.getElementById('edit-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeEditModal();
-  });
+  document.getElementById('edit-modal').addEventListener('click', function(e) { if (e.target === this) closeEditModal(); });
 
   function esc(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+
+  init();
 </script>
 </body>
 </html>
