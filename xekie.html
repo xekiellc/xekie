@@ -8,7 +8,7 @@
   <meta property="og:site_name" content="XEKIE">
   <meta property="og:title" content="XEKIE — Trade Different">
   <meta property="og:description" content="Someone is looking to buy this on XEKIE. Respond with your best offer.">
-  <meta property="og:url" content="https://xekie.com">
+  <meta property="og:url" id="og-url" content="https://xekie.com">
   <meta property="og:image" content="https://xekie.com/icon-180x180.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="XEKIE — Trade Different">
@@ -99,18 +99,6 @@
     .qr-title{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:16px;}
     .qr-sub{font-size:13px;color:var(--mid);margin-top:12px;}
     .btn-qr-close{margin-top:16px;width:100%;padding:10px;background:var(--black);color:white;border:none;border-radius:10px;font-family:var(--font-body);cursor:pointer;}
-    /* Share modal */
-    .share-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;padding:0;}
-    .share-modal.open{display:flex;}
-    .share-sheet{background:var(--white);border-radius:24px 24px 0 0;padding:32px 24px 40px;width:100%;max-width:680px;}
-    .share-sheet-title{font-family:var(--font-display);font-size:18px;font-weight:800;margin-bottom:6px;}
-    .share-sheet-sub{font-size:13px;color:var(--mid);margin-bottom:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .share-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-    .share-option{display:flex;align-items:center;gap:10px;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;background:var(--white);font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--black);}
-    .share-option:hover{border-color:var(--black);background:var(--cream);}
-    .share-option-icon{font-size:20px;width:28px;text-align:center;}
-    .share-cancel{width:100%;padding:14px;background:var(--cream);border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;color:var(--mid);transition:all 0.2s;margin-top:4px;}
-    .share-cancel:hover{background:var(--border);color:var(--black);}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
     .report-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center;padding:20px;}
@@ -141,7 +129,7 @@
     .footer-links a:hover{color:var(--white);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
     .loading{text-align:center;padding:80px 20px;color:var(--mid);}
-    @media(max-width:600px){nav{padding:0 20px;}.xekie-card{padding:28px 20px;}.detail-grid{grid-template-columns:1fr;}.share-options{grid-template-columns:1fr 1fr;}}
+    @media(max-width:600px){nav{padding:0 20px;}.xekie-card{padding:28px 20px;}.detail-grid{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
@@ -195,23 +183,6 @@
     </div>
   </div>
 
-  <!-- SHARE MODAL -->
-  <div class="share-modal" id="share-modal" onclick="if(event.target===this)closeShareModal()">
-    <div class="share-sheet">
-      <div class="share-sheet-title">Share XEKIE</div>
-      <div class="share-sheet-sub" id="share-sheet-sub"></div>
-      <div class="share-options">
-        <button class="share-option" onclick="doShare('copy')"><span class="share-option-icon">🔗</span>Copy Link</button>
-        <button class="share-option" onclick="doShare('sms')"><span class="share-option-icon">💬</span>iMessage</button>
-        <button class="share-option" onclick="doShare('facebook')"><span class="share-option-icon">📘</span>Facebook</button>
-        <button class="share-option" onclick="doShare('x')"><span class="share-option-icon">𝕏</span>Post on X</button>
-        <button class="share-option" onclick="doShare('whatsapp')"><span class="share-option-icon">💚</span>WhatsApp</button>
-        <button class="share-option" onclick="doShare('email')"><span class="share-option-icon">📧</span>Email</button>
-      </div>
-      <button class="share-cancel" onclick="closeShareModal()">Cancel</button>
-    </div>
-  </div>
-
   <div class="share-toast" id="share-toast">Link copied! 🔗</div>
 
   <div class="report-modal" id="report-modal">
@@ -253,11 +224,11 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     const BETA_CUTOFF = new Date('2026-06-01');
+    const VIEW_MILESTONES = [5, 10, 25, 50, 100];
     let currentXekie = null, currentUser = null;
     let lightboxPhotos = [], lightboxIndex = 0;
     const params = new URLSearchParams(window.location.search);
     const xekieId = params.get('id');
-    let shareUrl = '', shareTitle = '';
 
     function formatBudget(x) {
       if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
@@ -275,13 +246,54 @@
       return "just now";
     }
 
+    async function incrementViewAndNotify(xekie) {
+      // Don't count views from the owner
+      if (currentUser && currentUser.id === xekie.user_id) return;
+
+      const newCount = (xekie.view_count || 0) + 1;
+      const alreadyNotified = xekie.view_notified_milestones || [];
+
+      // Find if this view hits a new milestone
+      const hitMilestone = VIEW_MILESTONES.find(m => newCount >= m && !alreadyNotified.includes(m));
+
+      // Update view count
+      await _sb.from('xekies').update({ view_count: newCount }).eq('id', xekie.id);
+
+      // If milestone hit, send email and mark it
+      if (hitMilestone) {
+        const newMilestones = [...alreadyNotified, hitMilestone];
+        await _sb.from('xekies').update({ view_notified_milestones: newMilestones }).eq('id', xekie.id);
+
+        // Fire the view notification email
+        fetch('/.netlify/functions/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'view_milestone',
+            to: xekie.owner_email,
+            data: {
+              name: xekie.owner_name,
+              xekieTitle: xekie.title,
+              xekieId: xekie.id,
+              viewCount: newCount,
+              milestone: hitMilestone
+            }
+          })
+        }).catch(() => {});
+      }
+    }
+
     async function loadXekie() {
       if (!xekieId) { document.getElementById('content').innerHTML = '<div class="loading">No XEKIE specified.</div>'; return; }
       const { data: x, error } = await _sb.from('xekies').select('*').eq('id', xekieId).single();
       if (error || !x) { document.getElementById('content').innerHTML = '<div class="loading">XEKIE not found.</div>'; return; }
       currentXekie = x;
-      shareUrl = window.location.href;
-      shareTitle = x.title;
+
+      // Get owner email for notifications
+      const { data: ownerProfile } = await _sb.auth.admin?.getUserById?.(x.user_id).catch(() => ({ data: null })) || { data: null };
+      const { data: userMeta } = await _sb.from('user_profiles').select('display_name').eq('user_id', x.user_id).single().catch(() => ({ data: null }));
+      x.owner_email = ownerProfile?.user?.email || null;
+      x.owner_name = userMeta?.display_name || null;
 
       document.title = `XEKIE — ${x.title}`;
       document.querySelector('meta[property="og:title"]').setAttribute('content', `${x.title} — XEKIE`);
@@ -293,7 +305,6 @@
       const ogImg = `https://xekie.com/.netlify/functions/og-image?${ogParams}`;
       document.querySelector('meta[property="og:image"]').setAttribute('content', ogImg);
       document.querySelector('meta[name="twitter:image"]').setAttribute('content', ogImg);
-      document.getElementById('share-sheet-sub').textContent = x.title;
 
       const isExpired = x.expires_at && new Date(x.expires_at) < new Date();
       const isFulfilled = x.is_fulfilled;
@@ -313,9 +324,16 @@
 
       let photoGallery = '';
       if (x.photos && x.photos.length) {
+        lightboxPhotos = x.photos;
         const cls = x.photos.length === 1 ? 'single' : x.photos.length === 3 ? 'three' : '';
         photoGallery = `<div class="photo-gallery ${cls}">${x.photos.map((url, i) => `<div class="photo-item" onclick="openLightbox(${i})"><img src="${url}" alt="Photo ${i+1}" loading="lazy" /></div>`).join('')}</div>`;
       }
+
+      const { data: savedItems } = await _sb.from('saved_xekies').select('id').eq('xekie_id', xekieId).eq('user_id', currentUser?.id || '').limit(1).catch(() => ({ data: [] }));
+      const isSaved = savedItems && savedItems.length > 0;
+
+      const { data: existingOffer } = await _sb.from('offers').select('id').eq('xekie_id', xekieId).eq('seller_id', currentUser?.id || '').limit(1).catch(() => ({ data: [] }));
+      const hasResponded = existingOffer && existingOffer.length > 0;
 
       document.getElementById('content').innerHTML = `
         <div class="xekie-card">
@@ -337,38 +355,66 @@
               <div class="detail-value">${x.location || 'Not specified'}</div>
             </div>
           </div>
-          ${canRespond ? `<button class="btn-respond-big" onclick="openModal()">Respond with an offer →</button>` : `<div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">${isFulfilled ? '✓ This XEKIE has been fulfilled.' : '⏰ This XEKIE has expired.'}</div>`}
+          ${canRespond ? `
+            ${hasResponded ? `<div style="text-align:center;padding:14px;background:#EAF3DE;border-radius:12px;color:#3B6D11;font-size:15px;font-weight:500;margin-bottom:12px;">✓ You've already responded to this XEKIE</div>` : ''}
+            <button class="btn-respond-big" onclick="openModal()" ${hasResponded ? 'style="background:#666;"' : ''}>
+              ${hasResponded ? 'Send another offer →' : 'Respond with an offer →'}
+            </button>` :
+            `<div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">${isFulfilled ? '✓ This XEKIE has been fulfilled.' : '⏰ This XEKIE has expired.'}</div>`
+          }
+          <button class="btn-save ${isSaved ? 'saved' : ''}" id="btn-save" onclick="toggleSave()">
+            ${isSaved ? '🔖 Saved' : '🔖 Save this XEKIE'}
+          </button>
           <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-            <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="openShareModal()">🔗 Share</button>
-            <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="showQR()">📲 QR Code</button>
-          </div>
-          <div style="display:flex;gap:8px;margin-bottom:12px;">
-            <button class="btn-save" id="btn-save" onclick="toggleSave()" style="flex:1;">🔖 Save XEKIE</button>
-            <button class="btn-share-big" onclick="openReport()" style="flex:1;color:#ef4444;border-color:rgba(239,68,68,0.3);">🚩 Report</button>
+            <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareThis()">🔗 Copy link</button>
+            <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareToSMS()">💬 iMessage</button>
+            <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareToFacebook()">📘 Facebook</button>
+            <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareToX()">𝕏 Post</button>
           </div>
           <div class="meta-row">
-            <span>👁 ${x.view_count||0} views</span>
+            <span>👁 ${x.view_count || 0} views</span>
             <span>⏱ Posted ${timeAgo(x.created_at)}</span>
             ${expiryDisplay}
+            <span style="margin-left:auto;cursor:pointer;color:var(--mid);" onclick="openReport()">🚩 Report</span>
           </div>
         </div>
+        ${!currentUser ? `
         <div class="cta-band">
-          <h3>Just XEKIE it.</h3>
-          <p>Can't find what you're looking for? XEKIE it — tell sellers what you want and let offers roll in.</p>
-          <a href="request.html" class="btn-nav primary" style="display:inline-block;font-size:15px;padding:12px 28px;">XEKIE it →</a>
-        </div>`;
+          <h3>Have what they're looking for?</h3>
+          <p>Sign in to respond with your offer and connect with the buyer directly.</p>
+          <a href="login.html" class="btn-nav primary" style="display:inline-block;font-size:15px;padding:12px 28px;">Sign in to respond →</a>
+        </div>` : ''}`;
 
-      _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', xekieId).then(() => {});
-      checkSaved();
+      // Increment view count and check milestones
+      incrementViewAndNotify(x);
     }
 
-    function openLightbox(i) { lightboxPhotos = currentXekie?.photos || []; lightboxIndex = i; document.getElementById('lightbox-img').src = lightboxPhotos[i]; document.getElementById('photo-lightbox').classList.add('open'); }
+    function openLightbox(i) {
+      lightboxIndex = i;
+      document.getElementById('lightbox-img').src = lightboxPhotos[i];
+      document.getElementById('photo-lightbox').classList.add('open');
+    }
     function closeLightbox() { document.getElementById('photo-lightbox').classList.remove('open'); }
-    function lightboxNav(dir) { lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length; document.getElementById('lightbox-img').src = lightboxPhotos[lightboxIndex]; }
-    document.getElementById('photo-lightbox').addEventListener('click', e => { if (e.target === document.getElementById('photo-lightbox')) closeLightbox(); });
+    function lightboxNav(dir) {
+      lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length;
+      document.getElementById('lightbox-img').src = lightboxPhotos[lightboxIndex];
+    }
+
+    async function toggleSave() {
+      if (!currentUser) { window.location.href = 'login.html'; return; }
+      const btn = document.getElementById('btn-save');
+      const isSaved = btn.classList.contains('saved');
+      if (isSaved) {
+        await _sb.from('saved_xekies').delete().eq('xekie_id', xekieId).eq('user_id', currentUser.id);
+        btn.classList.remove('saved'); btn.textContent = '🔖 Save this XEKIE';
+      } else {
+        await _sb.from('saved_xekies').insert({ xekie_id: xekieId, user_id: currentUser.id });
+        btn.classList.add('saved'); btn.textContent = '🔖 Saved';
+      }
+    }
 
     function openModal() {
-      if (!currentUser) { window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href); return; }
+      if (!currentUser) { window.location.href = 'login.html'; return; }
       document.getElementById('modal-message').value = '';
       document.getElementById('modal-price').value = '';
       document.getElementById('modal-msg').className = 'modal-msg';
@@ -388,111 +434,58 @@
       btn.disabled = true; btn.textContent = 'Sending...';
       const { error } = await _sb.from('offers').insert({ xekie_id: xekieId, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
       if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send & open chat →'; return; }
-      const buyerId = currentXekie?.user_id;
-      if (buyerId && buyerId !== currentUser.id) {
-        const firstMsg = price ? `${message}\n\n💰 Asking price: $${Number(price).toLocaleString()}` : message;
-        await _sb.from('messages').insert({ xekie_id: xekieId, sender_id: currentUser.id, recipient_id: buyerId, content: firstMsg });
-        try {
-          await fetch('/.netlify/functions/send-push', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: buyerId,
-              title: '💬 New offer on your XEKIE!',
-              body: `Someone responded to "${currentXekie?.title}" — tap to see their offer.`,
-              url: `/messages.html?xekie=${xekieId}&other=${currentUser.id}`
-            })
-          });
-        } catch(e) {}
-      }
+
+      // Send push notification to buyer
+      try {
+        await fetch('/.netlify/functions/send-push', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentXekie.user_id, title: 'New offer on your XEKIE!', body: `Someone responded to "${currentXekie.title}"` }) });
+      } catch(e) {}
+
       msgEl.className='modal-msg success'; msgEl.style.display='block';
-      msgEl.textContent='Sent! Opening your conversation...';
+      msgEl.textContent='Offer sent! Opening chat...';
       btn.textContent='Sent ✓';
-      if (buyerId) setTimeout(() => { window.location.href = `messages.html?xekie=${xekieId}&other=${buyerId}`; }, 1200);
-      else setTimeout(closeModal, 2000);
+      setTimeout(() => { window.location.href = `messages.html?xekie=${xekieId}&other=${currentUser.id}`; }, 1200);
     }
 
-    // Share modal
-    function openShareModal() {
-      document.getElementById('share-modal').classList.add('open');
+    function shareThis() {
+      const url = window.location.href;
+      if (navigator.share) { navigator.share({ title: currentXekie?.title, url }).catch(() => {}); }
+      else { navigator.clipboard.writeText(url).then(() => showToast('Link copied! 🔗')); }
     }
-    function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
-
-    function doShare(type) {
-      const encoded = encodeURIComponent(shareUrl);
-      const text = encodeURIComponent(`Check out this XEKIE: ${shareTitle}`);
-      closeShareModal();
-      switch(type) {
-        case 'copy':
-          navigator.clipboard.writeText(shareUrl).then(() => {
-            const t = document.getElementById('share-toast');
-            t.textContent = 'Link copied! 🔗';
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2500);
-          }); break;
-        case 'sms': window.open(`sms:&body=${text}%20${encoded}`); break;
-        case 'facebook': window.open(`https://www.facebook.com/sharer/sharer.php?u=${encoded}`, '_blank'); break;
-        case 'x': window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encoded}`, '_blank'); break;
-        case 'whatsapp': window.open(`https://wa.me/?text=${text}%20${encoded}`, '_blank'); break;
-        case 'email': window.open(`mailto:?subject=${encodeURIComponent('Check out this XEKIE: ' + shareTitle)}&body=${text}%20${encoded}`); break;
-      }
-    }
-
-    function checkSaved() {
-      const saved = JSON.parse(localStorage.getItem('savedXekies') || '[]');
-      if (xekieId && saved.includes(xekieId)) { const btn = document.getElementById('btn-save'); if (btn) { btn.textContent = '✓ Saved'; btn.classList.add('saved'); } }
-    }
-    function toggleSave() {
-      if (!xekieId) return;
-      let saved = JSON.parse(localStorage.getItem('savedXekies') || '[]');
-      const btn = document.getElementById('btn-save');
-      if (saved.includes(xekieId)) { saved = saved.filter(id => id !== xekieId); btn.textContent = '🔖 Save XEKIE'; btn.classList.remove('saved'); }
-      else { saved.push(xekieId); btn.textContent = '✓ Saved'; btn.classList.add('saved'); }
-      localStorage.setItem('savedXekies', JSON.stringify(saved));
-    }
-    function showQR() {
-      document.getElementById('qr-code').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.href)}" style="width:200px;height:200px;border-radius:12px;" />`;
-      document.getElementById('qr-modal').classList.add('open');
-    }
+    function shareToSMS() { window.open(`sms:?body=${encodeURIComponent('Check this out on XEKIE: ' + window.location.href)}`); }
+    function shareToFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank'); }
+    function shareToX() { window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent((currentXekie?.title || 'Check this XEKIE') + ' — ' + window.location.href)}`, '_blank'); }
+    function showToast(msg) { const t = document.getElementById('share-toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
     function closeQR() { document.getElementById('qr-modal').classList.remove('open'); }
-    document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
 
-    let selectedReason = '';
-    function openReport() {
-      if (!currentUser) { window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href); return; }
-      selectedReason = '';
-      document.querySelectorAll('.report-reason').forEach(r => r.classList.remove('selected'));
-      document.getElementById('report-details').value = '';
-      document.getElementById('report-msg').className = 'report-msg';
-      document.getElementById('btn-report-submit').disabled = false;
-      document.getElementById('btn-report-submit').textContent = 'Submit report';
-      document.getElementById('report-modal').classList.add('open');
-    }
-    function closeReport() { document.getElementById('report-modal').classList.remove('open'); }
+    let selectedReportReason = '';
     function selectReason(el, reason) {
-      selectedReason = reason;
       document.querySelectorAll('.report-reason').forEach(r => r.classList.remove('selected'));
-      el.classList.add('selected');
+      el.classList.add('selected'); selectedReportReason = reason;
     }
+    function openReport() { document.getElementById('report-modal').classList.add('open'); }
+    function closeReport() { document.getElementById('report-modal').classList.remove('open'); }
     async function submitReport() {
-      if (!selectedReason) { const m = document.getElementById('report-msg'); m.className='report-msg error'; m.textContent='Please select a reason.'; return; }
+      if (!selectedReportReason) { const m = document.getElementById('report-msg'); m.className='report-msg error'; m.style.display='block'; m.textContent='Please select a reason.'; return; }
       const details = document.getElementById('report-details').value.trim();
       const btn = document.getElementById('btn-report-submit');
       btn.disabled = true; btn.textContent = 'Submitting...';
-      const { error } = await _sb.from('reports').insert({ reporter_id: currentUser.id, xekie_id: xekieId, reason: selectedReason, details: details || null, status: 'pending' });
-      if (error) { const m = document.getElementById('report-msg'); m.className='report-msg error'; m.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Submit report'; return; }
-      try {
-        await fetch('/.netlify/functions/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'report', to: 'zach@xekie.com', data: { xekieId, xekieTitle: currentXekie?.title, reason: selectedReason, details, reporterEmail: currentUser.email } }) });
-      } catch(e) {}
-      const m = document.getElementById('report-msg'); m.className='report-msg success'; m.textContent='Report submitted. Thank you for keeping XEKIE safe. ✓';
-      btn.textContent='Submitted ✓';
-      setTimeout(closeReport, 2000);
+      const { error } = await _sb.from('reports').insert({ xekie_id: xekieId, reason: selectedReportReason, details: details || null, reporter_id: currentUser?.id || null });
+      if (!error) {
+        try {
+          await fetch('/.netlify/functions/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'report', to: 'zach@xekie.com', data: { xekieId, xekieTitle: currentXekie?.title, reason: selectedReportReason, details, reporterEmail: currentUser?.email } }) });
+        } catch(e) {}
+        const m = document.getElementById('report-msg'); m.className='report-msg success'; m.style.display='block'; m.textContent='Report submitted. Thank you for keeping XEKIE safe.';
+        btn.textContent='Submitted ✓';
+        setTimeout(closeReport, 2000);
+      } else { btn.disabled=false; btn.textContent='Submit report'; }
     }
+
+    document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
     document.getElementById('report-modal').addEventListener('click', e => { if (e.target === document.getElementById('report-modal')) closeReport(); });
+    document.getElementById('photo-lightbox').addEventListener('click', e => { if (e.target === document.getElementById('photo-lightbox')) closeLightbox(); });
 
     _sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) currentUser = session.user;
+      currentUser = session?.user || null;
       loadXekie();
     });
   </script>
