@@ -44,6 +44,21 @@
     .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--black);color:var(--white);padding:14px 24px;border-radius:12px;font-size:14px;z-index:1000;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);}
     .toast.show{transform:translateX(-50%) translateY(0);}
     .toast-sub{font-size:12px;color:#aaa;margin-top:2px;}
+
+    /* WINE GLASSES OVERLAY */
+    #glasses-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:none;opacity:0;transition:opacity 0.3s;}
+    #glasses-overlay.show{opacity:1;}
+    .glasses-wrap{position:relative;display:flex;align-items:flex-end;justify-content:center;gap:0;}
+    .glass{font-size:100px;display:inline-block;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+    .glass-left{transform:rotate(-30deg) translateX(20px);}
+    .glass-right{transform:rotate(30deg) translateX(-20px);}
+    .glasses-wrap.clink .glass-left{transform:rotate(-10deg) translateX(4px);}
+    .glasses-wrap.clink .glass-right{transform:rotate(10deg) translateX(-4px);}
+    .sparkle{position:absolute;font-size:24px;opacity:0;animation:none;}
+    .sparkle.pop{animation:sparklePop 0.8s ease forwards;}
+    @keyframes sparklePop{0%{opacity:0;transform:scale(0) translate(0,0)}30%{opacity:1;transform:scale(1.2) translate(var(--tx),var(--ty))}100%{opacity:0;transform:scale(0.8) translate(calc(var(--tx)*2),calc(var(--ty)*2))}}
+    .glasses-text{position:absolute;bottom:-60px;left:50%;transform:translateX(-50%);font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--white);white-space:nowrap;text-shadow:0 2px 12px rgba(0,0,0,0.5);}
+
     footer{background:var(--black);color:var(--white);padding:24px 40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
     .footer-links{display:flex;gap:20px;flex-wrap:wrap;}
@@ -56,6 +71,23 @@
   <div class="toast" id="toast">
     <div>Welcome to XEKIE! 🔶</div>
     <div class="toast-sub">Check your inbox — a welcome email is on its way.</div>
+  </div>
+
+  <!-- WINE GLASSES OVERLAY -->
+  <div id="glasses-overlay">
+    <div style="position:relative;text-align:center;">
+      <div class="glasses-wrap" id="glasses-wrap">
+        <span class="glass glass-left">🥂</span>
+        <span class="glass glass-right">🥂</span>
+        <span class="sparkle" id="sp1" style="top:-20px;left:50%;--tx:-40px;--ty:-50px;">✨</span>
+        <span class="sparkle" id="sp2" style="top:-10px;left:50%;--tx:40px;--ty:-60px;">⭐</span>
+        <span class="sparkle" id="sp3" style="top:10px;left:30%;--tx:-50px;--ty:-30px;">💫</span>
+        <span class="sparkle" id="sp4" style="top:10px;left:70%;--tx:50px;--ty:-30px;">✨</span>
+        <span class="sparkle" id="sp5" style="top:30px;left:20%;--tx:-30px;--ty:-20px;">⭐</span>
+        <span class="sparkle" id="sp6" style="top:30px;left:80%;--tx:30px;--ty:-20px;">💫</span>
+      </div>
+      <div class="glasses-text">Welcome to XEKIE! 🔶</div>
+    </div>
   </div>
 
   <nav>
@@ -129,6 +161,82 @@
       el.textContent = msg;
     }
 
+    // ---- CLINK SOUND (Web Audio API) ----
+    function playClinkSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Main clink tone
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(1800, ctx.currentTime);
+        osc1.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.8);
+        gain1.gain.setValueAtTime(0.4, ctx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+        osc1.connect(gain1); gain1.connect(ctx.destination);
+        osc1.start(ctx.currentTime); osc1.stop(ctx.currentTime + 1.2);
+
+        // Harmonic overtone
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(2400, ctx.currentTime);
+        osc2.frequency.exponentialRampToValueAtTime(1800, ctx.currentTime + 0.6);
+        gain2.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+        osc2.connect(gain2); gain2.connect(ctx.destination);
+        osc2.start(ctx.currentTime); osc2.stop(ctx.currentTime + 0.8);
+
+        // Second glass resonance (slight delay)
+        const osc3 = ctx.createOscillator();
+        const gain3 = ctx.createGain();
+        osc3.type = 'sine';
+        osc3.frequency.setValueAtTime(2100, ctx.currentTime + 0.05);
+        osc3.frequency.exponentialRampToValueAtTime(1500, ctx.currentTime + 0.7);
+        gain3.gain.setValueAtTime(0.3, ctx.currentTime + 0.05);
+        gain3.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
+        osc3.connect(gain3); gain3.connect(ctx.destination);
+        osc3.start(ctx.currentTime + 0.05); osc3.stop(ctx.currentTime + 1.0);
+
+      } catch(e) { /* silent fail */ }
+    }
+
+    function launchWineGlasses() {
+      const overlay = document.getElementById('glasses-overlay');
+      const wrap = document.getElementById('glasses-wrap');
+
+      // Show overlay with dark background
+      overlay.style.background = 'rgba(10,10,10,0.75)';
+      overlay.style.backdropFilter = 'blur(4px)';
+      overlay.classList.add('show');
+
+      // Play clink sound
+      playClinkSound();
+
+      // Clink the glasses together after a short delay
+      setTimeout(() => {
+        wrap.classList.add('clink');
+
+        // Pop sparkles
+        document.querySelectorAll('.sparkle').forEach((sp, i) => {
+          setTimeout(() => {
+            sp.classList.add('pop');
+          }, i * 60);
+        });
+      }, 400);
+
+      // Hide after 2.5 seconds then redirect
+      setTimeout(() => {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.classList.remove('show');
+          overlay.style.background = '';
+          overlay.style.backdropFilter = '';
+        }, 300);
+      }, 2500);
+    }
+
     async function sendWelcomeEmail(email, name) {
       try {
         return await fetch('/.netlify/functions/send-email', {
@@ -164,9 +272,9 @@
         btn.disabled = false; btn.textContent = 'Create account';
       } else {
         await sendWelcomeEmail(email, name);
-        showToast();
+        launchWineGlasses();
         btn.textContent = 'Account created ✓';
-        setTimeout(() => window.location.href = 'dashboard.html', 1800);
+        setTimeout(() => window.location.href = 'dashboard.html', 2800);
       }
     }
 
