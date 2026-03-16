@@ -97,6 +97,18 @@
     .modal-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
     .btn-modal-submit{width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
     .btn-modal-submit:hover{background:var(--accent);}
+    /* Share modal */
+    .share-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;padding:0;}
+    .share-modal.open{display:flex;}
+    .share-sheet{background:var(--white);border-radius:24px 24px 0 0;padding:32px 24px 40px;width:100%;max-width:520px;}
+    .share-sheet-title{font-family:var(--font-display);font-size:18px;font-weight:800;margin-bottom:6px;}
+    .share-sheet-sub{font-size:13px;color:var(--mid);margin-bottom:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .share-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+    .share-option{display:flex;align-items:center;gap:10px;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;background:var(--white);font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--black);}
+    .share-option:hover{border-color:var(--black);background:var(--cream);}
+    .share-option-icon{font-size:20px;width:28px;text-align:center;}
+    .share-cancel{width:100%;padding:14px;background:var(--cream);border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;color:var(--mid);transition:all 0.2s;margin-top:4px;}
+    .share-cancel:hover{background:var(--border);color:var(--black);}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
@@ -108,7 +120,7 @@
     .footer-links a{font-size:13px;color:#666;text-decoration:none;}
     .footer-links a:hover{color:var(--white);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
-    @media(max-width:600px){nav{padding:0 20px;}.stats-row{grid-template-columns:1fr 1fr;}}
+    @media(max-width:600px){nav{padding:0 20px;}.stats-row{grid-template-columns:1fr 1fr;}.share-options{grid-template-columns:1fr 1fr;}}
   </style>
 </head>
 <body>
@@ -179,6 +191,23 @@
     </div>
   </div>
 
+  <!-- SHARE MODAL -->
+  <div class="share-modal" id="share-modal" onclick="if(event.target===this)closeShareModal()">
+    <div class="share-sheet">
+      <div class="share-sheet-title">Share XEKIE</div>
+      <div class="share-sheet-sub" id="share-sheet-sub"></div>
+      <div class="share-options">
+        <button class="share-option" onclick="doShare('copy')"><span class="share-option-icon">🔗</span>Copy Link</button>
+        <button class="share-option" onclick="doShare('sms')"><span class="share-option-icon">💬</span>iMessage</button>
+        <button class="share-option" onclick="doShare('facebook')"><span class="share-option-icon">📘</span>Facebook</button>
+        <button class="share-option" onclick="doShare('x')"><span class="share-option-icon">𝕏</span>Post on X</button>
+        <button class="share-option" onclick="doShare('whatsapp')"><span class="share-option-icon">💚</span>WhatsApp</button>
+        <button class="share-option" onclick="doShare('email')"><span class="share-option-icon">📧</span>Email</button>
+      </div>
+      <button class="share-cancel" onclick="closeShareModal()">Cancel</button>
+    </div>
+  </div>
+
   <div class="share-toast" id="share-toast">Link copied! 🔗</div>
 
   <footer>
@@ -204,6 +233,7 @@
     let currentUser = null;
     const BETA_CUTOFF = new Date('2026-06-01');
     const VAPID_PUBLIC_KEY = 'BMu4OTWBIY4cfPe6e2ZLfSr9w-kZy9tlkwN_CHfv4tPuXbhZvORDb-ihHNmvPagyWM-wTc7W2hYt7RLLcCN8qlM';
+    let shareUrl = '', shareTitle = '';
 
     function urlBase64ToUint8Array(base64String) {
       const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -214,8 +244,7 @@
 
     async function initNotifications() {
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-      const permission = Notification.permission;
-      if (permission === 'default') {
+      if (Notification.permission === 'default') {
         document.getElementById('notif-banner').style.display = 'flex';
       }
     }
@@ -225,28 +254,45 @@
       btn.disabled = true; btn.textContent = 'Enabling...';
       try {
         const permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
-          btn.textContent = 'Blocked — check browser settings';
-          return;
-        }
+        if (permission !== 'granted') { btn.textContent = 'Blocked — check browser settings'; return; }
         const reg = await navigator.serviceWorker.ready;
-        const sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-        });
-        await _sb.from('push_subscriptions').upsert({
-          user_id: currentUser.id,
-          subscription: sub.toJSON()
-        }, { onConflict: 'user_id' });
+        const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
+        await _sb.from('push_subscriptions').upsert({ user_id: currentUser.id, subscription: sub.toJSON() }, { onConflict: 'user_id' });
         document.getElementById('notif-banner').style.display = 'none';
         const t = document.getElementById('share-toast');
         t.textContent = '🔔 Notifications enabled!';
         t.classList.add('show');
         setTimeout(() => { t.classList.remove('show'); t.textContent = 'Link copied! 🔗'; }, 3000);
-      } catch(err) {
-        console.error('Push error:', err);
-        btn.disabled = false;
-        btn.textContent = 'Enable Notifications';
+      } catch(err) { console.error(err); btn.disabled = false; btn.textContent = 'Enable Notifications'; }
+    }
+
+    // Share modal
+    function openShareModal(id, title) {
+      shareUrl = `${window.location.origin}/xekie.html?id=${id}`;
+      shareTitle = title;
+      document.getElementById('share-sheet-sub').textContent = title;
+      document.getElementById('share-modal').classList.add('open');
+    }
+
+    function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
+
+    function doShare(type) {
+      const encoded = encodeURIComponent(shareUrl);
+      const text = encodeURIComponent(`Check out this XEKIE: ${shareTitle}`);
+      closeShareModal();
+      switch(type) {
+        case 'copy':
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            const t = document.getElementById('share-toast');
+            t.textContent = 'Link copied! 🔗';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+          }); break;
+        case 'sms': window.open(`sms:&body=${text}%20${encoded}`); break;
+        case 'facebook': window.open(`https://www.facebook.com/sharer/sharer.php?u=${encoded}`, '_blank'); break;
+        case 'x': window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encoded}`, '_blank'); break;
+        case 'whatsapp': window.open(`https://wa.me/?text=${text}%20${encoded}`, '_blank'); break;
+        case 'email': window.open(`mailto:?subject=${encodeURIComponent('Check out this XEKIE: ' + shareTitle)}&body=${text}%20${encoded}`); break;
       }
     }
 
@@ -295,9 +341,7 @@
       document.getElementById('user-meta').textContent = 'Member since ' + joined.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
       if (joined < BETA_CUTOFF) document.getElementById('early-badge-container').innerHTML = '<div class="early-badge">⚡ Early Adopter</div>';
       document.getElementById('nav-profile').href = `seller.html?id=${session.user.id}`;
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(console.error);
-      }
+      if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(console.error);
       initNotifications();
       loadDashboard();
     });
@@ -350,7 +394,7 @@
               <button class="btn-view-offers" onclick="viewOffers('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">
                 Responses${offerCount?`<span class="offers-badge">${offerCount}</span>`:''}
               </button>
-              <button class="btn-share-xekie" onclick="shareXekie('${x.id}')">Share</button>
+              <button class="btn-share-xekie" onclick="openShareModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
               ${!isFulfilled && !isExpired ? `<button class="btn-fulfill" onclick="markFulfilled('${x.id}')">✓ Fulfilled</button>` : ''}
               ${isExpired ? `<button class="btn-repost" onclick="repostXekie('${x.id}')">🔁 Repost</button>` : ''}
               ${!isPromoted && !isFulfilled ? `<button class="btn-promote" onclick="promoteXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">⚡ Promote $5</button>` : isPromoted ? '<span class="promoted-badge">⚡ Promoted</span>' : ''}
@@ -416,12 +460,6 @@
       if (!confirm('Delete this XEKIE? This cannot be undone.')) return;
       await _sb.from('xekies').delete().eq('id', id).eq('user_id', currentUser.id);
       loadDashboard();
-    }
-
-    function shareXekie(id) {
-      const url = `${window.location.origin}/xekie.html?id=${id}`;
-      if (navigator.share) { navigator.share({ url }).catch(() => {}); }
-      else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
     }
 
     async function viewOffers(xekieId, title) {
