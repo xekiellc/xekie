@@ -7,70 +7,69 @@ export default async function handler(request, context) {
 
   if (!xekieId) return context.next();
 
-  const ua = request.headers.get('user-agent') || '';
-  const isBot = /facebookexternalhit|twitterbot|linkedinbot|whatsapp|slackbot|telegrambot|discordbot|googlebot|bingbot|crawler|spider/i.test(ua);
-
-  if (!isBot) return context.next();
-
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/xekies?id=eq.${xekieId}&select=title,description,budget,budget_min,budget_max,location,category&limit=1`,
-      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
-    );
-    const data = await res.json();
-    const x = data?.[0];
-    if (!x) return context.next();
-
-    let budget = '';
-    if (x.budget_min && x.budget_max) budget = `$${Number(x.budget_min).toLocaleString()} – $${Number(x.budget_max).toLocaleString()}`;
-    else if (x.budget_min) budget = `$${Number(x.budget_min).toLocaleString()}+`;
-    else if (x.budget_max) budget = `Up to $${Number(x.budget_max).toLocaleString()}`;
-    else if (x.budget) budget = `$${Number(x.budget).toLocaleString()}`;
-
-    const title = `${x.title} — XEKIE`;
-    const description = x.description
-      ? `${x.description.slice(0, 120)}${x.description.length > 120 ? '...' : ''} | Budget: ${budget}`
-      : `Looking to buy: ${x.title}. Budget: ${budget}. Respond with your best offer on XEKIE.`;
-
-    const ogParams = new URLSearchParams({
-      title: x.title, budget, location: x.location || '', category: x.category || ''
-    });
-    const ogImage = `https://xekie.com/.netlify/functions/og-image?${ogParams}`;
-    const pageUrl = `https://xekie.com/xekie.html?id=${xekieId}`;
-
+    // Fetch the original HTML
     const originalResponse = await context.next();
     let html = await originalResponse.text();
 
-    // Fix og:url — replace the id="og-url" tag and any content value
+    // Always fix og:url to the actual page URL (no JS needed)
+    const pageUrl = `https://xekie.com/xekie.html?id=${xekieId}`;
     html = html.replace(
-      /<meta property="og:url"[^>]*>/,
-      `<meta property="og:url" content="${pageUrl}">`
-    );
-    // Also fix the id="og-url" variant
-    html = html.replace(
-      /<meta property="og:url" id="og-url"[^>]*>/,
+      /<meta property="og:url" content="[^"]*">/,
       `<meta property="og:url" content="${pageUrl}">`
     );
 
-    html = html
-      .replace(/<title>.*?<\/title>/, `<title>${escHtml(title)}</title>`)
-      .replace(/<meta property="og:title"[^>]*>/, `<meta property="og:title" content="${escHtml(title)}">`)
-      .replace(/<meta property="og:description"[^>]*>/, `<meta property="og:description" content="${escHtml(description)}">`)
-      .replace(/<meta property="og:image" [^>]*>/, `<meta property="og:image" content="${ogImage}">`)
-      .replace(/<meta name="twitter:title"[^>]*>/, `<meta name="twitter:title" content="${escHtml(title)}">`)
-      .replace(/<meta name="twitter:description"[^>]*>/, `<meta name="twitter:description" content="${escHtml(description)}">`)
-      .replace(/<meta name="twitter:image"[^>]*>/, `<meta name="twitter:image" content="${ogImage}">`);
+    // Try to fetch XEKIE data and enrich the other tags
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/xekies?id=eq.${xekieId}&select=title,description,budget,budget_min,budget_max,location,category&limit=1`,
+        { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+      );
+      const data = await res.json();
+      const x = data?.[0];
+
+      if (x) {
+        let budget = '';
+        if (x.budget_min && x.budget_max) budget = `$${Number(x.budget_min).toLocaleString()} – $${Number(x.budget_max).toLocaleString()}`;
+        else if (x.budget_min) budget = `$${Number(x.budget_min).toLocaleString()}+`;
+        else if (x.budget_max) budget = `Up to $${Number(x.budget_max).toLocaleString()}`;
+        else if (x.budget) budget = `$${Number(x.budget).toLocaleString()}`;
+
+        const title = `${x.title} — XEKIE`;
+        const description = x.description
+          ? `${x.description.slice(0, 120)}${x.description.length > 120 ? '...' : ''} | Budget: ${budget}`
+          : `Looking to buy: ${x.title}. Budget: ${budget}. Respond with your best offer on XEKIE.`;
+
+        const ogParams = new URLSearchParams({
+          title: x.title, budget,
+          location: x.location || '',
+          category: x.category || ''
+        });
+        const ogImage = `https://xekie.com/.netlify/functions/og-image?${ogParams}`;
+
+        html = html
+          .replace(/<title>.*?<\/title>/, `<title>${escHtml(title)}</title>`)
+          .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${escHtml(title)}">`)
+          .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${escHtml(description)}">`)
+          .replace(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${ogImage}">`)
+          .replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${escHtml(title)}">`)
+          .replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${escHtml(description)}">`)
+          .replace(/<meta name="twitter:image" content="[^"]*">/, `<meta name="twitter:image" content="${ogImage}">`);
+      }
+    } catch(e) {
+      // Supabase fetch failed — og:url is already fixed above, just serve what we have
+    }
 
     return new Response(html, {
       status: originalResponse.status,
       headers: {
         ...Object.fromEntries(originalResponse.headers),
         'content-type': 'text/html; charset=utf-8',
-        'cache-control': 'public, max-age=300, stale-while-revalidate=60',
+        'cache-control': 'public, max-age=300',
       }
     });
 
-  } catch (err) {
+  } catch(e) {
     return context.next();
   }
 }
