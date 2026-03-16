@@ -95,6 +95,19 @@
     .btn-modal-submit:hover{background:var(--accent);}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
+
+    /* CONFETTI CANVAS */
+    #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;display:none;}
+
+    /* CELEBRATION OVERLAY */
+    #celebration-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:none;opacity:0;transition:opacity 0.4s;}
+    #celebration-overlay.show{opacity:1;}
+    .celebration-box{background:rgba(10,10,10,0.85);backdrop-filter:blur(8px);border-radius:24px;padding:48px 56px;text-align:center;border:1px solid rgba(255,255,255,0.1);}
+    .celebration-emoji{font-size:72px;display:block;margin-bottom:16px;animation:celebBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) both;}
+    @keyframes celebBounce{from{transform:scale(0) rotate(-10deg)}to{transform:scale(1) rotate(0deg)}}
+    .celebration-title{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#fafaf8;letter-spacing:-0.02em;margin-bottom:8px;}
+    .celebration-sub{font-size:16px;color:#888;font-weight:300;}
+
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -108,6 +121,16 @@
   </style>
 </head>
 <body>
+  <canvas id="confetti-canvas"></canvas>
+
+  <div id="celebration-overlay">
+    <div class="celebration-box">
+      <span class="celebration-emoji">🎉</span>
+      <div class="celebration-title">Deal Complete!</div>
+      <div class="celebration-sub">XEKIE'd successfully. 🔶</div>
+    </div>
+  </div>
+
   <nav>
     <a href="index.html" class="nav-logo">
       <span><span class="xe">XE</span>KIE</span>
@@ -201,6 +224,96 @@
       document.title = totalNewOffers > 0 ? `(${totalNewOffers}) XEKIE — Dashboard` : 'XEKIE — Dashboard';
     }
 
+    // ---- CELEBRATION SOUND (Web Audio API) ----
+    function playCelebrationSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523, 659, 784, 1047]; // C, E, G, C — major chord arpeggio
+        notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
+          gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + i * 0.12 + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.6);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.12);
+          osc.stop(ctx.currentTime + i * 0.12 + 0.6);
+        });
+        // Final sparkle burst
+        setTimeout(() => {
+          const bufferSize = ctx.sampleRate * 0.3;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let j = 0; j < bufferSize; j++) {
+            data[j] = (Math.random() * 2 - 1) * Math.pow(1 - j / bufferSize, 3) * 0.3;
+          }
+          const source = ctx.createBufferSource();
+          source.buffer = buffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'highpass';
+          filter.frequency.value = 3000;
+          const gain = ctx.createGain();
+          gain.gain.value = 0.4;
+          source.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+          source.start(ctx.currentTime);
+        }, 500);
+      } catch(e) { /* silent fail */ }
+    }
+
+    // ---- CONFETTI ----
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      canvas.style.display = 'block';
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const pieces = [];
+      const colors = ['#ff4d1c','#ffd700','#ff69b4','#00cfff','#7fff00','#ff8c00','#a855f7','#fafaf8'];
+      for (let i = 0; i < 150; i++) {
+        pieces.push({
+          x: Math.random() * canvas.width,
+          y: -10 - Math.random() * 200,
+          w: 8 + Math.random() * 8,
+          h: 4 + Math.random() * 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.15,
+          vy: 2 + Math.random() * 4,
+          vx: (Math.random() - 0.5) * 3,
+          alpha: 1
+        });
+      }
+      let frame = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.y += p.vy; p.x += p.vx; p.rotation += p.rotSpeed;
+          if (frame > 90) p.alpha -= 0.015;
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, p.alpha);
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          ctx.restore();
+        });
+        frame++;
+        if (frame < 160) requestAnimationFrame(animate);
+        else { canvas.style.display = 'none'; }
+      }
+      animate();
+    }
+
+    function launchCelebration() {
+      playCelebrationSound();
+      launchConfetti();
+      const overlay = document.getElementById('celebration-overlay');
+      overlay.classList.add('show');
+      setTimeout(() => overlay.classList.remove('show'), 3000);
+    }
+
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
@@ -257,7 +370,6 @@
         const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
         (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
       }
-
       const seenCounts = getSeenCounts();
       let totalNewOffers = 0;
       const newOfferCounts = {};
@@ -269,11 +381,9 @@
         totalNewOffers += newCount;
       });
       updateTabTitle(totalNewOffers);
-
       document.getElementById('stat-xekies').textContent = list.length;
       document.getElementById('stat-offers').textContent = Object.values(offerCounts).reduce((a,b)=>a+b,0);
       document.getElementById('stat-views').textContent = list.reduce((a,x)=>a+(x.view_count||0),0);
-
       const container = document.getElementById('xekie-list');
       if (!list.length) {
         container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Nothing XEKIE'd yet</div><p class="empty-sub">Can't find something? Just XEKIE it — tell sellers what you want and let them come to you.</p><a href="request.html" class="btn-nav primary" style="display:inline-block;">XEKIE something →</a></div>`;
@@ -327,18 +437,22 @@
       if (!confirm('Mark this XEKIE as fulfilled?')) return;
       const { error } = await _sb.from('xekies').update({ is_fulfilled: true }).eq('id', id).eq('user_id', currentUser.id);
       if (!error) {
-        loadDashboard();
-        const { data: offers } = await _sb.from('offers').select('seller_id').eq('xekie_id', id).limit(1);
-        if (offers && offers.length) {
-          ratingXekieId = id; pendingFulfillId = offers[0].seller_id; selectedStar = 0;
-          document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('active'));
-          document.getElementById('rating-comment').value = '';
-          document.getElementById('rating-msg').className = 'modal-msg';
-          document.getElementById('rating-msg').style.display = 'none';
-          document.getElementById('rating-submit').disabled = false;
-          document.getElementById('rating-submit').textContent = 'Submit rating';
-          setTimeout(() => document.getElementById('rating-modal').classList.add('open'), 600);
-        }
+        launchCelebration();
+        setTimeout(() => {
+          loadDashboard();
+          const { data: offers } = _sb.from('offers').select('seller_id').eq('xekie_id', id).limit(1).then(({ data: offers }) => {
+            if (offers && offers.length) {
+              ratingXekieId = id; pendingFulfillId = offers[0].seller_id; selectedStar = 0;
+              document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('active'));
+              document.getElementById('rating-comment').value = '';
+              document.getElementById('rating-msg').className = 'modal-msg';
+              document.getElementById('rating-msg').style.display = 'none';
+              document.getElementById('rating-submit').disabled = false;
+              document.getElementById('rating-submit').textContent = 'Submit rating';
+              setTimeout(() => document.getElementById('rating-modal').classList.add('open'), 600);
+            }
+          });
+        }, 3200);
       }
     }
 
