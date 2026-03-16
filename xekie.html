@@ -264,7 +264,7 @@
     const VIEW_MILESTONES = [5,10,25,50,100];
     let currentXekie = null, currentUser = null;
     let lightboxPhotos = [], lightboxIndex = 0;
-    let aiSuggestionsLoaded = false; // prevent double-render
+    let aiLoaded = false;
     const params = new URLSearchParams(window.location.search);
     const xekieId = params.get('id');
 
@@ -297,22 +297,15 @@
 
     // ── AI SUGGESTIONS ──
     async function loadAISuggestions(xekie, offerCount) {
-      // Guard: only run once per page load
-      if (aiSuggestionsLoaded) return;
-      aiSuggestionsLoaded = true;
-
+      if(aiLoaded) return;
+      aiLoaded = true;
       const container = document.getElementById('ai-suggest-container');
-      if (!container) return;
-
+      if(!container) return;
       const shouldShow = offerCount === 0 || xekie.is_fulfilled || (xekie.expires_at && new Date(xekie.expires_at) < new Date());
-      if (!shouldShow) return;
-
+      if(!shouldShow) return;
       const label = xekie.is_fulfilled
         ? "This was fulfilled — but others are looking for similar things"
-        : offerCount === 0
-        ? "No offers yet — but you might also like these"
-        : "Related demand on XEKIE";
-
+        : "No offers yet — but you might also like these";
       container.innerHTML = `
         <div class="ai-suggest-section">
           <div class="ai-suggest-header">
@@ -331,43 +324,27 @@
             </div>
           </div>
         </div>`;
-
       try {
         const res = await fetch('/.netlify/functions/ai-suggest', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({
-            xekieId: xekie.id,
-            title: xekie.title,
-            description: xekie.description || '',
-            category: xekie.category || ''
-          })
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({xekieId:xekie.id,title:xekie.title,description:xekie.description||'',category:xekie.category||''})
         });
-
         const data = await res.json();
         const suggestions = data.suggestions || [];
         const cardsEl = document.getElementById('ai-cards');
-        if (!cardsEl) return;
-
-        if (!suggestions.length) {
-          container.innerHTML = '';
-          return;
-        }
-
-        cardsEl.innerHTML = suggestions.map(s => `
+        if(!cardsEl) return;
+        if(!suggestions.length){container.innerHTML='';return;}
+        cardsEl.innerHTML = suggestions.map(s=>`
           <a href="xekie.html?id=${s.id}" class="ai-card">
             <div class="ai-card-reason">${s.reason}</div>
             <div class="ai-card-title">${s.title}</div>
             <div class="ai-card-meta">
-              ${s.budget ? `<span class="ai-card-budget">${s.budget}</span>` : ''}
-              ${s.category ? `<span>📦 ${s.category}</span>` : ''}
-              ${s.location ? `<span>📍 ${s.location}</span>` : ''}
+              ${s.budget?`<span class="ai-card-budget">${s.budget}</span>`:''}
+              ${s.category?`<span>📦 ${s.category}</span>`:''}
+              ${s.location?`<span>📍 ${s.location}</span>`:''}
             </div>
           </a>`).join('');
-
-      } catch(e) {
-        container.innerHTML = '';
-      }
+      } catch(e){container.innerHTML='';}
     }
 
     // ── WAITLIST ──
@@ -472,7 +449,7 @@
       if(error||!x){document.getElementById('content').innerHTML='<div class="loading">XEKIE not found.</div>';return;}
       currentXekie=x;
 
-      let userMetaData = null;
+      let userMetaData=null;
       try{const r=await _sb.from('user_profiles').select('display_name').eq('user_id',x.user_id).single();userMetaData=r.data;}catch(e){}
       x.owner_name=userMetaData?.display_name||null;
 
@@ -589,9 +566,8 @@
         </div>`:''}`;
 
       incrementViewAndNotify(x);
-
-      // Load AI suggestions with a stable delay so DOM is settled
-      setTimeout(() => loadAISuggestions(x, offerCount), 300);
+      // AI suggestions: wait 500ms after DOM settles, only run once
+      setTimeout(()=>loadAISuggestions(x,offerCount), 500);
     }
 
     function openLightbox(i){lightboxIndex=i;document.getElementById('lightbox-img').src=lightboxPhotos[i];document.getElementById('photo-lightbox').classList.add('open');}
@@ -662,7 +638,7 @@
     document.getElementById('photo-lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('photo-lightbox'))closeLightbox();});
     document.getElementById('story-modal').addEventListener('click',e=>{if(e.target===document.getElementById('story-modal'))closeStoryModal();});
 
-    // Load xekie once on session resolve — AI suggestions guarded by aiSuggestionsLoaded flag
+    // Single entry point — auth resolves once, loadXekie fires once
     _sb.auth.getSession().then(({data:{session}})=>{
       currentUser=session?.user||null;
       loadXekie();
