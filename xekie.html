@@ -19,6 +19,7 @@
   <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
   <style>
@@ -71,6 +72,8 @@
     .btn-save{width:100%;padding:12px;background:transparent;color:var(--black);border:1.5px solid var(--border);border-radius:12px;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;margin-bottom:8px;}
     .btn-save:hover{border-color:var(--black);}
     .btn-save.saved{background:#EAF3DE;color:#3B6D11;border-color:#c0dd97;}
+    .btn-story{width:100%;padding:14px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:white;border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-bottom:8px;}
+    .btn-story:hover{opacity:0.9;transform:translateY(-1px);}
     .meta-row{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mid);margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
     .cta-band{background:var(--black);border-radius:16px;padding:32px;text-align:center;margin-top:16px;}
     .cta-band h3{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--white);margin-bottom:8px;}
@@ -93,12 +96,6 @@
     .modal-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
     .btn-modal-submit{width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
     .btn-modal-submit:hover{background:var(--accent);}
-    .qr-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;}
-    .qr-modal.open{display:flex;}
-    .qr-box{background:white;border-radius:20px;padding:36px;text-align:center;max-width:300px;width:100%;}
-    .qr-title{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:16px;}
-    .qr-sub{font-size:13px;color:var(--mid);margin-top:12px;}
-    .btn-qr-close{margin-top:16px;width:100%;padding:10px;background:var(--black);color:white;border:none;border-radius:10px;font-family:var(--font-body);cursor:pointer;}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
     .report-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center;padding:20px;}
@@ -119,6 +116,19 @@
     .report-msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;}
     .report-msg.error{background:#FCEBEB;color:#A32D2D;display:block;}
     .report-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
+
+    /* STORY MODAL */
+    .story-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:400;align-items:center;justify-content:center;padding:20px;flex-direction:column;gap:16px;}
+    .story-modal.open{display:flex;}
+    .story-preview{border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);max-height:70vh;}
+    .story-preview canvas{display:block;max-height:70vh;width:auto;}
+    .story-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+    .btn-download{padding:14px 28px;background:var(--accent);color:white;border:none;border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .btn-download:hover{background:#e03a0a;transform:translateY(-1px);}
+    .btn-story-close{padding:14px 28px;background:rgba(255,255,255,0.15);color:white;border:1.5px solid rgba(255,255,255,0.3);border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s;}
+    .btn-story-close:hover{background:rgba(255,255,255,0.25);}
+    .story-hint{font-size:13px;color:rgba(255,255,255,0.6);text-align:center;}
+
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -174,16 +184,19 @@
     <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)">›</button>
   </div>
 
-  <div class="qr-modal" id="qr-modal" onclick="if(event.target===this)closeQR()">
-    <div class="qr-box">
-      <div class="qr-title">Scan to view XEKIE</div>
-      <div id="qr-code"></div>
-      <div class="qr-sub">Share this code anywhere — print it, text it, post it.</div>
-      <button class="btn-qr-close" onclick="closeQR()">Close</button>
-    </div>
-  </div>
-
   <div class="share-toast" id="share-toast">Link copied! 🔗</div>
+
+  <!-- STORY MODAL -->
+  <div class="story-modal" id="story-modal">
+    <div class="story-preview">
+      <canvas id="story-canvas"></canvas>
+    </div>
+    <div class="story-actions">
+      <button class="btn-download" onclick="downloadStory()">⬇️ Download Story</button>
+      <button class="btn-story-close" onclick="closeStoryModal()">Close</button>
+    </div>
+    <div class="story-hint">Save and share to Instagram Stories, TikTok, Snapchat & more</div>
+  </div>
 
   <div class="report-modal" id="report-modal">
     <div class="report-box">
@@ -247,40 +260,269 @@
     }
 
     async function incrementViewAndNotify(xekie) {
-      // Don't count views from the owner
       if (currentUser && currentUser.id === xekie.user_id) return;
-
       const newCount = (xekie.view_count || 0) + 1;
       const alreadyNotified = xekie.view_notified_milestones || [];
-
-      // Find if this view hits a new milestone
       const hitMilestone = VIEW_MILESTONES.find(m => newCount >= m && !alreadyNotified.includes(m));
-
-      // Update view count
       await _sb.from('xekies').update({ view_count: newCount }).eq('id', xekie.id);
-
-      // If milestone hit, send email and mark it
       if (hitMilestone) {
         const newMilestones = [...alreadyNotified, hitMilestone];
         await _sb.from('xekies').update({ view_notified_milestones: newMilestones }).eq('id', xekie.id);
-
-        // Fire the view notification email
         fetch('/.netlify/functions/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'view_milestone',
-            to: xekie.owner_email,
-            data: {
-              name: xekie.owner_name,
-              xekieTitle: xekie.title,
-              xekieId: xekie.id,
-              viewCount: newCount,
-              milestone: hitMilestone
-            }
-          })
+          body: JSON.stringify({ type: 'view_milestone', to: xekie.owner_email, data: { name: xekie.owner_name, xekieTitle: xekie.title, xekieId: xekie.id, viewCount: newCount, milestone: hitMilestone } })
         }).catch(() => {});
       }
+    }
+
+    // ---- STORY CARD GENERATOR ----
+    async function generateStoryCard(xekie) {
+      const canvas = document.getElementById('story-canvas');
+      const ctx = canvas.getContext('2d');
+      const W = 1080, H = 1920;
+      canvas.width = W; canvas.height = H;
+
+      // Background gradient
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, '#0a0a0a');
+      grad.addColorStop(0.5, '#1a0a05');
+      grad.addColorStop(1, '#0a0a0a');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Accent orb
+      const orbGrad = ctx.createRadialGradient(W*0.8, H*0.2, 0, W*0.8, H*0.2, 500);
+      orbGrad.addColorStop(0, 'rgba(255,77,28,0.25)');
+      orbGrad.addColorStop(1, 'rgba(255,77,28,0)');
+      ctx.fillStyle = orbGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Second orb bottom
+      const orbGrad2 = ctx.createRadialGradient(W*0.2, H*0.8, 0, W*0.2, H*0.8, 400);
+      orbGrad2.addColorStop(0, 'rgba(255,140,0,0.15)');
+      orbGrad2.addColorStop(1, 'rgba(255,140,0,0)');
+      ctx.fillStyle = orbGrad2;
+      ctx.fillRect(0, 0, W, H);
+
+      // XEKIE logo top
+      ctx.font = '900 72px Arial';
+      ctx.fillStyle = '#fafaf8';
+      ctx.textAlign = 'center';
+      ctx.fillText('XEKIE', W/2, 140);
+
+      // Tagline
+      ctx.font = '300 28px Arial';
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.letterSpacing = '8px';
+      ctx.fillText('TRADE DIFFERENT', W/2, 185);
+
+      // Divider line
+      ctx.strokeStyle = 'rgba(255,77,28,0.4)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(80, 220); ctx.lineTo(W-80, 220);
+      ctx.stroke();
+
+      // "LOOKING FOR" label
+      ctx.font = '600 26px Arial';
+      ctx.fillStyle = '#ff4d1c';
+      ctx.textAlign = 'left';
+      ctx.fillText('LOOKING FOR', 80, 300);
+
+      // Title - word wrap
+      ctx.font = '800 72px Arial';
+      ctx.fillStyle = '#fafaf8';
+      const titleWords = xekie.title.split(' ');
+      let titleLines = [], titleLine = '';
+      for (const word of titleWords) {
+        const test = titleLine + (titleLine ? ' ' : '') + word;
+        if (ctx.measureText(test).width > W - 160) { titleLines.push(titleLine); titleLine = word; }
+        else titleLine = test;
+      }
+      if (titleLine) titleLines.push(titleLine);
+      titleLines.slice(0, 3).forEach((line, i) => {
+        ctx.fillText(line, 80, 390 + i * 88);
+      });
+
+      const titleBottom = 390 + Math.min(titleLines.length, 3) * 88;
+
+      // Description if available
+      let descBottom = titleBottom + 40;
+      if (xekie.description) {
+        ctx.font = '300 36px Arial';
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        const descWords = xekie.description.split(' ');
+        let descLines = [], descLine = '';
+        for (const word of descWords) {
+          const test = descLine + (descLine ? ' ' : '') + word;
+          if (ctx.measureText(test).width > W - 160) { descLines.push(descLine); descLine = word; }
+          else descLine = test;
+          if (descLines.length >= 2) break;
+        }
+        if (descLine && descLines.length < 2) descLines.push(descLine);
+        descLines.slice(0, 2).forEach((line, i) => {
+          ctx.fillText(line + (i === 1 && descWords.length > descLines.join(' ').split(' ').length ? '…' : ''), 80, descBottom + i * 50);
+        });
+        descBottom += descLines.length * 50 + 20;
+      }
+
+      // Details cards
+      const cardY = Math.max(descBottom + 40, titleBottom + 140);
+      const cardH = 140;
+      const cardGap = 20;
+      const cardW = (W - 160 - cardGap) / 2;
+
+      // Budget card
+      roundRect(ctx, 80, cardY, cardW, cardH, 20);
+      ctx.fillStyle = 'rgba(255,77,28,0.15)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,77,28,0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.font = '500 24px Arial';
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.textAlign = 'left';
+      ctx.fillText('BUDGET', 80 + 24, cardY + 44);
+      ctx.font = '800 42px Arial';
+      ctx.fillStyle = '#ff4d1c';
+      ctx.fillText(formatBudget(xekie), 80 + 24, cardY + 100);
+
+      // Location card
+      if (xekie.location) {
+        roundRect(ctx, 80 + cardW + cardGap, cardY, cardW, cardH, 20);
+        ctx.fillStyle = 'rgba(255,255,255,0.06)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.font = '500 24px Arial';
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.fillText('LOCATION', 80 + cardW + cardGap + 24, cardY + 44);
+        ctx.font = '700 36px Arial';
+        ctx.fillStyle = '#fafaf8';
+        const locText = xekie.location.length > 16 ? xekie.location.slice(0, 16) + '…' : xekie.location;
+        ctx.fillText(locText, 80 + cardW + cardGap + 24, cardY + 100);
+      }
+
+      // Category pill
+      if (xekie.category) {
+        const pillY = cardY + cardH + 32;
+        ctx.font = '600 28px Arial';
+        ctx.fillStyle = '#ff4d1c';
+        ctx.textAlign = 'center';
+        const pillW = ctx.measureText(xekie.category).width + 60;
+        roundRect(ctx, W/2 - pillW/2, pillY - 36, pillW, 56, 28);
+        ctx.fillStyle = 'rgba(255,77,28,0.15)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,77,28,0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.fillStyle = '#ff4d1c';
+        ctx.fillText(xekie.category, W/2, pillY + 8);
+      }
+
+      // Bottom CTA section
+      const ctaY = H - 420;
+
+      // Divider
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(80, ctaY); ctx.lineTo(W-80, ctaY);
+      ctx.stroke();
+
+      // CTA text
+      ctx.font = '700 40px Arial';
+      ctx.fillStyle = '#fafaf8';
+      ctx.textAlign = 'center';
+      ctx.fillText('Can you help?', W/2, ctaY + 70);
+      ctx.font = '300 32px Arial';
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.fillText('Respond with your best offer at', W/2, ctaY + 120);
+
+      // URL badge
+      roundRect(ctx, W/2 - 240, ctaY + 148, 480, 72, 36);
+      ctx.fillStyle = '#ff4d1c';
+      ctx.fill();
+      ctx.font = '700 36px Arial';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText('xekie.com', W/2, ctaY + 195);
+
+      // QR code area - generate and draw
+      await drawQRCode(ctx, `https://xekie.com/xekie.html?id=${xekie.id}`, W/2 - 100, ctaY + 250, 200);
+
+      ctx.font = '300 26px Arial';
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.textAlign = 'center';
+      ctx.fillText('Scan to respond', W/2, ctaY + 490);
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    async function drawQRCode(ctx, url, x, y, size) {
+      try {
+        const qrDiv = document.createElement('div');
+        qrDiv.style.position = 'absolute';
+        qrDiv.style.left = '-9999px';
+        document.body.appendChild(qrDiv);
+        new QRCode(qrDiv, { text: url, width: size, height: size, colorDark: '#0a0a0a', colorLight: '#fafaf8' });
+        await new Promise(r => setTimeout(r, 200));
+        const qrImg = qrDiv.querySelector('img') || qrDiv.querySelector('canvas');
+        if (qrImg) {
+          if (qrImg.tagName === 'IMG') {
+            await new Promise((resolve) => {
+              const img = new Image();
+              img.onload = () => { ctx.drawImage(img, x, y, size, size); resolve(); };
+              img.src = qrImg.src;
+            });
+          } else {
+            ctx.drawImage(qrImg, x, y, size, size);
+          }
+        }
+        document.body.removeChild(qrDiv);
+      } catch(e) {
+        // Fallback — just draw a placeholder box
+        roundRect(ctx, x, y, size, size, 12);
+        ctx.fillStyle = '#fafaf8';
+        ctx.fill();
+        ctx.font = '500 20px Arial';
+        ctx.fillStyle = '#0a0a0a';
+        ctx.textAlign = 'center';
+        ctx.fillText('xekie.com', x + size/2, y + size/2);
+      }
+    }
+
+    async function openStoryModal() {
+      if (!currentXekie) return;
+      document.getElementById('story-modal').classList.add('open');
+      await generateStoryCard(currentXekie);
+    }
+
+    function closeStoryModal() {
+      document.getElementById('story-modal').classList.remove('open');
+    }
+
+    function downloadStory() {
+      const canvas = document.getElementById('story-canvas');
+      const link = document.createElement('a');
+      link.download = `xekie-story-${currentXekie?.id?.slice(0,8) || 'share'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('Story card downloaded! 📸');
     }
 
     async function loadXekie() {
@@ -289,10 +531,7 @@
       if (error || !x) { document.getElementById('content').innerHTML = '<div class="loading">XEKIE not found.</div>'; return; }
       currentXekie = x;
 
-      // Get owner email for notifications
-      const { data: ownerProfile } = await _sb.auth.admin?.getUserById?.(x.user_id).catch(() => ({ data: null })) || { data: null };
       const { data: userMeta } = await _sb.from('user_profiles').select('display_name').eq('user_id', x.user_id).single().catch(() => ({ data: null }));
-      x.owner_email = ownerProfile?.user?.email || null;
       x.owner_name = userMeta?.display_name || null;
 
       document.title = `XEKIE — ${x.title}`;
@@ -365,12 +604,13 @@
           <button class="btn-save ${isSaved ? 'saved' : ''}" id="btn-save" onclick="toggleSave()">
             ${isSaved ? '🔖 Saved' : '🔖 Save this XEKIE'}
           </button>
-          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareThis()">🔗 Copy link</button>
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareToSMS()">💬 iMessage</button>
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareToFacebook()">📘 Facebook</button>
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareToX()">𝕏 Post</button>
           </div>
+          <button class="btn-story" onclick="openStoryModal()">📸 Create Story Card — Share to Instagram & TikTok</button>
           <div class="meta-row">
             <span>👁 ${x.view_count || 0} views</span>
             <span>⏱ Posted ${timeAgo(x.created_at)}</span>
@@ -385,20 +625,12 @@
           <a href="login.html" class="btn-nav primary" style="display:inline-block;font-size:15px;padding:12px 28px;">Sign in to respond →</a>
         </div>` : ''}`;
 
-      // Increment view count and check milestones
       incrementViewAndNotify(x);
     }
 
-    function openLightbox(i) {
-      lightboxIndex = i;
-      document.getElementById('lightbox-img').src = lightboxPhotos[i];
-      document.getElementById('photo-lightbox').classList.add('open');
-    }
+    function openLightbox(i) { lightboxIndex = i; document.getElementById('lightbox-img').src = lightboxPhotos[i]; document.getElementById('photo-lightbox').classList.add('open'); }
     function closeLightbox() { document.getElementById('photo-lightbox').classList.remove('open'); }
-    function lightboxNav(dir) {
-      lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length;
-      document.getElementById('lightbox-img').src = lightboxPhotos[lightboxIndex];
-    }
+    function lightboxNav(dir) { lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length; document.getElementById('lightbox-img').src = lightboxPhotos[lightboxIndex]; }
 
     async function toggleSave() {
       if (!currentUser) { window.location.href = 'login.html'; return; }
@@ -434,34 +666,21 @@
       btn.disabled = true; btn.textContent = 'Sending...';
       const { error } = await _sb.from('offers').insert({ xekie_id: xekieId, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
       if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send & open chat →'; return; }
-
-      // Send push notification to buyer
-      try {
-        await fetch('/.netlify/functions/send-push', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentXekie.user_id, title: 'New offer on your XEKIE!', body: `Someone responded to "${currentXekie.title}"` }) });
-      } catch(e) {}
-
+      try { await fetch('/.netlify/functions/send-push', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentXekie.user_id, title: 'New offer on your XEKIE!', body: `Someone responded to "${currentXekie.title}"` }) }); } catch(e) {}
       msgEl.className='modal-msg success'; msgEl.style.display='block';
       msgEl.textContent='Offer sent! Opening chat...';
       btn.textContent='Sent ✓';
       setTimeout(() => { window.location.href = `messages.html?xekie=${xekieId}&other=${currentUser.id}`; }, 1200);
     }
 
-    function shareThis() {
-      const url = window.location.href;
-      if (navigator.share) { navigator.share({ title: currentXekie?.title, url }).catch(() => {}); }
-      else { navigator.clipboard.writeText(url).then(() => showToast('Link copied! 🔗')); }
-    }
+    function shareThis() { const url = window.location.href; if (navigator.share) { navigator.share({ title: currentXekie?.title, url }).catch(() => {}); } else { navigator.clipboard.writeText(url).then(() => showToast('Link copied! 🔗')); } }
     function shareToSMS() { window.open(`sms:?body=${encodeURIComponent('Check this out on XEKIE: ' + window.location.href)}`); }
     function shareToFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank'); }
     function shareToX() { window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent((currentXekie?.title || 'Check this XEKIE') + ' — ' + window.location.href)}`, '_blank'); }
     function showToast(msg) { const t = document.getElementById('share-toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
-    function closeQR() { document.getElementById('qr-modal').classList.remove('open'); }
 
     let selectedReportReason = '';
-    function selectReason(el, reason) {
-      document.querySelectorAll('.report-reason').forEach(r => r.classList.remove('selected'));
-      el.classList.add('selected'); selectedReportReason = reason;
-    }
+    function selectReason(el, reason) { document.querySelectorAll('.report-reason').forEach(r => r.classList.remove('selected')); el.classList.add('selected'); selectedReportReason = reason; }
     function openReport() { document.getElementById('report-modal').classList.add('open'); }
     function closeReport() { document.getElementById('report-modal').classList.remove('open'); }
     async function submitReport() {
@@ -471,18 +690,16 @@
       btn.disabled = true; btn.textContent = 'Submitting...';
       const { error } = await _sb.from('reports').insert({ xekie_id: xekieId, reason: selectedReportReason, details: details || null, reporter_id: currentUser?.id || null });
       if (!error) {
-        try {
-          await fetch('/.netlify/functions/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'report', to: 'zach@xekie.com', data: { xekieId, xekieTitle: currentXekie?.title, reason: selectedReportReason, details, reporterEmail: currentUser?.email } }) });
-        } catch(e) {}
+        try { await fetch('/.netlify/functions/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'report', to: 'zach@xekie.com', data: { xekieId, xekieTitle: currentXekie?.title, reason: selectedReportReason, details, reporterEmail: currentUser?.email } }) }); } catch(e) {}
         const m = document.getElementById('report-msg'); m.className='report-msg success'; m.style.display='block'; m.textContent='Report submitted. Thank you for keeping XEKIE safe.';
-        btn.textContent='Submitted ✓';
-        setTimeout(closeReport, 2000);
+        btn.textContent='Submitted ✓'; setTimeout(closeReport, 2000);
       } else { btn.disabled=false; btn.textContent='Submit report'; }
     }
 
     document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
     document.getElementById('report-modal').addEventListener('click', e => { if (e.target === document.getElementById('report-modal')) closeReport(); });
     document.getElementById('photo-lightbox').addEventListener('click', e => { if (e.target === document.getElementById('photo-lightbox')) closeLightbox(); });
+    document.getElementById('story-modal').addEventListener('click', e => { if (e.target === document.getElementById('story-modal')) closeStoryModal(); });
 
     _sb.auth.getSession().then(({ data: { session } }) => {
       currentUser = session?.user || null;
