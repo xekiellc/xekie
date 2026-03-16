@@ -5,7 +5,6 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  // Rate limit: 5 emails per IP per minute
   const ip = getIP(event);
   const { limited } = rateLimit(ip, 'send-email', 5, 60000);
   if (limited) return limitedResponse();
@@ -152,6 +151,38 @@ exports.handler = async (event) => {
     <a href="https://xekie.com/dashboard.html" style="display:inline-block;background:#f4f2ec;color:#0a0a0a;text-decoration:none;padding:15px 28px;border-radius:10px;font-size:15px;font-weight:600;border:1px solid rgba(10,10,10,0.15);">Mark fulfilled</a>
   </div>
   <p style="font-size:13px;color:#999;margin:0;">Questions? <a href="mailto:hello@xekie.com" style="color:#ff4d1c;">hello@xekie.com</a></p>
+</td></tr>
+<tr><td style="padding:20px 0;text-align:center;"><p style="font-size:12px;color:#999;margin:0;">© 2025 XEKIE LLC · <a href="https://xekie.com/privacy.html" style="color:#999;">Privacy</a> · <a href="https://xekie.com/terms.html" style="color:#999;">Terms</a></p></td></tr>
+</table></td></tr></table></body></html>`;
+
+  } else if (type === 'view_milestone') {
+    const { xekieTitle, xekieId, viewCount, milestone, name } = data;
+    subject = `👀 Your XEKIE just hit ${milestone} views: "${xekieTitle}"`;
+    html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f4f2ec;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f2ec;padding:40px 20px;"><tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+<tr><td style="background:#0a0a0a;border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
+  <div style="font-size:28px;font-weight:900;color:#fafaf8;letter-spacing:-0.03em;"><span style="color:#ff4d1c;">XE</span>KIE</div>
+  <div style="font-size:10px;letter-spacing:0.2em;color:#666;text-transform:uppercase;margin-top:4px;">TRADE DIFFERENT</div>
+</td></tr>
+<tr><td style="background:#fafaf8;padding:40px;border-radius:0 0 16px 16px;">
+  <div style="font-size:48px;text-align:center;margin-bottom:16px;">👀</div>
+  <h1 style="font-size:24px;font-weight:800;color:#0a0a0a;margin:0 0 6px 0;text-align:center;">Your XEKIE hit ${milestone} views!</h1>
+  <p style="font-size:15px;color:#6b6b6b;margin:0 0 28px 0;text-align:center;">Hey${name ? ` ${name}` : ''} — sellers are looking at your post.</p>
+  <div style="background:#f4f2ec;border-radius:12px;padding:18px 22px;margin-bottom:24px;border-left:4px solid #ff4d1c;">
+    <div style="font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#6b6b6b;margin-bottom:4px;">Your XEKIE</div>
+    <div style="font-size:17px;font-weight:700;color:#0a0a0a;">${xekieTitle}</div>
+  </div>
+  <div style="text-align:center;background:#0a0a0a;border-radius:12px;padding:24px;margin-bottom:24px;">
+    <div style="font-size:56px;font-weight:900;color:#ff4d1c;letter-spacing:-0.03em;">${viewCount}</div>
+    <div style="font-size:13px;color:#666;text-transform:uppercase;letter-spacing:0.15em;">Total views</div>
+  </div>
+  <p style="font-size:15px;color:#333;line-height:1.7;margin:0 0 24px 0;text-align:center;">Sellers are browsing your XEKIE. Check your dashboard for any new responses!</p>
+  <div style="text-align:center;margin:24px 0;">
+    <a href="https://xekie.com/xekie.html?id=${xekieId}" style="display:inline-block;background:#ff4d1c;color:#fff;text-decoration:none;padding:15px 32px;border-radius:10px;font-size:15px;font-weight:700;">View my XEKIE →</a>
+  </div>
+  <p style="font-size:13px;color:#999;margin:0;text-align:center;">Questions? <a href="mailto:hello@xekie.com" style="color:#ff4d1c;">hello@xekie.com</a></p>
 </td></tr>
 <tr><td style="padding:20px 0;text-align:center;"><p style="font-size:12px;color:#999;margin:0;">© 2025 XEKIE LLC · <a href="https://xekie.com/privacy.html" style="color:#999;">Privacy</a> · <a href="https://xekie.com/terms.html" style="color:#999;">Terms</a></p></td></tr>
 </table></td></tr></table></body></html>`;
