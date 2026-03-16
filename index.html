@@ -47,8 +47,31 @@
     .hero-title .line2 { display: block; color: var(--mid); font-size: 0.55em; font-weight: 700; letter-spacing: -0.02em; margin-top: 8px; }
     .hero-sub { font-size: clamp(17px, 2.5vw, 22px); font-weight: 300; color: var(--mid); line-height: 1.5; max-width: 520px; margin: 0 auto 40px; animation: fadeUp 0.6s 0.2s ease both; }
     .hero-sub strong { font-weight: 500; color: var(--black); }
-    .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.6s 0.3s ease both; }
+    .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.6s 0.3s ease both; margin-bottom: 32px; }
     .hero-cta .btn { font-size: 15px; padding: 14px 28px; }
+
+    /* HERO SEARCH BAR */
+    .hero-search { width: 100%; max-width: 560px; margin: 0 auto; animation: fadeUp 0.6s 0.4s ease both; position: relative; }
+    .hero-search-input { width: 100%; padding: 16px 60px 16px 24px; border: 2px solid var(--border); border-radius: 100px; font-family: var(--font-body); font-size: 16px; color: var(--black); background: var(--white); outline: none; transition: all 0.2s; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .hero-search-input:focus { border-color: var(--accent); box-shadow: 0 4px 24px rgba(255,77,28,0.15); }
+    .hero-search-input::placeholder { color: #bbb; }
+    .hero-search-btn { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.2s; }
+    .hero-search-btn:hover { background: #e03a0a; transform: translateY(-50%) scale(1.05); }
+    .hero-search-hint { font-size: 12px; color: var(--mid); margin-top: 10px; opacity: 0.7; }
+
+    /* SEARCH RESULTS DROPDOWN */
+    .hero-search-results { position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: var(--white); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); z-index: 50; max-height: 400px; overflow-y: auto; display: none; }
+    .hero-search-results.open { display: block; }
+    .search-result-item { padding: 14px 20px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--cream); }
+    .search-result-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--black); }
+    .search-result-meta { font-size: 12px; color: var(--mid); margin-top: 2px; }
+    .search-result-budget { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+    .search-result-empty { padding: 32px 20px; text-align: center; color: var(--mid); font-size: 14px; }
+    .search-result-all { padding: 12px 20px; text-align: center; font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; border-top: 1px solid var(--border); }
+    .search-result-all:hover { background: var(--accent-dim); }
+
     .hero-scroll { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid); animation: fadeUp 0.6s 0.6s ease both; }
     .hero-scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--mid), transparent); animation: scrollLine 1.5s infinite; }
     @keyframes scrollLine { 0%{opacity:0;transform:scaleY(0);transform-origin:top} 50%{opacity:1;transform:scaleY(1)} 100%{opacity:0;transform:scaleY(1);transform-origin:bottom} }
@@ -63,7 +86,7 @@
     .stat-label { font-size: 12px; font-weight: 400; color: #555; text-transform: uppercase; letter-spacing: 0.1em; line-height: 1.3; }
     .stat-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; flex-shrink: 0; }
 
-    /* TRENDING CATEGORIES */
+    /* TRENDING */
     .trending { background: var(--cream); padding: 32px 24px; border-bottom: 1px solid var(--border); }
     .trending-inner { max-width: 960px; margin: 0 auto; }
     .trending-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
@@ -79,7 +102,6 @@
     .trending-name { font-size: 13px; font-weight: 600; line-height: 1.2; }
     .trending-count { font-size: 11px; color: var(--mid); }
     .trending-card.top .trending-count { color: var(--accent); font-weight: 600; }
-    .trending-rank { font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; }
 
     .section { padding: 100px 24px; }
     .section-inner { max-width: 960px; margin: 0 auto; }
@@ -97,7 +119,7 @@
     .demo-section { background: var(--white); padding: 100px 24px; }
     .demo-inner { max-width: 960px; margin: 0 auto; }
     .demo-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
-    .demo-card { background: var(--cream); border: 1px solid var(--border); border-radius: 20px; padding: 32px; position: relative; }
+    .demo-card { background: var(--cream); border: 1px solid var(--border); border-radius: 20px; padding: 32px; }
     .demo-card-label { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
     .demo-card-label::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
     .demo-buyer-name { font-size: 13px; font-weight: 500; color: var(--mid); margin-bottom: 6px; }
@@ -210,6 +232,13 @@
         <a href="request.html" class="btn btn-accent">XEKIE it →</a>
         <a href="radar.html" class="btn">Browse XEKIEs</a>
       </div>
+      <!-- HERO SEARCH -->
+      <div class="hero-search">
+        <input type="text" class="hero-search-input" id="hero-search" placeholder="Search XEKIEs — MacBook, vintage watch, iPhone..." oninput="heroSearch()" onkeydown="if(event.key==='Enter')goToSearch()" autocomplete="off" />
+        <button class="hero-search-btn" onclick="goToSearch()">🔍</button>
+        <div class="hero-search-results" id="hero-search-results"></div>
+        <div class="hero-search-hint">Search 10+ active XEKIEs — or post your own in 60 seconds</div>
+      </div>
     </div>
     <div class="hero-scroll">
       <div class="hero-scroll-line"></div>
@@ -292,7 +321,6 @@
     </div>
   </section>
 
-  <!-- SAMPLE XEKIE DEMO -->
   <section class="demo-section">
     <div class="demo-inner">
       <div class="section-label">See it in action</div>
@@ -315,7 +343,7 @@
           </div>
         </div>
         <div>
-          <div style="margin-bottom:12px;font-size:13px;font-weight:500;color:var(--mid);letter-spacing:0.05em;">3 sellers responded within 2 hours ↓</div>
+          <div style="margin-bottom:12px;font-size:13px;font-weight:500;color:var(--mid);">3 sellers responded within 2 hours ↓</div>
           <div class="demo-response">
             <div class="demo-response-label">Seller responds</div>
             <div class="demo-seller-name">From Jake R. · Verified Seller ✓</div>
@@ -415,6 +443,7 @@
         <div class="footer-col">
           <div class="footer-col-title">Company</div>
           <a href="mailto:zach@xekie.com">Contact</a>
+          <a href="pulse.html">XEKIE Pulse 🔴</a>
         </div>
       </div>
     </div>
@@ -436,12 +465,66 @@
       'Music & Movies': '🎵', 'Collectibles': '🏆', 'Other': '📦'
     };
 
+    let allXekiesCache = [];
+    let searchTimeout = null;
+
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         document.getElementById('nav-signin').style.display = 'none';
         const profileLink = document.getElementById('nav-profile');
         profileLink.href = `seller.html?id=${session.user.id}`;
         profileLink.style.display = 'inline-block';
+      }
+    });
+
+    // ---- HERO SEARCH ----
+    async function heroSearch() {
+      const q = document.getElementById('hero-search').value.trim();
+      const results = document.getElementById('hero-search-results');
+      if (!q) { results.classList.remove('open'); return; }
+
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(async () => {
+        // Search from cache first
+        if (!allXekiesCache.length) {
+          const { data } = await _sb.from('xekies').select('*').eq('is_fulfilled', false).order('created_at', { ascending: false }).limit(200);
+          allXekiesCache = data || [];
+        }
+        const ql = q.toLowerCase();
+        const matches = allXekiesCache.filter(x =>
+          (x.title||'').toLowerCase().includes(ql) ||
+          (x.description||'').toLowerCase().includes(ql) ||
+          (x.location||'').toLowerCase().includes(ql) ||
+          (x.category||'').toLowerCase().includes(ql)
+        ).slice(0, 5);
+
+        if (!matches.length) {
+          results.innerHTML = `<div class="search-result-empty">No XEKIEs found for "${q}"<br><a href="request.html" style="color:var(--accent);font-weight:600;">Post this as a XEKIE →</a></div>`;
+        } else {
+          results.innerHTML = matches.map(x => `
+            <div class="search-result-item" onclick="window.location.href='xekie.html?id=${x.id}'">
+              <div>
+                <div class="search-result-title">${x.title}</div>
+                <div class="search-result-meta">${x.category || ''} ${x.location ? '· 📍 ' + x.location : ''}</div>
+              </div>
+              <div class="search-result-budget">${formatBudget(x)}</div>
+            </div>`).join('') +
+            `<div class="search-result-all" onclick="goToSearch()">See all results for "${q}" →</div>`;
+        }
+        results.classList.add('open');
+      }, 200);
+    }
+
+    function goToSearch() {
+      const q = document.getElementById('hero-search').value.trim();
+      if (q) window.location.href = `radar.html?search=${encodeURIComponent(q)}`;
+      else window.location.href = 'radar.html';
+    }
+
+    // Close search on outside click
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.hero-search')) {
+        document.getElementById('hero-search-results').classList.remove('open');
       }
     });
 
@@ -489,24 +572,11 @@
     async function loadTrending() {
       try {
         const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-        const { data } = await _sb.from('xekies')
-          .select('category')
-          .eq('is_fulfilled', false)
-          .gte('created_at', since)
-          .not('category', 'is', null);
-
-        if (!data || !data.length) {
-          document.getElementById('trending-cards').innerHTML = '<div style="font-size:13px;color:var(--mid);">No data yet — be the first to post!</div>';
-          return;
-        }
-
-        // Count by category
+        const { data } = await _sb.from('xekies').select('category').eq('is_fulfilled', false).gte('created_at', since).not('category', 'is', null);
+        if (!data || !data.length) { document.getElementById('trending-cards').innerHTML = '<div style="font-size:13px;color:var(--mid);">No data yet — be the first to post!</div>'; return; }
         const counts = {};
         data.forEach(x => { if (x.category) counts[x.category] = (counts[x.category] || 0) + 1; });
-
-        // Sort and take top 5
         const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
-
         document.getElementById('trending-cards').innerHTML = sorted.map(([cat, count], i) => `
           <a href="radar.html?category=${encodeURIComponent(cat)}" class="trending-card ${i === 0 ? 'top' : ''}">
             <div class="trending-emoji">${CATEGORY_EMOJIS[cat] || '📦'}</div>
@@ -515,9 +585,7 @@
               <div class="trending-count">${count} XEKIE${count !== 1 ? 's' : ''} this week</div>
             </div>
           </a>`).join('');
-      } catch(e) {
-        document.getElementById('trending-cards').innerHTML = '';
-      }
+      } catch(e) { document.getElementById('trending-cards').innerHTML = ''; }
     }
 
     async function loadRecent() {
@@ -558,6 +626,7 @@
       }).join('');
     }
 
+    // Also wire up radar.html to accept ?search= param
     loadStats();
     loadTrending();
     loadRecent();
