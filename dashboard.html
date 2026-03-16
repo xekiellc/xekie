@@ -129,7 +129,6 @@
         <div class="user-meta" id="user-meta"></div>
         <div id="early-badge-container"></div>
       </div>
-      <a href="request.html" class="btn-nav primary" style="align-self:flex-start;">+ XEKIE it</a>
     </div>
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num" id="stat-xekies">—</div><div class="stat-label">Times XEKIE'd</div></div>
@@ -192,7 +191,6 @@
     let currentUser = null;
     const BETA_CUTOFF = new Date('2026-06-01');
 
-    // Track seen offer counts in localStorage so we know what's "new"
     function getSeenCounts() {
       try { return JSON.parse(localStorage.getItem('xekie_seen_offers') || '{}'); } catch { return {}; }
     }
@@ -260,7 +258,6 @@
         (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
       }
 
-      // Calculate new offers since last visit
       const seenCounts = getSeenCounts();
       let totalNewOffers = 0;
       const newOfferCounts = {};
@@ -388,27 +385,18 @@
     }
 
     async function viewOffers(xekieId, title, totalCount, cardId) {
-      // Mark this XEKIE's offers as seen
       const seenCounts = getSeenCounts();
       seenCounts[cardId] = totalCount;
       saveSeenCounts(seenCounts);
-
-      // Recalculate total new offers and update tab
       let totalNew = 0;
       document.querySelectorAll('[id^="card-"]').forEach(card => {
         const id = card.id.replace('card-', '');
         const badge = card.querySelector('.new-offers-badge');
-        if (badge && id !== cardId) {
-          const match = badge.textContent.match(/\d+/);
-          if (match) totalNew += parseInt(match[0]);
-        }
+        if (badge && id !== cardId) { const match = badge.textContent.match(/\d+/); if (match) totalNew += parseInt(match[0]); }
       });
       updateTabTitle(totalNew);
-
-      // Remove the green "new" badge from this card
       const cardEl = document.getElementById('card-' + cardId);
       if (cardEl) { const nb = cardEl.querySelector('.new-offers-badge'); if (nb) nb.remove(); }
-
       document.getElementById('offers-modal-title').textContent = 'Responses: ' + title;
       document.getElementById('offers-list').innerHTML = '<div class="no-offers">Loading...</div>';
       document.getElementById('offers-modal').classList.add('open');
