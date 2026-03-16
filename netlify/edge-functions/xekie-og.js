@@ -1,6 +1,3 @@
-// Edge function: injects XEKIE-specific OG tags before page is served
-// Runs at the edge (before browser/crawler sees the page) so Facebook gets real meta tags
-
 const SUPABASE_URL = 'https://jlcrarqiyejgjbdesxik.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA';
 
@@ -8,17 +5,14 @@ export default async function handler(request, context) {
   const url = new URL(request.url);
   const xekieId = url.searchParams.get('id');
 
-  // No ID — just serve the page normally
   if (!xekieId) return context.next();
 
-  // Only inject for crawlers/bots — real users get the page as-is (faster)
   const ua = request.headers.get('user-agent') || '';
   const isBot = /facebookexternalhit|twitterbot|linkedinbot|whatsapp|slackbot|telegrambot|discordbot|googlebot|bingbot|crawler|spider/i.test(ua);
 
   if (!isBot) return context.next();
 
   try {
-    // Fetch XEKIE data from Supabase
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/xekies?id=eq.${xekieId}&select=title,description,budget,budget_min,budget_max,location,category&limit=1`,
       { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
@@ -27,7 +21,6 @@ export default async function handler(request, context) {
     const x = data?.[0];
     if (!x) return context.next();
 
-    // Build budget string
     let budget = '';
     if (x.budget_min && x.budget_max) budget = `$${Number(x.budget_min).toLocaleString()} – $${Number(x.budget_max).toLocaleString()}`;
     else if (x.budget_min) budget = `$${Number(x.budget_min).toLocaleString()}+`;
@@ -40,25 +33,30 @@ export default async function handler(request, context) {
       : `Looking to buy: ${x.title}. Budget: ${budget}. Respond with your best offer on XEKIE.`;
 
     const ogParams = new URLSearchParams({
-      title: x.title,
-      budget,
-      location: x.location || '',
-      category: x.category || ''
+      title: x.title, budget, location: x.location || '', category: x.category || ''
     });
     const ogImage = `https://xekie.com/.netlify/functions/og-image?${ogParams}`;
     const pageUrl = `https://xekie.com/xekie.html?id=${xekieId}`;
 
-    // Fetch the original HTML
     const originalResponse = await context.next();
     let html = await originalResponse.text();
 
-    // Replace generic OG tags with XEKIE-specific ones
+    // Fix og:url — replace the id="og-url" tag and any content value
+    html = html.replace(
+      /<meta property="og:url"[^>]*>/,
+      `<meta property="og:url" content="${pageUrl}">`
+    );
+    // Also fix the id="og-url" variant
+    html = html.replace(
+      /<meta property="og:url" id="og-url"[^>]*>/,
+      `<meta property="og:url" content="${pageUrl}">`
+    );
+
     html = html
       .replace(/<title>.*?<\/title>/, `<title>${escHtml(title)}</title>`)
       .replace(/<meta property="og:title"[^>]*>/, `<meta property="og:title" content="${escHtml(title)}">`)
       .replace(/<meta property="og:description"[^>]*>/, `<meta property="og:description" content="${escHtml(description)}">`)
-      .replace(/<meta property="og:url"[^>]*>/, `<meta property="og:url" content="${pageUrl}">`)
-      .replace(/<meta property="og:image"[^>]*>/, `<meta property="og:image" content="${ogImage}">`)
+      .replace(/<meta property="og:image" [^>]*>/, `<meta property="og:image" content="${ogImage}">`)
       .replace(/<meta name="twitter:title"[^>]*>/, `<meta name="twitter:title" content="${escHtml(title)}">`)
       .replace(/<meta name="twitter:description"[^>]*>/, `<meta name="twitter:description" content="${escHtml(description)}">`)
       .replace(/<meta name="twitter:image"[^>]*>/, `<meta name="twitter:image" content="${ogImage}">`);
@@ -73,7 +71,6 @@ export default async function handler(request, context) {
     });
 
   } catch (err) {
-    // On any error, just serve the page normally
     return context.next();
   }
 }
