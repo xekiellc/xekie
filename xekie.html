@@ -85,8 +85,7 @@
     .cta-band{background:var(--black);border-radius:16px;padding:32px;text-align:center;margin-top:16px;}
     .cta-band h3{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--white);margin-bottom:8px;}
     .cta-band p{font-size:15px;color:#888;margin-bottom:20px;}
-
-    /* ── AI SUGGESTIONS ── */
+    /* AI SUGGESTIONS */
     .ai-suggest-section{margin-top:8px;margin-bottom:24px;}
     .ai-suggest-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
     .ai-suggest-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);background:rgba(255,77,28,0.08);border:1px solid rgba(255,77,28,0.2);padding:4px 12px;border-radius:100px;}
@@ -95,7 +94,7 @@
     .ai-suggest-title{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--black);letter-spacing:-0.02em;}
     .ai-suggest-sub{font-size:13px;color:var(--mid);margin-bottom:16px;}
     .ai-cards{display:flex;flex-direction:column;gap:10px;}
-    .ai-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;display:block;transition:all 0.2s;position:relative;overflow:hidden;}
+    .ai-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;display:block;transition:all 0.2s;}
     .ai-card:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,77,28,0.08);}
     .ai-card-reason{font-size:11px;font-weight:600;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
     .ai-card-reason::before{content:'✦';font-size:9px;}
@@ -108,7 +107,6 @@
     .ai-loading-dot:nth-child(2){animation-delay:0.2s;}
     .ai-loading-dot:nth-child(3){animation-delay:0.4s;}
     @keyframes aiDot{0%,60%,100%{transform:scale(0.8);opacity:0.4}30%{transform:scale(1.2);opacity:1}}
-
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;padding:20px;}
     .modal-overlay.open{display:flex;}
     .modal{background:var(--white);border-radius:20px;padding:36px;max-width:480px;width:100%;position:relative;}
@@ -298,19 +296,15 @@
 
     // ── AI SUGGESTIONS ──
     async function loadAISuggestions(xekie, offerCount) {
-      // Only show if 0 offers OR fulfilled/expired — always show adjacent demand
       const container = document.getElementById('ai-suggest-container');
       if (!container) return;
-
       const shouldShow = offerCount === 0 || xekie.is_fulfilled || (xekie.expires_at && new Date(xekie.expires_at) < new Date());
       if (!shouldShow) return;
-
       const label = xekie.is_fulfilled
         ? "This was fulfilled — but others are looking for similar things"
         : offerCount === 0
         ? "No offers yet — but you might also like these"
         : "Related demand on XEKIE";
-
       container.innerHTML = `
         <div class="ai-suggest-section">
           <div class="ai-suggest-header">
@@ -329,40 +323,27 @@
             </div>
           </div>
         </div>`;
-
       try {
         const res = await fetch('/.netlify/functions/ai-suggest', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            xekieId: xekie.id,
-            title: xekie.title,
-            description: xekie.description || '',
-            category: xekie.category || ''
-          })
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({xekieId:xekie.id,title:xekie.title,description:xekie.description||'',category:xekie.category||''})
         });
-
         const data = await res.json();
         const suggestions = data.suggestions || [];
         const cardsEl = document.getElementById('ai-cards');
         if (!cardsEl) return;
-
-        if (!suggestions.length) {
-          container.innerHTML = '';
-          return;
-        }
-
+        if (!suggestions.length) { container.innerHTML = ''; return; }
         cardsEl.innerHTML = suggestions.map(s => `
           <a href="xekie.html?id=${s.id}" class="ai-card">
             <div class="ai-card-reason">${s.reason}</div>
             <div class="ai-card-title">${s.title}</div>
             <div class="ai-card-meta">
-              ${s.budget ? `<span class="ai-card-budget">${s.budget}</span>` : ''}
-              ${s.category ? `<span>📦 ${s.category}</span>` : ''}
-              ${s.location ? `<span>📍 ${s.location}</span>` : ''}
+              ${s.budget?`<span class="ai-card-budget">${s.budget}</span>`:''}
+              ${s.category?`<span>📦 ${s.category}</span>`:''}
+              ${s.location?`<span>📍 ${s.location}</span>`:''}
             </div>
           </a>`).join('');
-
       } catch(e) {
         document.getElementById('ai-suggest-container').innerHTML = '';
       }
@@ -372,13 +353,13 @@
     async function joinWaitlist() {
       if(!currentUser){window.location.href='login.html';return;}
       const btn=document.getElementById('btn-waitlist');
-      btn.disabled=true; btn.textContent='Creating your XEKIE...';
+      btn.disabled=true;btn.textContent='Creating your XEKIE...';
       const x=currentXekie;
       const newXekie={title:x.title,description:x.description||null,budget:x.budget||null,budget_min:x.budget_min||null,budget_max:x.budget_max||null,is_flexible:x.is_flexible||false,location:x.location||null,category:x.category||null,user_id:currentUser.id,view_count:0,is_fulfilled:false,expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString()};
       const{data:created,error}=await _sb.from('xekies').insert(newXekie).select().single();
       if(error){btn.disabled=false;btn.textContent='🙋 I want this too';showToast('Something went wrong — please try again.');return;}
       if(created){fetch('/.netlify/functions/notify-sellers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(created)}).catch(()=>{});}
-      btn.classList.add('joined'); btn.textContent='✓ Your XEKIE is live!'; btn.disabled=false;
+      btn.classList.add('joined');btn.textContent='✓ Your XEKIE is live!';btn.disabled=false;
       const countEl=document.getElementById('waitlist-count');
       if(countEl){const current=parseInt(countEl.dataset.count||'0')+1;countEl.dataset.count=current;countEl.textContent=`${current} ${current===1?'person':'people'} looking for this`;}
       showToast('🎉 Your XEKIE is live — sellers will find you!');
@@ -470,13 +451,16 @@
       if(error||!x){document.getElementById('content').innerHTML='<div class="loading">XEKIE not found.</div>';return;}
       currentXekie=x;
 
-      const{data:userMeta}=await _sb.from('user_profiles').select('display_name').eq('user_id',x.user_id).single().catch(()=>({data:null}));
-      x.owner_name=userMeta?.display_name||null;
+      // Safe fetches — no .catch() chaining on Supabase queries
+      let userMetaData = null;
+      try { const r = await _sb.from('user_profiles').select('display_name').eq('user_id',x.user_id).single(); userMetaData = r.data; } catch(e) {}
+      x.owner_name = userMetaData?.display_name || null;
 
-      const{count:waitlistCount}=await _sb.from('xekies').select('*',{count:'exact',head:true}).eq('title',x.title).eq('is_fulfilled',false).neq('id',x.id);
+      let waitlistCount = 0;
+      try { const r = await _sb.from('xekies').select('*',{count:'exact',head:true}).eq('title',x.title).eq('is_fulfilled',false).neq('id',x.id); waitlistCount = r.count || 0; } catch(e) {}
 
-      // Fetch offer count for AI suggestions logic
-      const{count:offerCount}=await _sb.from('offers').select('*',{count:'exact',head:true}).eq('xekie_id',x.id);
+      let offerCount = 0;
+      try { const r = await _sb.from('offers').select('*',{count:'exact',head:true}).eq('xekie_id',x.id); offerCount = r.count || 0; } catch(e) {}
 
       document.title=`XEKIE — ${x.title}`;
       document.querySelector('meta[property="og:title"]').setAttribute('content',`${x.title} — XEKIE`);
@@ -513,10 +497,11 @@
         photoGallery=`<div class="photo-gallery ${cls}">${x.photos.map((url,i)=>`<div class="photo-item" onclick="openLightbox(${i})"><img src="${url}" alt="Photo ${i+1}" loading="lazy" /></div>`).join('')}</div>`;
       }
 
-      const{data:savedItems}=await _sb.from('saved_xekies').select('id').eq('xekie_id',xekieId).eq('user_id',currentUser?.id||'').limit(1).catch(()=>({data:[]}));
-      const isSaved=savedItems&&savedItems.length>0;
-      const{data:existingOffer}=await _sb.from('offers').select('id').eq('xekie_id',xekieId).eq('seller_id',currentUser?.id||'').limit(1).catch(()=>({data:[]}));
-      const hasResponded=existingOffer&&existingOffer.length>0;
+      let isSaved = false;
+      try { const r = await _sb.from('saved_xekies').select('id').eq('xekie_id',xekieId).eq('user_id',currentUser?.id||'').limit(1); isSaved = (r.data||[]).length > 0; } catch(e) {}
+
+      let hasResponded = false;
+      try { const r = await _sb.from('offers').select('id').eq('xekie_id',xekieId).eq('seller_id',currentUser?.id||'').limit(1); hasResponded = (r.data||[]).length > 0; } catch(e) {}
 
       let fulfilledSection='';
       if(isFulfilled&&!isOwn){
@@ -528,9 +513,9 @@
           </div>
           ${wCount>0?`<div class="waitlist-count" id="waitlist-count" data-count="${wCount}">🙋 ${wCount} ${wCount===1?'person is':'people are'} also looking for this</div>`:`<div class="waitlist-count" id="waitlist-count" data-count="0"></div>`}
           <button class="btn-waitlist" id="btn-waitlist" onclick="joinWaitlist()">🙋 I want this too — post my own XEKIE</button>`;
-      }else if(isFulfilled&&isOwn){
+      } else if(isFulfilled&&isOwn){
         fulfilledSection='<div style="text-align:center;padding:16px;color:#3B6D11;background:#EAF3DE;border-radius:12px;font-size:15px;font-weight:500;">✓ You marked this XEKIE as fulfilled. Deal done! 🎉</div>';
-      }else if(isExpired){
+      } else if(isExpired){
         fulfilledSection='<div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">⏰ This XEKIE has expired.</div>';
       }
 
@@ -584,9 +569,7 @@
         </div>`:''}`;
 
       incrementViewAndNotify(x);
-
-      // Load AI suggestions after main content renders
-      loadAISuggestions(x, offerCount || 0);
+      loadAISuggestions(x, offerCount);
     }
 
     function openLightbox(i){lightboxIndex=i;document.getElementById('lightbox-img').src=lightboxPhotos[i];document.getElementById('photo-lightbox').classList.add('open');}
