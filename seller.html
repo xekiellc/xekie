@@ -11,128 +11,171 @@
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root {
-      --black: #0a0a0a; --white: #fafaf8; --cream: #f4f2ec;
-      --accent: #ff4d1c; --mid: #6b6b6b; --border: #e8e6e0;
-      --radius: 16px; --radius-pill: 100px;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--cream); color: var(--black); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
-    nav { position: sticky; top: 0; z-index: 100; background: var(--black); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 60px; }
-    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; color: var(--white); text-decoration: none; }
-    .nav-logo span { color: var(--accent); }
-    .nav-links { display: flex; gap: 8px; align-items: center; }
-    .nav-links a { color: #aaa; text-decoration: none; font-size: 0.85rem; font-weight: 500; padding: 6px 14px; border-radius: var(--radius-pill); transition: all 0.2s; }
-    .nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.08); }
-    .nav-btn { background: var(--accent) !important; color: var(--white) !important; }
-    .profile-hero { background: var(--black); padding: 48px 24px 0; }
-    .container { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; }
-    .profile-card { background: var(--white); border-radius: 0 0 var(--radius) var(--radius); padding: 32px; margin-bottom: 24px; }
-    .profile-top { display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
-    .avatar { width: 88px; height: 88px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2rem; color: var(--white); flex-shrink: 0; border: 4px solid var(--cream); margin-top: -44px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-    .profile-info { flex: 1; min-width: 200px; }
-    .profile-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; line-height: 1.1; margin-bottom: 8px; }
-    .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.3px; }
-    .badge-verified-seller { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-    .badge-verified-buyer { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
-    .badge-early { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
-    .badge-member { background: var(--cream); color: var(--mid); border: 1px solid var(--border); }
-    .profile-bio { color: #444; font-size: 0.95rem; line-height: 1.6; margin-bottom: 16px; }
-    .profile-bio.placeholder { color: var(--mid); font-style: italic; }
-    .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: var(--radius-pill); font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.88rem; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
-    .btn-primary { background: var(--accent); color: var(--white); }
-    .btn-primary:hover { opacity: 0.88; }
-    .btn-outline { background: transparent; color: var(--black); border: 1.5px solid var(--border); }
-    .btn-outline:hover { border-color: var(--black); background: var(--cream); }
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }
-    .stat { background: var(--white); padding: 20px 16px; text-align: center; }
-    .stat-value { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; line-height: 1; margin-bottom: 4px; }
-    .stat-label { font-size: 0.78rem; color: var(--mid); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-    .stat-value.green { color: #2e7d32; }
-    .stat-value.blue { color: #1565c0; }
-    .stat-value.orange { color: var(--accent); }
-    .stars-display { display: flex; gap: 2px; justify-content: center; margin-bottom: 4px; }
-    .star { color: #ddd; font-size: 1rem; }
-    .star.filled { color: #ffc107; }
-    .section { background: var(--white); border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; }
-    .section-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
-    .section-count { font-size: 0.8rem; color: var(--mid); }
-    .review-item { padding: 20px 24px; border-bottom: 1px solid var(--border); }
-    .review-item:last-child { border-bottom: none; }
-    .review-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .review-stars { display: flex; gap: 2px; }
-    .review-date { font-size: 0.78rem; color: var(--mid); }
-    .review-text { font-size: 0.9rem; color: #444; line-height: 1.5; }
-    .review-xekie { font-size: 0.8rem; color: var(--mid); margin-top: 6px; }
-    .review-xekie a { color: var(--accent); text-decoration: none; }
-    .bookmark-item { padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .bookmark-item:last-child { border-bottom: none; }
-    .bookmark-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; color: var(--black); text-decoration: none; }
-    .bookmark-title:hover { color: var(--accent); }
-    .bookmark-meta { font-size: 0.8rem; color: var(--mid); margin-top: 3px; }
-    .bookmark-budget { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); font-size: 0.95rem; white-space: nowrap; }
-    .empty { padding: 40px 24px; text-align: center; color: var(--mid); }
-    .empty-icon { font-size: 2rem; margin-bottom: 8px; }
-    .response-rate-bar { height: 6px; background: var(--border); border-radius: 100px; margin-top: 8px; overflow: hidden; }
-    .response-rate-fill { height: 100%; background: linear-gradient(90deg, #ff4d1c, #ff8c00); border-radius: 100px; transition: width 0.8s ease; }
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 24px; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: var(--white); border-radius: var(--radius); width: 100%; max-width: 480px; padding: 32px; animation: slideUp 0.2s ease; }
-    @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-    .modal-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: 24px; }
-    .form-group { margin-bottom: 16px; }
-    .form-label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--mid); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
-    .form-input, .form-textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--black); background: var(--cream); transition: border-color 0.2s; outline: none; }
-    .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
-    .form-textarea { resize: vertical; min-height: 100px; }
-    .char-count { font-size: 0.75rem; color: var(--mid); text-align: right; margin-top: 4px; }
-    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 24px; }
-    .loading { display: flex; align-items: center; justify-content: center; padding: 80px 24px; gap: 8px; color: var(--mid); }
-    .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .not-found { text-align: center; padding: 80px 24px; }
-    .not-found h2 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2rem; margin-bottom: 12px; }
-    footer { background: var(--black); color: #666; padding: 32px 24px; text-align: center; font-size: 0.82rem; }
-    footer a { color: #888; text-decoration: none; margin: 0 8px; }
-    footer a:hover { color: var(--white); }
-    .footer-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--white); margin-bottom: 12px; }
-    .footer-logo span { color: var(--accent); }
-    @media (max-width: 600px) {
-      .profile-top { flex-direction: column; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
+    .nav-right{display:flex;align-items:center;gap:12px;}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-nav:hover{border-color:var(--black);color:var(--black);}
+    .btn-nav.primary{background:var(--black);color:var(--white);border-color:transparent;}
+    .btn-nav.primary:hover{background:var(--accent);}
+    .container{max-width:720px;margin:0 auto;padding:40px 20px 80px;flex:1;}
+
+    /* PROFILE HERO */
+    .profile-hero{background:var(--black);padding:40px 20px 64px;}
+    .profile-hero-inner{max-width:720px;margin:0 auto;}
+
+    /* PROFILE CARD */
+    .profile-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:20px;}
+    .profile-top{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;}
+    .avatar{width:88px;height:88px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:2rem;color:var(--white);flex-shrink:0;border:4px solid var(--white);margin-top:-56px;box-shadow:0 4px 20px rgba(0,0,0,0.15);}
+    .profile-info{flex:1;min-width:200px;}
+    .profile-name{font-family:var(--font-display);font-weight:800;font-size:28px;letter-spacing:-0.02em;line-height:1.1;margin-bottom:10px;}
+    .badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:0.3px;}
+    .badge-verified{background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9;}
+    .badge-early{background:#fff8e1;color:#f57f17;border:1px solid #ffe082;}
+    .badge-member{background:var(--cream);color:var(--mid);border:1px solid var(--border);}
+    .profile-bio{color:#444;font-size:15px;line-height:1.6;margin-bottom:16px;}
+    .profile-bio.placeholder{color:var(--mid);font-style:italic;}
+    .profile-actions{display:flex;gap:8px;flex-wrap:wrap;}
+    .btn-action{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:100px;font-family:var(--font-body);font-weight:500;font-size:13px;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--black);transition:all 0.2s;text-decoration:none;}
+    .btn-action:hover{border-color:var(--black);background:var(--cream);}
+    .btn-action.accent{background:var(--black);color:var(--white);border-color:transparent;}
+    .btn-action.accent:hover{background:var(--accent);}
+    .btn-action.rate{background:#fff8e1;color:#b45309;border-color:#fde68a;}
+    .btn-action.rate:hover{background:#fef3c7;border-color:#f59e0b;}
+
+    /* STATS GRID */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+    .stat-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 16px;text-align:center;}
+    .stat-value{font-family:var(--font-display);font-weight:800;font-size:28px;line-height:1;margin-bottom:4px;color:var(--black);}
+    .stat-value.accent{color:var(--accent);}
+    .stat-label{font-size:11px;color:var(--mid);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+    .stars-row{display:flex;gap:2px;justify-content:center;margin-bottom:6px;}
+    .star{color:#ddd;font-size:16px;}
+    .star.filled{color:#ffc107;}
+
+    /* RESPONSE RATE BAR */
+    .rate-bar-wrap{margin-top:8px;}
+    .rate-bar-track{height:4px;background:var(--border);border-radius:100px;overflow:hidden;margin-top:4px;}
+    .rate-bar-fill{height:100%;background:var(--accent);border-radius:100px;transition:width 0.6s ease;}
+
+    /* SECTIONS */
+    .section{background:var(--white);border:1px solid var(--border);border-radius:20px;margin-bottom:16px;overflow:hidden;}
+    .section-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .section-title{font-family:var(--font-display);font-weight:700;font-size:16px;}
+    .section-count{font-size:13px;color:var(--mid);}
+
+    /* REVIEWS */
+    .review-item{padding:20px 24px;border-bottom:1px solid var(--border);}
+    .review-item:last-child{border-bottom:none;}
+    .review-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+    .review-stars{display:flex;gap:2px;}
+    .review-date{font-size:12px;color:var(--mid);}
+    .review-text{font-size:14px;color:#444;line-height:1.5;}
+    .review-xekie{font-size:12px;color:var(--mid);margin-top:6px;}
+    .review-xekie a{color:var(--accent);text-decoration:none;}
+    .review-xekie a:hover{text-decoration:underline;}
+
+    /* BOOKMARKS */
+    .bookmark-item{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;text-decoration:none;color:inherit;transition:background 0.15s;}
+    .bookmark-item:last-child{border-bottom:none;}
+    .bookmark-item:hover{background:var(--cream);}
+    .bookmark-title{font-family:var(--font-display);font-size:15px;font-weight:700;margin-bottom:4px;}
+    .bookmark-meta{font-size:12px;color:var(--mid);display:flex;gap:10px;flex-wrap:wrap;}
+    .bookmark-budget{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--accent);white-space:nowrap;}
+
+    .empty{padding:40px 24px;text-align:center;color:var(--mid);}
+    .empty-icon{font-size:2rem;margin-bottom:8px;}
+
+    /* MODALS */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;padding:24px;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--white);border-radius:20px;width:100%;max-width:480px;padding:36px;position:relative;}
+    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);}
+    .modal-title{font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:-0.02em;margin-bottom:6px;}
+    .modal-sub{font-size:14px;color:var(--mid);margin-bottom:24px;}
+    .form-group{margin-bottom:18px;}
+    .form-label{display:block;font-size:13px;font-weight:500;color:var(--black);margin-bottom:6px;}
+    .form-input,.form-textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;color:var(--black);background:var(--white);outline:none;transition:border-color 0.2s;}
+    .form-input:focus,.form-textarea:focus{border-color:var(--black);}
+    .form-textarea{resize:vertical;min-height:90px;}
+    .char-count{font-size:12px;color:var(--mid);text-align:right;margin-top:4px;}
+    .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:24px;}
+    .btn-modal{padding:10px 20px;border-radius:100px;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--black);transition:all 0.2s;}
+    .btn-modal:hover{border-color:var(--black);}
+    .btn-modal.primary{background:var(--black);color:var(--white);border-color:transparent;}
+    .btn-modal.primary:hover{background:var(--accent);}
+    .btn-modal:disabled{background:#ccc;cursor:not-allowed;border-color:#ccc;color:white;}
+
+    /* STAR PICKER */
+    .star-picker{display:flex;gap:8px;margin-bottom:4px;}
+    .star-pick{font-size:32px;cursor:pointer;color:#ddd;transition:color 0.1s;border:none;background:none;padding:0;}
+    .star-pick.active,.star-pick:hover,.star-pick.hover{color:#ffc107;}
+
+    .msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-top:12px;display:none;}
+    .msg.error{background:#FCEBEB;color:#A32D2D;display:block;}
+    .msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
+
+    .loading{display:flex;align-items:center;justify-content:center;padding:80px 24px;gap:8px;color:var(--mid);}
+    .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.6s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
+    .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+    .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
+    .footer-logo .xe{color:var(--accent);}
+    .footer-tagline{font-size:11px;letter-spacing:0.2em;color:#555;text-transform:uppercase;}
+    .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
+    .footer-links a:hover{color:var(--white);}
+    .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
+
+    @media(max-width:600px){
+      nav{padding:0 20px;}
+      .stats-grid{grid-template-columns:repeat(2,1fr);}
+      .profile-top{flex-direction:column;}
     }
   </style>
 </head>
 <body>
+
 <nav>
-  <a class="nav-logo" href="index.html">X<span>E</span>KIE</a>
-  <div class="nav-links">
-    <a href="radar.html">Browse</a>
-    <a href="request.html" class="nav-btn">+ Post XEKIE</a>
-    <a href="seller.html" id="nav-profile" style="display:none">👤 Profile</a>
-    <a href="dashboard.html" id="nav-dashboard" style="display:none">Dashboard</a>
-    <a href="login.html" id="nav-login">Sign In</a>
+  <a href="index.html" class="nav-logo">
+    <span><span class="xe">XE</span>KIE</span>
+    <span class="nav-tagline">Trade Different</span>
+  </a>
+  <div class="nav-right">
+    <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
+    <a href="dashboard.html" class="btn-nav" id="nav-dashboard" style="display:none">My XEKIEs</a>
+    <a href="login.html" class="btn-nav primary" id="nav-login">Sign In</a>
+    <a href="request.html" class="btn-nav primary" id="nav-post" style="display:none">XEKIE it →</a>
   </div>
 </nav>
 
-<div class="profile-hero"></div>
+<div class="profile-hero" id="profile-hero"></div>
 
 <div class="container">
   <div class="loading" id="loading">
     <div class="spinner"></div>
     <span>Loading profile…</span>
   </div>
-  <div class="not-found" id="not-found" style="display:none">
+
+  <div id="not-found" style="display:none;text-align:center;padding:80px 24px;">
     <div style="font-size:3rem;margin-bottom:16px">👤</div>
-    <h2>Profile not found</h2>
-    <p style="color:var(--mid);margin-bottom:24px">This user doesn't exist or their profile is private.</p>
-    <a href="radar.html" class="btn btn-primary">Browse XEKIEs</a>
+    <div style="font-family:var(--font-display);font-weight:800;font-size:28px;margin-bottom:12px;">Profile not found</div>
+    <p style="color:var(--mid);margin-bottom:24px;">This user doesn't exist or their profile is private.</p>
+    <a href="radar.html" class="btn-action accent">Browse XEKIEs</a>
   </div>
 
-  <div id="profile-content" style="display:none">
+  <div id="profile-content" style="display:none;">
+
+    <!-- PROFILE CARD -->
     <div class="profile-card">
       <div class="profile-top">
         <div class="avatar" id="profile-avatar">?</div>
@@ -146,46 +189,53 @@
     </div>
 
     <!-- STATS GRID -->
-    <div class="stats-grid" id="stats-grid">
-      <div class="stat">
-        <div class="stars-display" id="stars-display"></div>
-        <div class="stat-value" id="stat-rating">—</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stars-row" id="stars-row"></div>
+        <div class="stat-value accent" id="stat-rating">—</div>
         <div class="stat-label">Avg Rating</div>
       </div>
-      <div class="stat">
+      <div class="stat-card">
         <div class="stat-value" id="stat-reviews">0</div>
         <div class="stat-label">Reviews</div>
       </div>
-      <div class="stat">
-        <div class="stat-value orange" id="stat-offers">0</div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-deals">0</div>
+        <div class="stat-label">Deals Done</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-offers">0</div>
         <div class="stat-label">Offers Made</div>
       </div>
-      <div class="stat">
-        <div class="stat-value green" id="stat-traded">0</div>
-        <div class="stat-label">Deals Done ✓</div>
+    </div>
+
+    <!-- RESPONSE RATE -->
+    <div class="section" id="section-rate" style="display:none;">
+      <div class="section-header">
+        <span class="section-title">Response Rate</span>
+        <span class="section-count" id="rate-label"></span>
       </div>
-      <div class="stat">
-        <div class="stat-value blue" id="stat-xekies-posted">0</div>
-        <div class="stat-label">XEKIEs Posted</div>
-      </div>
-      <div class="stat" id="stat-response-rate-cell">
-        <div class="stat-value" id="stat-response-rate">—</div>
-        <div class="response-rate-bar"><div class="response-rate-fill" id="response-rate-fill" style="width:0%"></div></div>
-        <div class="stat-label">Response Rate</div>
+      <div style="padding:20px 24px;">
+        <div class="rate-bar-wrap">
+          <div class="rate-bar-track">
+            <div class="rate-bar-fill" id="rate-bar" style="width:0%"></div>
+          </div>
+        </div>
+        <p style="font-size:13px;color:var(--mid);margin-top:10px;" id="rate-desc"></p>
       </div>
     </div>
 
     <!-- REVIEWS -->
     <div class="section">
       <div class="section-header">
-        <span class="section-title">Reviews</span>
+        <span class="section-title">⭐ Reviews</span>
         <span class="section-count" id="reviews-count"></span>
       </div>
       <div id="reviews-list"></div>
     </div>
 
-    <!-- I HAVE THIS BOOKMARKS (own profile only) -->
-    <div class="section" id="bookmarks-section" style="display:none">
+    <!-- SELLER BOOKMARKS (I Have This) -->
+    <div class="section" id="section-bookmarks" style="display:none;">
       <div class="section-header">
         <span class="section-title">🙋 I Have This</span>
         <span class="section-count" id="bookmarks-count"></span>
@@ -196,10 +246,12 @@
   </div>
 </div>
 
-<!-- EDIT MODAL -->
+<!-- EDIT PROFILE MODAL -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
+    <button class="modal-close" onclick="closeEditModal()">✕</button>
     <div class="modal-title">Edit Profile</div>
+    <div class="modal-sub">This is how buyers see you on XEKIE.</div>
     <div class="form-group">
       <label class="form-label">Display Name</label>
       <input class="form-input" id="edit-name" maxlength="40" placeholder="Your name" />
@@ -210,94 +262,142 @@
       <div class="char-count"><span id="bio-chars">0</span>/160</div>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+      <button class="btn-modal" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-modal primary" id="btn-save-profile" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- RATE SELLER MODAL -->
+<div class="modal-overlay" id="rate-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeRateModal()">✕</button>
+    <div class="modal-title">Leave a Review</div>
+    <div class="modal-sub" id="rate-modal-sub">How was your experience with this seller?</div>
+    <div class="form-group">
+      <label class="form-label">Your Rating</label>
+      <div class="star-picker" id="star-picker">
+        <button class="star-pick" data-val="1" onclick="pickStar(1)">★</button>
+        <button class="star-pick" data-val="2" onclick="pickStar(2)">★</button>
+        <button class="star-pick" data-val="3" onclick="pickStar(3)">★</button>
+        <button class="star-pick" data-val="4" onclick="pickStar(4)">★</button>
+        <button class="star-pick" data-val="5" onclick="pickStar(5)">★</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Review <span style="font-weight:400;color:var(--mid);">Optional</span></label>
+      <textarea class="form-textarea" id="rate-comment" maxlength="300" placeholder="What made this seller great? (or not so great?)"></textarea>
+      <div class="char-count"><span id="comment-chars">0</span>/300</div>
+    </div>
+    <div class="msg" id="rate-msg"></div>
+    <div class="modal-actions">
+      <button class="btn-modal" onclick="closeRateModal()">Cancel</button>
+      <button class="btn-modal primary" id="btn-submit-rating" onclick="submitRating()">Submit Review</button>
     </div>
   </div>
 </div>
 
 <footer>
-  <div class="footer-logo">X<span>E</span>KIE</div>
-  <div>
-    <a href="privacy.html">Privacy</a>
-    <a href="terms.html">Terms</a>
-    <a href="guidelines.html">Guidelines</a>
-    <a href="prohibited-items.html">Prohibited Items</a>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+      <div class="footer-tagline">Trade Different</div>
+    </div>
+    <div class="footer-links">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="prohibited-items.html">Prohibited Items</a>
+      <a href="guidelines.html">Community Guidelines</a>
+      <a href="terms.html">Terms of Service</a>
+    </div>
+    <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
   </div>
-  <div style="margin-top:12px">© 2025 XEKIE LLC · Akron, OH · Trade Different.</div>
 </footer>
 
 <script>
   const SUPABASE_URL = 'https://jlcrarqiyejgjbdesxik.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA';
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const EARLY_ADOPTER_CUTOFF = new Date('2026-06-01');
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA';
+  const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const EARLY_CUTOFF = new Date('2026-06-01');
 
-  let currentUser = null, profileUserId = null, isOwnProfile = false;
+  let currentUser = null;
+  let profileUserId = null;
+  let isOwnProfile = false;
+  let selectedStars = 0;
+  let canRate = false;
 
   async function init() {
     const params = new URLSearchParams(window.location.search);
     profileUserId = params.get('id');
-    const { data: { session } } = await sb.auth.getSession();
+
+    const { data: { session } } = await _sb.auth.getSession();
     currentUser = session?.user ?? null;
+
     if (currentUser) {
       document.getElementById('nav-login').style.display = 'none';
-      document.getElementById('nav-dashboard').style.display = 'inline-flex';
-      document.getElementById('nav-profile').href = `seller.html?id=${currentUser.id}`;
-      document.getElementById('nav-profile').style.display = 'inline-flex';
+      document.getElementById('nav-dashboard').style.display = 'inline-block';
+      document.getElementById('nav-post').style.display = 'inline-block';
     }
+
     if (!profileUserId) {
-      if (currentUser) { profileUserId = currentUser.id; }
+      if (currentUser) profileUserId = currentUser.id;
       else { window.location.href = 'login.html'; return; }
     }
+
     isOwnProfile = currentUser?.id === profileUserId;
     await loadProfile();
   }
 
   async function loadProfile() {
     try {
-      const [ratingsRes, offersRes, verifiedSellerRes, verifiedBuyerRes, profileRes, xekiesRes, bookmarksRes] = await Promise.all([
-        sb.from('ratings').select('stars, comment, xekie_id, created_at').eq('seller_id', profileUserId),
-        sb.from('offers').select('id, created_at').eq('seller_id', profileUserId),
-        sb.from('verified_sellers').select('verified_at').eq('user_id', profileUserId).maybeSingle(),
-        sb.from('verified_buyers').select('verified_at').eq('user_id', profileUserId).maybeSingle(),
-        sb.from('user_profiles').select('display_name, bio, created_at').eq('user_id', profileUserId).maybeSingle(),
-        sb.from('xekies').select('id, title, is_fulfilled, created_at, budget_min, budget_max, budget').eq('user_id', profileUserId),
-        isOwnProfile ? sb.from('seller_bookmarks').select('xekie_id, created_at').eq('seller_id', profileUserId) : Promise.resolve({ data: [] })
+      const [ratingsRes, offersRes, verifiedRes, profileRes, bookmarksRes, dealsRes] = await Promise.all([
+        _sb.from('ratings').select('stars,comment,xekie_id,created_at').eq('seller_id', profileUserId),
+        _sb.from('offers').select('id,xekie_id').eq('seller_id', profileUserId),
+        _sb.from('verified_sellers').select('verified_at').eq('user_id', profileUserId).maybeSingle(),
+        _sb.from('user_profiles').select('display_name,bio,created_at').eq('user_id', profileUserId).maybeSingle(),
+        _sb.from('seller_bookmarks').select('xekie_id, xekies(id,title,budget_min,budget_max,budget,location,category,is_fulfilled)').eq('seller_id', profileUserId).order('created_at', { ascending: false }).limit(10),
+        _sb.from('xekies').select('id',{count:'exact',head:true}).eq('user_id', profileUserId).eq('is_fulfilled', true),
       ]);
 
-      // Get bookmarked xekie details
-      let bookmarkedXekies = [];
-      if (isOwnProfile && bookmarksRes.data?.length) {
-        const bookmarkIds = bookmarksRes.data.map(b => b.xekie_id);
-        const { data: bxData } = await sb.from('xekies').select('id, title, budget_min, budget_max, budget, category, is_fulfilled').in('id', bookmarkIds);
-        bookmarkedXekies = bxData || [];
+      // check if current user has had offers/messages with this seller
+      if (currentUser && !isOwnProfile) {
+        const { data: sharedOffers } = await _sb.from('offers')
+          .select('id').eq('seller_id', profileUserId)
+          .in('xekie_id',
+            (offersRes.data || []).map(o => o.xekie_id).filter(Boolean)
+          ).limit(1);
+
+        // simpler: check if current user has any messages with this seller
+        const { data: msgCheck } = await _sb.from('messages')
+          .select('id')
+          .or(`sender_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`)
+          .or(`sender_id.eq.${profileUserId},recipient_id.eq.${profileUserId}`)
+          .limit(1);
+
+        canRate = (msgCheck && msgCheck.length > 0);
+
+        // also check if they already rated this seller
+        if (canRate) {
+          const { data: existingRating } = await _sb.from('ratings')
+            .select('id').eq('seller_id', profileUserId).eq('buyer_id', currentUser.id).limit(1);
+          if (existingRating && existingRating.length > 0) canRate = false;
+        }
       }
 
       renderProfile(
         profileRes.data,
         ratingsRes.data || [],
         offersRes.data || [],
-        verifiedSellerRes.data,
-        verifiedBuyerRes.data,
-        xekiesRes.data || [],
-        bookmarkedXekies
+        verifiedRes.data,
+        (bookmarksRes.data || []).filter(b => b.xekies),
+        dealsRes.count || 0
       );
-    } catch (err) {
+    } catch(err) {
       console.error(err);
       showNotFound();
     }
   }
 
-  function formatBudget(x) {
-    if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
-    if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
-    if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
-    if (x.budget) return '$'+Number(x.budget).toLocaleString();
-    return '$—';
-  }
-
-  function renderProfile(meta, ratings, offers, verifiedSeller, verifiedBuyer, xekies, bookmarkedXekies) {
+  function renderProfile(meta, ratings, offers, verified, bookmarks, dealsDone) {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('profile-content').style.display = 'block';
 
@@ -308,6 +408,7 @@
     const initials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
     document.getElementById('profile-avatar').textContent = initials || '?';
 
+    // Bio
     const bioEl = document.getElementById('profile-bio');
     if (meta?.bio) {
       bioEl.textContent = meta.bio;
@@ -318,63 +419,65 @@
 
     // Badges
     const badgesEl = document.getElementById('profile-badges');
-    if (verifiedSeller) badgesEl.innerHTML += `<span class="badge badge-verified-seller">✓ Verified Seller</span>`;
-    if (verifiedBuyer) badgesEl.innerHTML += `<span class="badge badge-verified-buyer">✓ Verified Buyer</span>`;
+    if (verified) badgesEl.innerHTML += `<span class="badge badge-verified">✓ Verified Seller</span>`;
     const joinDate = meta?.created_at ? new Date(meta.created_at) : null;
-    if (joinDate && joinDate < EARLY_ADOPTER_CUTOFF) badgesEl.innerHTML += `<span class="badge badge-early">⚡ Early Adopter</span>`;
+    if (joinDate && joinDate < EARLY_CUTOFF) badgesEl.innerHTML += `<span class="badge badge-early">⚡ Early Adopter</span>`;
     if (joinDate) {
       const mo = joinDate.toLocaleString('default', { month: 'short', year: 'numeric' });
       badgesEl.innerHTML += `<span class="badge badge-member">Joined ${mo}</span>`;
     }
 
+    // Actions
+    const actionsEl = document.getElementById('profile-actions');
     if (isOwnProfile) {
-      document.getElementById('profile-actions').innerHTML = `<button class="btn btn-outline" onclick="openEditModal()">✏️ Edit Profile</button>`;
+      actionsEl.innerHTML = `<button class="btn-action" onclick="openEditModal()">✏️ Edit Profile</button>`;
+    } else if (canRate) {
+      actionsEl.innerHTML = `<button class="btn-action rate" onclick="openRateModal()">⭐ Leave a Review</button>`;
     }
 
     // Stats
     const totalOffers = offers.length;
     const totalReviews = ratings.length;
-    const avgRating = totalReviews > 0 ? (ratings.reduce((s, r) => s + r.stars, 0) / totalReviews).toFixed(1) : null;
-    const totalDeals = xekies.filter(x => x.is_fulfilled).length;
-    const totalPosted = xekies.length;
-
-    // Buyer response rate — % of XEKIEs that received at least 1 offer response read
-    // Simplified: ratio of fulfilled XEKIEs to total posted (as a proxy for engagement)
-    const responseRate = totalPosted > 0 ? Math.round((totalDeals / totalPosted) * 100) : null;
+    const avgRating = totalReviews > 0
+      ? (ratings.reduce((s, r) => s + r.stars, 0) / totalReviews).toFixed(1)
+      : null;
 
     document.getElementById('stat-offers').textContent = totalOffers;
     document.getElementById('stat-reviews').textContent = totalReviews;
-    document.getElementById('stat-traded').textContent = totalDeals;
-    document.getElementById('stat-xekies-posted').textContent = totalPosted;
-
-    if (responseRate !== null) {
-      document.getElementById('stat-response-rate').textContent = responseRate + '%';
-      document.getElementById('response-rate-fill').style.width = responseRate + '%';
-    } else {
-      document.getElementById('stat-response-rate').textContent = '—';
-    }
+    document.getElementById('stat-deals').textContent = dealsDone;
 
     if (avgRating) {
       document.getElementById('stat-rating').textContent = avgRating;
-      const starsEl = document.getElementById('stars-display');
+      const starsEl = document.getElementById('stars-row');
       for (let i = 1; i <= 5; i++) {
         starsEl.innerHTML += `<span class="star ${i <= Math.round(avgRating) ? 'filled' : ''}">★</span>`;
       }
     } else {
       document.getElementById('stat-rating').textContent = '—';
-      document.getElementById('stars-display').innerHTML = `<span style="color:var(--mid);font-size:0.8rem">No ratings yet</span>`;
+      document.getElementById('stars-row').innerHTML = `<span style="font-size:11px;color:var(--mid)">No ratings yet</span>`;
+    }
+
+    // Response rate
+    if (totalOffers > 0) {
+      const rate = Math.min(100, Math.round((totalOffers / Math.max(totalOffers, 1)) * 100));
+      const uniqueXekies = new Set(offers.map(o => o.xekie_id)).size;
+      document.getElementById('section-rate').style.display = 'block';
+      document.getElementById('rate-label').textContent = `${uniqueXekies} XEKIEs responded to`;
+      document.getElementById('rate-desc').textContent = `This seller has responded to ${uniqueXekies} unique ${uniqueXekies === 1 ? 'XEKIE' : 'XEKIEs'} with ${totalOffers} total ${totalOffers === 1 ? 'offer' : 'offers'}.`;
+      setTimeout(() => { document.getElementById('rate-bar').style.width = Math.min(100, uniqueXekies * 10) + '%'; }, 100);
     }
 
     // Reviews
-    document.getElementById('reviews-count').textContent = totalReviews > 0 ? `${totalReviews} review${totalReviews !== 1 ? 's' : ''}` : '';
+    document.getElementById('reviews-count').textContent = totalReviews > 0
+      ? `${totalReviews} review${totalReviews !== 1 ? 's' : ''}` : '';
     const listEl = document.getElementById('reviews-list');
     if (totalReviews === 0) {
       listEl.innerHTML = `<div class="empty"><div class="empty-icon">⭐</div><p>No reviews yet</p></div>`;
     } else {
       const sorted = [...ratings].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       listEl.innerHTML = sorted.map(r => {
-        const stars = Array.from({ length: 5 }, (_, i) => `<span class="star ${i < r.stars ? 'filled' : ''}">★</span>`).join('');
-        const date = new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const stars = Array.from({length:5},(_,i) => `<span class="star ${i < r.stars ? 'filled' : ''}">★</span>`).join('');
+        const date = new Date(r.created_at).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
         return `<div class="review-item">
           <div class="review-top"><div class="review-stars">${stars}</div><span class="review-date">${date}</span></div>
           ${r.comment ? `<div class="review-text">${esc(r.comment)}</div>` : ''}
@@ -383,25 +486,28 @@
       }).join('');
     }
 
-    // Bookmarks (own profile only)
-    if (isOwnProfile) {
-      const bookmarksSection = document.getElementById('bookmarks-section');
-      const bookmarksList = document.getElementById('bookmarks-list');
-      const bookmarksCount = document.getElementById('bookmarks-count');
-      bookmarksSection.style.display = 'block';
-      if (bookmarkedXekies.length === 0) {
-        bookmarksList.innerHTML = `<div class="empty"><div class="empty-icon">🙋</div><p>No bookmarks yet — browse XEKIEs and click "I have this" when you can fulfill a request.</p></div>`;
-      } else {
-        bookmarksCount.textContent = `${bookmarkedXekies.length} saved`;
-        bookmarksList.innerHTML = bookmarkedXekies.map(x => `
-          <div class="bookmark-item">
-            <div>
-              <a href="xekie.html?id=${x.id}" class="bookmark-title">${x.title}</a>
-              <div class="bookmark-meta">${x.category || ''} ${x.is_fulfilled ? '· ✓ Fulfilled' : ''}</div>
+    // Bookmarks (I Have This)
+    if (bookmarks.length > 0 && (isOwnProfile || bookmarks.some(b => !b.xekies?.is_fulfilled))) {
+      document.getElementById('section-bookmarks').style.display = 'block';
+      document.getElementById('bookmarks-count').textContent = `${bookmarks.length} saved`;
+      const bListEl = document.getElementById('bookmarks-list');
+      bListEl.innerHTML = bookmarks.map(b => {
+        const x = b.xekies;
+        if (!x) return '';
+        const budget = x.budget_min && x.budget_max ? `$${Number(x.budget_min).toLocaleString()} – $${Number(x.budget_max).toLocaleString()}`
+          : x.budget ? `$${Number(x.budget).toLocaleString()}` : '$—';
+        return `<a href="xekie.html?id=${x.id}" class="bookmark-item">
+          <div>
+            <div class="bookmark-title">${esc(x.title)}</div>
+            <div class="bookmark-meta">
+              ${x.category ? `<span>📦 ${x.category}</span>` : ''}
+              ${x.location ? `<span>📍 ${x.location}</span>` : ''}
+              ${x.is_fulfilled ? `<span style="color:#3B6D11;">✓ Fulfilled</span>` : ''}
             </div>
-            <div class="bookmark-budget">${formatBudget(x)}</div>
-          </div>`).join('');
-      }
+          </div>
+          <div class="bookmark-budget">${budget}</div>
+        </a>`;
+      }).join('');
     }
   }
 
@@ -410,6 +516,7 @@
     document.getElementById('not-found').style.display = 'block';
   }
 
+  // ── EDIT PROFILE ──
   function openEditModal() {
     const name = document.getElementById('profile-name').textContent;
     const bio = document.getElementById('profile-bio').textContent;
@@ -418,22 +525,20 @@
     updateBioCount();
     document.getElementById('edit-modal').classList.add('open');
   }
-
   function closeEditModal() { document.getElementById('edit-modal').classList.remove('open'); }
-
-  function updateBioCount() {
-    document.getElementById('bio-chars').textContent = document.getElementById('edit-bio').value.length;
-  }
+  function updateBioCount() { document.getElementById('bio-chars').textContent = document.getElementById('edit-bio').value.length; }
   document.getElementById('edit-bio').addEventListener('input', updateBioCount);
 
   async function saveProfile() {
     const name = document.getElementById('edit-name').value.trim();
     const bio = document.getElementById('edit-bio').value.trim();
     if (!name) { alert('Please enter a display name.'); return; }
-    const btn = document.querySelector('#edit-modal .btn-primary');
+    const btn = document.getElementById('btn-save-profile');
     btn.textContent = 'Saving…'; btn.disabled = true;
     try {
-      const { error } = await sb.from('user_profiles').upsert({ user_id: profileUserId, display_name: name, bio, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+      const { error } = await _sb.from('user_profiles').upsert({
+        user_id: profileUserId, display_name: name, bio, updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
       if (error) throw error;
       document.getElementById('profile-name').textContent = name;
       document.title = `${name} | XEKIE`;
@@ -441,21 +546,75 @@
       document.getElementById('profile-avatar').textContent = initials || '?';
       const bioEl = document.getElementById('profile-bio');
       bioEl.classList.remove('placeholder');
-      if (bio) { bioEl.textContent = bio; }
-      else { bioEl.textContent = 'Add a bio to let buyers know who you are.'; bioEl.classList.add('placeholder'); }
+      bioEl.textContent = bio || 'Add a bio to let buyers know who you are.';
+      if (!bio) bioEl.classList.add('placeholder');
       closeEditModal();
-    } catch (err) {
-      console.error(err);
+    } catch(err) {
       alert('Could not save. Make sure you\'re signed in.');
     } finally {
       btn.textContent = 'Save Changes'; btn.disabled = false;
     }
   }
 
-  document.getElementById('edit-modal').addEventListener('click', function(e) { if (e.target === this) closeEditModal(); });
+  // ── RATE SELLER ──
+  function openRateModal() {
+    selectedStars = 0;
+    document.getElementById('rate-comment').value = '';
+    document.getElementById('comment-chars').textContent = '0';
+    document.getElementById('rate-msg').className = 'msg';
+    document.getElementById('btn-submit-rating').disabled = false;
+    document.getElementById('btn-submit-rating').textContent = 'Submit Review';
+    document.querySelectorAll('.star-pick').forEach(s => s.classList.remove('active'));
+    document.getElementById('rate-modal').classList.add('open');
+  }
+  function closeRateModal() { document.getElementById('rate-modal').classList.remove('open'); }
+
+  function pickStar(val) {
+    selectedStars = val;
+    document.querySelectorAll('.star-pick').forEach(s => {
+      s.classList.toggle('active', parseInt(s.dataset.val) <= val);
+    });
+  }
+
+  document.getElementById('rate-comment').addEventListener('input', function() {
+    document.getElementById('comment-chars').textContent = this.value.length;
+  });
+
+  async function submitRating() {
+    if (!selectedStars) {
+      const m = document.getElementById('rate-msg');
+      m.className = 'msg error'; m.textContent = 'Please select a star rating.'; return;
+    }
+    if (!currentUser) { window.location.href = 'login.html'; return; }
+    const comment = document.getElementById('rate-comment').value.trim();
+    const btn = document.getElementById('btn-submit-rating');
+    btn.disabled = true; btn.textContent = 'Submitting…';
+
+    const { error } = await _sb.from('ratings').insert({
+      seller_id: profileUserId,
+      buyer_id: currentUser.id,
+      stars: selectedStars,
+      comment: comment || null,
+    });
+
+    if (error) {
+      const m = document.getElementById('rate-msg');
+      m.className = 'msg error'; m.textContent = 'Error: ' + error.message;
+      btn.disabled = false; btn.textContent = 'Submit Review';
+    } else {
+      const m = document.getElementById('rate-msg');
+      m.className = 'msg success'; m.textContent = 'Review submitted! Thank you. ✓';
+      btn.textContent = 'Submitted ✓';
+      setTimeout(() => { closeRateModal(); location.reload(); }, 1500);
+    }
+  }
+
+  // Close modals on backdrop click
+  document.getElementById('edit-modal').addEventListener('click', e => { if (e.target === document.getElementById('edit-modal')) closeEditModal(); });
+  document.getElementById('rate-modal').addEventListener('click', e => { if (e.target === document.getElementById('rate-modal')) closeRateModal(); });
 
   function esc(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   init();
