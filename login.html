@@ -33,9 +33,17 @@
     label{display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--black);}
     input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;background:var(--cream);color:var(--black);outline:none;transition:border-color 0.2s;}
     input:focus{border-color:var(--black);}
+    .password-wrap{position:relative;}
+    .password-wrap input{padding-right:48px;}
+    .btn-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mid);font-size:16px;padding:4px;line-height:1;display:flex;align-items:center;justify-content:center;transition:color 0.2s;}
+    .btn-eye:hover{color:var(--black);}
     .btn-submit{width:100%;padding:13px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;margin-top:4px;transition:background 0.2s;}
     .btn-submit:hover{background:var(--accent);}
     .btn-submit:disabled{background:#ccc;cursor:not-allowed;}
+    .divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--mid);font-size:13px;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+    .btn-google{width:100%;padding:11px;background:var(--white);color:var(--black);border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color 0.2s;}
+    .btn-google:hover{border-color:var(--black);}
     .forgot{font-size:13px;color:var(--mid);text-align:right;cursor:pointer;margin-top:8px;}
     .forgot:hover{color:var(--accent);}
     .msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-top:12px;display:none;}
@@ -44,21 +52,6 @@
     .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--black);color:var(--white);padding:14px 24px;border-radius:12px;font-size:14px;z-index:1000;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);}
     .toast.show{transform:translateX(-50%) translateY(0);}
     .toast-sub{font-size:12px;color:#aaa;margin-top:2px;}
-
-    /* WINE GLASSES OVERLAY */
-    #glasses-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:none;opacity:0;transition:opacity 0.3s;}
-    #glasses-overlay.show{opacity:1;}
-    .glasses-wrap{position:relative;display:flex;align-items:flex-end;justify-content:center;gap:0;}
-    .glass{font-size:100px;display:inline-block;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);}
-    .glass-left{transform:rotate(-30deg) translateX(20px);}
-    .glass-right{transform:rotate(30deg) translateX(-20px);}
-    .glasses-wrap.clink .glass-left{transform:rotate(-10deg) translateX(4px);}
-    .glasses-wrap.clink .glass-right{transform:rotate(10deg) translateX(-4px);}
-    .sparkle{position:absolute;font-size:24px;opacity:0;animation:none;}
-    .sparkle.pop{animation:sparklePop 0.8s ease forwards;}
-    @keyframes sparklePop{0%{opacity:0;transform:scale(0) translate(0,0)}30%{opacity:1;transform:scale(1.2) translate(var(--tx),var(--ty))}100%{opacity:0;transform:scale(0.8) translate(calc(var(--tx)*2),calc(var(--ty)*2))}}
-    .glasses-text{position:absolute;bottom:-60px;left:50%;transform:translateX(-50%);font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--white);white-space:nowrap;text-shadow:0 2px 12px rgba(0,0,0,0.5);}
-
     footer{background:var(--black);color:var(--white);padding:24px 40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
     .footer-links{display:flex;gap:20px;flex-wrap:wrap;}
@@ -71,23 +64,6 @@
   <div class="toast" id="toast">
     <div>Welcome to XEKIE! 🔶</div>
     <div class="toast-sub">Check your inbox — a welcome email is on its way.</div>
-  </div>
-
-  <!-- WINE GLASSES OVERLAY -->
-  <div id="glasses-overlay">
-    <div style="position:relative;text-align:center;">
-      <div class="glasses-wrap" id="glasses-wrap">
-        <span class="glass glass-left">🥂</span>
-        <span class="glass glass-right">🥂</span>
-        <span class="sparkle" id="sp1" style="top:-20px;left:50%;--tx:-40px;--ty:-50px;">✨</span>
-        <span class="sparkle" id="sp2" style="top:-10px;left:50%;--tx:40px;--ty:-60px;">⭐</span>
-        <span class="sparkle" id="sp3" style="top:10px;left:30%;--tx:-50px;--ty:-30px;">💫</span>
-        <span class="sparkle" id="sp4" style="top:10px;left:70%;--tx:50px;--ty:-30px;">✨</span>
-        <span class="sparkle" id="sp5" style="top:30px;left:20%;--tx:-30px;--ty:-20px;">⭐</span>
-        <span class="sparkle" id="sp6" style="top:30px;left:80%;--tx:30px;--ty:-20px;">💫</span>
-      </div>
-      <div class="glasses-text">Welcome to XEKIE! 🔶</div>
-    </div>
   </div>
 
   <nav>
@@ -108,19 +84,56 @@
         <button class="tab" id="tab-signup" onclick="switchTab('signup')">Create account</button>
       </div>
 
+      <!-- SIGN IN -->
       <div class="tab-panel active" id="panel-signin">
-        <div class="form-group"><label>Email</label><input type="email" id="signin-email" placeholder="you@example.com" /></div>
-        <div class="form-group"><label>Password</label><input type="password" id="signin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')signIn()" /></div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="signin-email" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="password-wrap">
+            <input type="password" id="signin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')signIn()" />
+            <button type="button" class="btn-eye" id="eye-signin" onclick="togglePassword('signin-password','eye-signin')" aria-label="Show password">
+              <svg id="eye-signin-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
         <button class="btn-submit" id="btn-signin" onclick="signIn()">Sign in</button>
         <div class="forgot" onclick="forgotPassword()">Forgot password?</div>
+        <div class="divider">or</div>
+        <button class="btn-google" onclick="signInWithGoogle()">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
         <div class="msg" id="signin-msg"></div>
       </div>
 
+      <!-- CREATE ACCOUNT -->
       <div class="tab-panel" id="panel-signup">
-        <div class="form-group"><label>First name</label><input type="text" id="signup-name" placeholder="e.g. Zach" autocomplete="given-name" /></div>
-        <div class="form-group"><label>Email</label><input type="email" id="signup-email" placeholder="you@example.com" /></div>
-        <div class="form-group"><label>Password</label><input type="password" id="signup-password" placeholder="At least 6 characters" onkeydown="if(event.key==='Enter')signUp()" /></div>
+        <div class="form-group">
+          <label>First name</label>
+          <input type="text" id="signup-name" placeholder="e.g. Zach" autocomplete="given-name" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="signup-email" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="password-wrap">
+            <input type="password" id="signup-password" placeholder="At least 6 characters" onkeydown="if(event.key==='Enter')signUp()" />
+            <button type="button" class="btn-eye" id="eye-signup" onclick="togglePassword('signup-password','eye-signup')" aria-label="Show password">
+              <svg id="eye-signup-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
         <button class="btn-submit" id="btn-signup" onclick="signUp()">Create account</button>
+        <div class="divider">or</div>
+        <button class="btn-google" onclick="signInWithGoogle()">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
         <div class="msg" id="signup-msg"></div>
       </div>
     </div>
@@ -161,85 +174,21 @@
       el.textContent = msg;
     }
 
-    // ---- CLINK SOUND (Web Audio API) ----
-    function playClinkSound() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-        // Main clink tone
-        const osc1 = ctx.createOscillator();
-        const gain1 = ctx.createGain();
-        osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(1800, ctx.currentTime);
-        osc1.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.8);
-        gain1.gain.setValueAtTime(0.4, ctx.currentTime);
-        gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-        osc1.connect(gain1); gain1.connect(ctx.destination);
-        osc1.start(ctx.currentTime); osc1.stop(ctx.currentTime + 1.2);
-
-        // Harmonic overtone
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(2400, ctx.currentTime);
-        osc2.frequency.exponentialRampToValueAtTime(1800, ctx.currentTime + 0.6);
-        gain2.gain.setValueAtTime(0.2, ctx.currentTime);
-        gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
-        osc2.connect(gain2); gain2.connect(ctx.destination);
-        osc2.start(ctx.currentTime); osc2.stop(ctx.currentTime + 0.8);
-
-        // Second glass resonance (slight delay)
-        const osc3 = ctx.createOscillator();
-        const gain3 = ctx.createGain();
-        osc3.type = 'sine';
-        osc3.frequency.setValueAtTime(2100, ctx.currentTime + 0.05);
-        osc3.frequency.exponentialRampToValueAtTime(1500, ctx.currentTime + 0.7);
-        gain3.gain.setValueAtTime(0.3, ctx.currentTime + 0.05);
-        gain3.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
-        osc3.connect(gain3); gain3.connect(ctx.destination);
-        osc3.start(ctx.currentTime + 0.05); osc3.stop(ctx.currentTime + 1.0);
-
-      } catch(e) { /* silent fail */ }
-    }
-
-    function launchWineGlasses() {
-      const overlay = document.getElementById('glasses-overlay');
-      const wrap = document.getElementById('glasses-wrap');
-
-      // Show overlay with dark background
-      overlay.style.background = 'rgba(10,10,10,0.75)';
-      overlay.style.backdropFilter = 'blur(4px)';
-      overlay.classList.add('show');
-
-      // Play clink sound
-      playClinkSound();
-
-      // Clink the glasses together after a short delay
-      setTimeout(() => {
-        wrap.classList.add('clink');
-
-        // Pop sparkles
-        document.querySelectorAll('.sparkle').forEach((sp, i) => {
-          setTimeout(() => {
-            sp.classList.add('pop');
-          }, i * 60);
-        });
-      }, 400);
-
-      // Hide after 2.5 seconds then redirect
-      setTimeout(() => {
-        overlay.style.opacity = '0';
-        setTimeout(() => {
-          overlay.classList.remove('show');
-          overlay.style.background = '';
-          overlay.style.backdropFilter = '';
-        }, 300);
-      }, 2500);
+    // ── SHOW/HIDE PASSWORD ──
+    function togglePassword(inputId, btnId) {
+      const input = document.getElementById(inputId);
+      const btn = document.getElementById(btnId);
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      // Swap icon: open eye when visible, crossed eye when hidden
+      btn.innerHTML = isHidden
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
     }
 
     async function sendWelcomeEmail(email, name) {
       try {
-        return await fetch('/.netlify/functions/send-email', {
+        await fetch('/.netlify/functions/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: 'welcome', to: email, data: { name } })
@@ -266,16 +215,21 @@
       if (!name || !email || !password) return showMessage('signup-msg', 'Please fill in all fields.', 'error');
       if (password.length < 6) return showMessage('signup-msg', 'Password must be at least 6 characters.', 'error');
       btn.disabled = true; btn.textContent = 'Creating account...';
-      const { error } = await _sb.auth.signUp({ email, password, options: { data: { full_name: name } } });
+      const { data, error } = await _sb.auth.signUp({ email, password, options: { data: { full_name: name } } });
       if (error) {
         showMessage('signup-msg', error.message, 'error');
         btn.disabled = false; btn.textContent = 'Create account';
       } else {
-        await sendWelcomeEmail(email, name);
-        launchWineGlasses();
+        sendWelcomeEmail(email, name);
+        showToast();
         btn.textContent = 'Account created ✓';
-        setTimeout(() => window.location.href = 'dashboard.html', 2800);
+        if (data.session) setTimeout(() => window.location.href = 'dashboard.html', 1800);
       }
+    }
+
+    async function signInWithGoogle() {
+      const { error } = await _sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/dashboard.html' } });
+      if (error) showMessage('signin-msg', error.message, 'error');
     }
 
     async function forgotPassword() {
