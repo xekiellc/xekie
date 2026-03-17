@@ -1,5 +1,5 @@
 // notify-sellers.js — fires when a new XEKIE is posted
-// Finds matching subscriptions and emails + texts each one
+// Notifies: subscriptions table + watches table
 
 const { createClient } = require('@supabase/supabase-js');
 const { rateLimit, getIP, limitedResponse } = require('./rate-limit');
@@ -21,24 +21,7 @@ exports.handler = async (event) => {
     process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA'
   );
 
-  const { data: subs } = await _sb.from('subscriptions').select('*');
-  if (!subs || !subs.length) return { statusCode: 200, body: 'No subscribers' };
-
-  const matching = subs.filter(sub => {
-    const categoryMatch = !sub.categories || sub.categories.length === 0 ||
-      sub.categories.includes('All') || (category && sub.categories.includes(category));
-    const locationMatch = !sub.location ||
-      (location && location.toLowerCase().includes(sub.location.toLowerCase()));
-    return categoryMatch && locationMatch;
-  });
-
-  if (!matching.length) return { statusCode: 200, body: 'No matching subscribers' };
-
   const RESEND_KEY = process.env.RESEND_API_KEY;
-  const TWILIO_SID = process.env.TWILIO_ACCOUNT_SID;
-  const TWILIO_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-  const TWILIO_PHONE = process.env.TWILIO_PHONE_NUMBER;
-
   const xekieUrl = `https://xekie.com/xekie.html?id=${id}`;
 
   const formatBudget = (x) => {
@@ -51,40 +34,7 @@ exports.handler = async (event) => {
 
   const budgetStr = formatBudget(xekie);
 
-  // Send SMS via Twilio
-  async function sendSMS(to, body) {
-    if (!TWILIO_SID || !TWILIO_TOKEN || !TWILIO_PHONE) return;
-    try {
-      const credentials = Buffer.from(`${TWILIO_SID}:${TWILIO_TOKEN}`).toString('base64');
-      await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_SID}/Messages.json`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({ To: to, From: TWILIO_PHONE, Body: body }).toString()
-      });
-    } catch(e) {}
-  }
-
-  const results = await Promise.allSettled(matching.map(async sub => {
-    const smsBody = `🔶 XEKIE Alert: "${title}" — ${budgetStr}${location ? ' · ' + location : ''}\nRespond: ${xekieUrl}`;
-
-    // Send SMS if subscriber has a phone number and opted in
-    if (sub.phone && sub.sms_alerts) {
-      await sendSMS(sub.phone, smsBody);
-    }
-
-    // Send email
-    if (!sub.email) return;
-    return fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: 'XEKIE <hello@xekie.com>',
-        to: sub.email,
-        subject: `🔶 New XEKIE: ${title}`,
-        html: `<!DOCTYPE html>
+  const emailHtml = (recipientName, matchLabel) => `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f4f2ec;font-family:'DM Sans',Arial,sans-serif;">
@@ -96,10 +46,10 @@ exports.handler = async (event) => {
     <div style="font-size:10px;letter-spacing:3px;color:#555;text-transform:uppercase;margin-top:4px;">TRADE DIFFERENT</div>
   </td></tr>
   <tr><td style="background:linear-gradient(135deg,#ff4d1c,#ff8c00);padding:16px 40px;">
-    <div style="color:white;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">🔔 New XEKIE Alert — ${category || 'All Categories'}</div>
+    <div style="color:white;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">🔔 New XEKIE Alert — ${matchLabel}</div>
   </td></tr>
   <tr><td style="background:#ffffff;padding:40px;">
-    <p style="font-size:14px;color:#6b6b6b;margin:0 0 8px;">Hey ${sub.name || 'there'},</p>
+    <p style="font-size:14px;color:#6b6b6b;margin:0 0 8px;">Hey ${recipientName},</p>
     <p style="font-size:14px;color:#6b6b6b;margin:0 0 28px;">A new XEKIE just posted that matches your alert:</p>
     <div style="background:#f4f2ec;border-radius:14px;padding:28px;margin-bottom:28px;">
       <div style="font-size:22px;font-weight:900;color:#0a0a0a;letter-spacing:-0.5px;margin-bottom:12px;">${title}</div>
@@ -115,18 +65,84 @@ exports.handler = async (event) => {
     <p style="font-size:13px;color:#6b6b6b;text-align:center;margin:0;">Be the first to respond — buyers pick fast.</p>
   </td></tr>
   <tr><td style="background:#0a0a0a;border-radius:0 0 16px 16px;padding:28px 40px;">
-    <p style="font-size:12px;color:#444;margin:0 0 8px;">You're receiving this because you subscribed to XEKIE alerts.</p>
+    <p style="font-size:12px;color:#444;margin:0 0 8px;">You're receiving this because you set up a watch on XEKIE.</p>
+    <a href="https://xekie.com/watches.html" style="font-size:12px;color:#666;">Manage your alerts & watches</a>
     <p style="font-size:11px;color:#333;margin:12px 0 0;">© 2025 XEKIE LLC</p>
   </td></tr>
 </table>
 </td></tr>
 </table>
 </body>
-</html>`
-      })
-    });
-  }));
+</html>`;
 
-  const sent = results.filter(r => r.status === 'fulfilled').length;
-  return { statusCode: 200, body: JSON.stringify({ sent, total: matching.length }) };
+  const sendEmail = (to, subject, html) =>
+    fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: 'XEKIE <hello@xekie.com>', to, subject, html })
+    });
+
+  let totalSent = 0;
+
+  // ── 1. SUBSCRIPTIONS TABLE (category + location based) ──
+  const { data: subs } = await _sb.from('subscriptions').select('*');
+  if (subs && subs.length) {
+    const matchingSubs = subs.filter(sub => {
+      const categoryMatch = !sub.categories || sub.categories.length === 0 ||
+        sub.categories.includes('All') || (category && sub.categories.includes(category));
+      const locationMatch = !sub.location ||
+        (location && location.toLowerCase().includes(sub.location.toLowerCase()));
+      return categoryMatch && locationMatch;
+    });
+    const subResults = await Promise.allSettled(matchingSubs.map(sub =>
+      sendEmail(
+        sub.email,
+        `🔶 New XEKIE: ${title}`,
+        emailHtml(sub.name || 'there', category || 'All Categories')
+      )
+    ));
+    totalSent += subResults.filter(r => r.status === 'fulfilled').length;
+  }
+
+  // ── 2. WATCHES TABLE (keyword + category + location based) ──
+  const { data: watches } = await _sb.from('watches').select('*').eq('is_active', true);
+  if (watches && watches.length) {
+    const matchingWatches = watches.filter(w => {
+      // Keyword match — check title and description
+      const keywordMatch = !w.keyword ||
+        (title && title.toLowerCase().includes(w.keyword.toLowerCase())) ||
+        (description && description.toLowerCase().includes(w.keyword.toLowerCase()));
+
+      // Category match
+      const categoryMatch = !w.category ||
+        (category && category === w.category);
+
+      // Location match
+      const locationMatch = !w.location ||
+        (location && location.toLowerCase().includes(w.location.toLowerCase()));
+
+      return keywordMatch && categoryMatch && locationMatch;
+    });
+
+    // Dedupe by email — don't email same person twice
+    const emailsSentFromSubs = new Set((subs || []).map(s => s.email));
+    const uniqueWatches = matchingWatches.filter(w => !emailsSentFromSubs.has(w.email));
+
+    const watchResults = await Promise.allSettled(uniqueWatches.map(w => {
+      const matchLabel = [
+        w.keyword ? `"${w.keyword}"` : null,
+        w.category || null,
+        w.location || null
+      ].filter(Boolean).join(' · ') || 'All XEKIEs';
+
+      return sendEmail(
+        w.email,
+        `🔔 Watch match: ${title}`,
+        emailHtml('there', matchLabel)
+      );
+    }));
+    totalSent += watchResults.filter(r => r.status === 'fulfilled').length;
+  }
+
+  return { statusCode: 200, body: JSON.stringify({ sent: totalSent }) };
 };
