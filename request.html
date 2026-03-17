@@ -74,7 +74,6 @@
     .preview-budget{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);margin-top:10px;}
     .preview-expiry{font-size:12px;color:var(--mid);margin-top:6px;}
     #fireworks-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;display:none;}
-
     /* AI WRITER */
     .ai-writer-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:14px 18px;background:linear-gradient(135deg,rgba(255,77,28,0.06),rgba(255,140,0,0.04));border:1px solid rgba(255,77,28,0.2);border-radius:12px;}
     .ai-writer-text{flex:1;font-size:14px;color:var(--mid);line-height:1.4;}
@@ -88,7 +87,6 @@
     .ai-thinking-dot:nth-child(2){animation-delay:0.2s;}
     .ai-thinking-dot:nth-child(3){animation-delay:0.4s;}
     @keyframes aiThink{0%,60%,100%{transform:scale(0.8);opacity:0.4}30%{transform:scale(1.2);opacity:1}}
-
     /* SHARE MODAL */
     .share-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:20px;}
     .share-modal.open{display:flex;}
@@ -111,7 +109,6 @@
     .btn-share-done:hover{background:var(--accent);}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:99999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
-
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -327,7 +324,7 @@
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // ── #4 AI XEKIE WRITER ──
+    // ── AI XEKIE WRITER ──
     async function aiWriteXekie() {
       const title = document.getElementById('title').value.trim();
       if (!title) {
@@ -339,16 +336,13 @@
       btn.disabled = true;
       btn.innerHTML = '<span>✨</span> Writing...';
       thinking.classList.add('show');
-
       try {
         const res = await fetch('/.netlify/functions/ai-writer', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title })
         });
-
         const result = await res.json();
-
         if (result.title) {
           document.getElementById('title').value = result.title.slice(0, 100);
           document.getElementById('title-count').textContent = result.title.slice(0,100).length;
@@ -381,7 +375,7 @@
       }
     }
 
-    // ── #8 SHARE MODAL ──
+    // ── SHARE MODAL ──
     function openShareModal(xekieId, title) {
       postedXekieId = xekieId;
       postedXekieTitle = title;
@@ -406,10 +400,21 @@
       window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
     }
 
+    // ── SMS FIX — cross-platform compatible ──
     function shareToSMS() {
       const url = `https://xekie.com/xekie.html?id=${postedXekieId}`;
       const text = `I just posted a XEKIE — looking for "${postedXekieTitle}". Can you help? ${url}`;
-      window.open(`sms:?body=${encodeURIComponent(text)}`);
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isMac = /Macintosh/.test(navigator.userAgent) && !isIOS;
+      let smsUrl;
+      if (isIOS) {
+        smsUrl = `sms:&body=${encodeURIComponent(text)}`;
+      } else if (isMac) {
+        smsUrl = `sms:&body=${encodeURIComponent(text)}`;
+      } else {
+        smsUrl = `sms:?body=${encodeURIComponent(text)}`;
+      }
+      window.open(smsUrl);
     }
 
     function copyShareLink() {
