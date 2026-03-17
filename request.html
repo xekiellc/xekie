@@ -44,6 +44,11 @@
     .flexible-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
     .flexible-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--black);}
     .flexible-row label{font-size:13px;color:var(--mid);margin:0;cursor:pointer;}
+    /* PRICE HINT */
+    .price-hint{display:none;margin-top:10px;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.5;}
+    .price-hint.low{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;display:flex;gap:8px;align-items:flex-start;}
+    .price-hint.good{background:#EAF3DE;color:#3B6D11;border:1px solid #C0DD97;display:flex;gap:8px;align-items:flex-start;}
+    .price-hint.high{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;display:flex;gap:8px;align-items:flex-start;}
     .char-count{font-size:12px;color:var(--mid);text-align:right;margin-top:5px;}
     .expiry-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
     .expiry-btn{padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;background:var(--white);font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--mid);cursor:pointer;text-align:center;transition:all 0.2s;line-height:1.3;}
@@ -188,15 +193,17 @@
         <div class="budget-section-title">Your budget</div>
         <div class="budget-row">
           <div class="budget-prefix">$</div>
-          <input type="number" id="budget-min" placeholder="Min (e.g. 400)" min="1" oninput="updatePreview()" />
+          <input type="number" id="budget-min" placeholder="Min (e.g. 400)" min="1" oninput="updatePreview()" onblur="triggerPriceCheck()" />
           <span class="budget-separator">—</span>
           <div class="budget-prefix">$</div>
-          <input type="number" id="budget-max" placeholder="Max (e.g. 700)" min="1" oninput="updatePreview()" />
+          <input type="number" id="budget-max" placeholder="Max (e.g. 700)" min="1" oninput="updatePreview()" onblur="triggerPriceCheck()" />
         </div>
         <div class="flexible-row">
           <input type="checkbox" id="is-flexible" onchange="updatePreview()" />
           <label for="is-flexible">I'm flexible on price if the right item comes along</label>
         </div>
+        <!-- PRICE HINT -->
+        <div class="price-hint" id="price-hint"></div>
       </div>
       <div class="form-group">
         <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
@@ -276,6 +283,7 @@
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null, selectedExpiryHours = 168, selectedPhotos = [];
     let postedXekieId = null, postedXekieTitle = null;
+    let priceCheckTimer = null, lastPriceCheckKey = '';
 
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (!session) { window.location.href = 'login.html'; return; }
@@ -324,39 +332,58 @@
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
+    // ── AI PRICE CHECK ──
+    function triggerPriceCheck() {
+      const title = document.getElementById('title').value.trim();
+      const min = document.getElementById('budget-min').value;
+      const max = document.getElementById('budget-max').value;
+      const category = document.getElementById('category').value;
+      if (!title || (!min && !max)) return;
+      const key = `${title}|${min}|${max}|${category}`;
+      if (key === lastPriceCheckKey) return;
+      clearTimeout(priceCheckTimer);
+      priceCheckTimer = setTimeout(() => runPriceCheck(title, min, max, category, key), 800);
+    }
+
+    async function runPriceCheck(title, min, max, category, key) {
+      lastPriceCheckKey = key;
+      const hintEl = document.getElementById('price-hint');
+      try {
+        const res = await fetch('/.netlify/functions/ai-price', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, budget_min: min, budget_max: max, category })
+        });
+        const data = await res.json();
+        if (!data.message || data.status === 'unknown') { hintEl.style.display = 'none'; return; }
+        const icons = { low: '⚠️', good: '✓', high: 'ℹ️' };
+        const icon = icons[data.status] || 'ℹ️';
+        let text = `${icon} ${data.message}`;
+        if (data.typical_range) text += ` Typical range: ${data.typical_range}.`;
+        hintEl.className = `price-hint ${data.status}`;
+        hintEl.textContent = text;
+      } catch(e) {
+        hintEl.style.display = 'none';
+      }
+    }
+
     // ── AI XEKIE WRITER ──
     async function aiWriteXekie() {
       const title = document.getElementById('title').value.trim();
-      if (!title) {
-        showMessage('Type a rough idea in the title field first — then let Claude expand it!', 'error');
-        return;
-      }
+      if (!title) { showMessage('Type a rough idea in the title field first — then let Claude expand it!', 'error'); return; }
       const btn = document.getElementById('btn-ai-write');
       const thinking = document.getElementById('ai-thinking');
-      btn.disabled = true;
-      btn.innerHTML = '<span>✨</span> Writing...';
+      btn.disabled = true; btn.innerHTML = '<span>✨</span> Writing...';
       thinking.classList.add('show');
       try {
         const res = await fetch('/.netlify/functions/ai-writer', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title })
         });
         const result = await res.json();
-        if (result.title) {
-          document.getElementById('title').value = result.title.slice(0, 100);
-          document.getElementById('title-count').textContent = result.title.slice(0,100).length;
-        }
-        if (result.description) {
-          document.getElementById('description').value = result.description.slice(0, 500);
-          document.getElementById('desc-count').textContent = result.description.slice(0,500).length;
-        }
-        if (result.category) {
-          const sel = document.getElementById('category');
-          for (let i = 0; i < sel.options.length; i++) {
-            if (sel.options[i].text === result.category) { sel.selectedIndex = i; break; }
-          }
-        }
+        if (result.title) { document.getElementById('title').value = result.title.slice(0, 100); document.getElementById('title-count').textContent = result.title.slice(0,100).length; }
+        if (result.description) { document.getElementById('description').value = result.description.slice(0, 500); document.getElementById('desc-count').textContent = result.description.slice(0,500).length; }
+        if (result.category) { const sel = document.getElementById('category'); for (let i = 0; i < sel.options.length; i++) { if (sel.options[i].text === result.category) { sel.selectedIndex = i; break; } } }
         if (result.budget_hint) {
           const parts = result.budget_hint.split('-');
           if (parts.length === 2) {
@@ -366,63 +393,38 @@
         }
         updatePreview();
         showMessage('✨ Claude wrote your XEKIE! Review and edit anything before posting.', 'success');
+        // Trigger price check after AI writer fills budget
+        setTimeout(triggerPriceCheck, 300);
       } catch(e) {
         showMessage('AI writer hit an error — please fill in manually.', 'error');
       } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<span>✨</span> Write for me';
+        btn.disabled = false; btn.innerHTML = '<span>✨</span> Write for me';
         thinking.classList.remove('show');
       }
     }
 
     // ── SHARE MODAL ──
     function openShareModal(xekieId, title) {
-      postedXekieId = xekieId;
-      postedXekieTitle = title;
+      postedXekieId = xekieId; postedXekieTitle = title;
       const url = `https://xekie.com/xekie.html?id=${xekieId}`;
       document.getElementById('share-link-box').textContent = url;
       document.getElementById('share-modal').classList.add('open');
     }
-
     function closeShareModal() {
       document.getElementById('share-modal').classList.remove('open');
       if (postedXekieId) window.location.href = `xekie.html?id=${postedXekieId}`;
     }
-
-    function shareToX() {
-      const url = `https://xekie.com/xekie.html?id=${postedXekieId}`;
-      const text = `I'm looking for: "${postedXekieTitle}" — respond with your best offer on XEKIE 🔶`;
-      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-    }
-
-    function shareToFacebook() {
-      const url = `https://xekie.com/xekie.html?id=${postedXekieId}`;
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-    }
-
-    // ── SMS FIX — cross-platform compatible ──
+    function shareToX() { const url = `https://xekie.com/xekie.html?id=${postedXekieId}`; window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I'm looking for: "${postedXekieTitle}" — respond with your best offer on XEKIE 🔶`)}&url=${encodeURIComponent(url)}`, '_blank'); }
+    function shareToFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://xekie.com/xekie.html?id=${postedXekieId}`)}`, '_blank'); }
     function shareToSMS() {
       const url = `https://xekie.com/xekie.html?id=${postedXekieId}`;
       const text = `I just posted a XEKIE — looking for "${postedXekieTitle}". Can you help? ${url}`;
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isMac = /Macintosh/.test(navigator.userAgent) && !isIOS;
-      let smsUrl;
-      if (isIOS) {
-        smsUrl = `sms:&body=${encodeURIComponent(text)}`;
-      } else if (isMac) {
-        smsUrl = `sms:&body=${encodeURIComponent(text)}`;
-      } else {
-        smsUrl = `sms:?body=${encodeURIComponent(text)}`;
-      }
-      window.open(smsUrl);
+      window.open(isIOS ? `sms:&body=${encodeURIComponent(text)}` : `sms:?body=${encodeURIComponent(text)}`);
     }
-
     function copyShareLink() {
-      const url = `https://xekie.com/xekie.html?id=${postedXekieId}`;
-      navigator.clipboard.writeText(url).then(() => {
-        const t = document.getElementById('share-toast');
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2500);
+      navigator.clipboard.writeText(`https://xekie.com/xekie.html?id=${postedXekieId}`).then(() => {
+        const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500);
       });
     }
 
@@ -473,10 +475,8 @@
       const dropZone = document.getElementById('photo-drop-zone');
       dropZone.style.display = selectedPhotos.length >= 4 ? 'none' : 'block';
       container.innerHTML = selectedPhotos.map((p, i) => `
-        <div class="photo-preview-item">
-          <img src="${p.previewUrl}" alt="Photo ${i+1}" />
-          <button class="photo-remove" onclick="removePhoto(${i})">✕</button>
-        </div>`).join('');
+        <div class="photo-preview-item"><img src="${p.previewUrl}" alt="Photo ${i+1}" />
+        <button class="photo-remove" onclick="removePhoto(${i})">✕</button></div>`).join('');
     }
 
     function removePhoto(i) { selectedPhotos.splice(i, 1); renderPhotoPreviews(); }
@@ -487,10 +487,7 @@
         const ext = p.file.name.split('.').pop() || 'jpg';
         const path = `${currentUser.id}/${xekieId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
         const { error } = await _sb.storage.from('xekie-photos').upload(path, p.file, { contentType: p.file.type, upsert: true });
-        if (!error) {
-          const { data: urlData } = _sb.storage.from('xekie-photos').getPublicUrl(path);
-          urls.push(urlData.publicUrl);
-        }
+        if (!error) { const { data: urlData } = _sb.storage.from('xekie-photos').getPublicUrl(path); urls.push(urlData.publicUrl); }
       }
       return urls;
     }
@@ -504,27 +501,15 @@
       const location = document.getElementById('location').value.trim();
       const category = document.getElementById('category').value;
       const btn = document.getElementById('btn-submit');
-
       if (!title) return showMessage('Please add a title — what do you want to find?', 'error');
       if (!budget_min && !budget_max) return showMessage('Please enter at least a minimum or maximum budget.', 'error');
       if (!location) return showMessage('Please add a location or write "Ships anywhere".', 'error');
       if (!category) return showMessage('Please select a category.', 'error');
-
       btn.disabled = true; btn.textContent = 'XEKIE\'ing...';
-
       let expires_at = null;
       if (selectedExpiryHours > 0) expires_at = new Date(Date.now() + selectedExpiryHours * 60 * 60 * 1000).toISOString();
-
-      const insertData = {
-        title, description,
-        budget: budget_max ? parseInt(budget_max) : parseInt(budget_min),
-        budget_min: budget_min ? parseInt(budget_min) : null,
-        budget_max: budget_max ? parseInt(budget_max) : null,
-        is_flexible, location, category,
-        user_id: currentUser.id, view_count: 0, is_fulfilled: false
-      };
+      const insertData = { title, description, budget: budget_max ? parseInt(budget_max) : parseInt(budget_min), budget_min: budget_min ? parseInt(budget_min) : null, budget_max: budget_max ? parseInt(budget_max) : null, is_flexible, location, category, user_id: currentUser.id, view_count: 0, is_fulfilled: false };
       if (expires_at) insertData.expires_at = expires_at;
-
       let newXekie = null;
       const { data: nx, error } = await _sb.from('xekies').insert(insertData).select().single();
       if (error) {
@@ -535,41 +520,23 @@
           newXekie = nx2;
         } else { showMessage('Something went wrong: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
       } else { newXekie = nx; }
-
       if (selectedPhotos.length && newXekie) {
         btn.textContent = 'Uploading photos...';
         const photoUrls = await uploadPhotos(newXekie.id);
         if (photoUrls.length) await _sb.from('xekies').update({ photos: photoUrls }).eq('id', newXekie.id);
       }
-
-      if (newXekie) {
-        fetch('/.netlify/functions/notify-sellers', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newXekie)
-        }).catch(() => {});
-      }
-
+      if (newXekie) { fetch('/.netlify/functions/notify-sellers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newXekie) }).catch(() => {}); }
       launchFireworks();
-
       btn.textContent = 'XEKIE\'d! 🎉';
       setTimeout(() => {
-        btn.disabled = false;
-        btn.textContent = 'Just XEKIE it →';
-        document.getElementById('title').value = '';
-        document.getElementById('description').value = '';
-        document.getElementById('budget-min').value = '';
-        document.getElementById('budget-max').value = '';
-        document.getElementById('is-flexible').checked = false;
-        document.getElementById('location').value = '';
-        document.getElementById('category').value = '';
-        selectedPhotos = [];
-        renderPhotoPreviews();
-        updatePreview();
+        btn.disabled = false; btn.textContent = 'Just XEKIE it →';
+        document.getElementById('title').value = ''; document.getElementById('description').value = '';
+        document.getElementById('budget-min').value = ''; document.getElementById('budget-max').value = '';
+        document.getElementById('is-flexible').checked = false; document.getElementById('location').value = '';
+        document.getElementById('category').value = ''; document.getElementById('price-hint').style.display = 'none';
+        selectedPhotos = []; renderPhotoPreviews(); updatePreview();
       }, 500);
-
-      setTimeout(() => {
-        if (newXekie) openShareModal(newXekie.id, title);
-      }, 1200);
+      setTimeout(() => { if (newXekie) openShareModal(newXekie.id, title); }, 1200);
     }
   </script>
 </body>
