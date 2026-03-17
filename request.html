@@ -44,11 +44,10 @@
     .flexible-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
     .flexible-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--black);}
     .flexible-row label{font-size:13px;color:var(--mid);margin:0;cursor:pointer;}
-    /* PRICE HINT */
-    .price-hint{display:none;margin-top:10px;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.5;}
-    .price-hint.low{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;display:flex;gap:8px;align-items:flex-start;}
-    .price-hint.good{background:#EAF3DE;color:#3B6D11;border:1px solid #C0DD97;display:flex;gap:8px;align-items:flex-start;}
-    .price-hint.high{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;display:flex;gap:8px;align-items:flex-start;}
+    .price-hint{display:none;margin-top:12px;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.5;gap:8px;align-items:flex-start;}
+    .price-hint.low{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
+    .price-hint.good{background:#EAF3DE;color:#3B6D11;border:1px solid #C0DD97;}
+    .price-hint.high{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;}
     .char-count{font-size:12px;color:var(--mid);text-align:right;margin-top:5px;}
     .expiry-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
     .expiry-btn{padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;background:var(--white);font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--mid);cursor:pointer;text-align:center;transition:all 0.2s;line-height:1.3;}
@@ -79,7 +78,6 @@
     .preview-budget{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);margin-top:10px;}
     .preview-expiry{font-size:12px;color:var(--mid);margin-top:6px;}
     #fireworks-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;display:none;}
-    /* AI WRITER */
     .ai-writer-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:14px 18px;background:linear-gradient(135deg,rgba(255,77,28,0.06),rgba(255,140,0,0.04));border:1px solid rgba(255,77,28,0.2);border-radius:12px;}
     .ai-writer-text{flex:1;font-size:14px;color:var(--mid);line-height:1.4;}
     .ai-writer-text strong{color:var(--black);font-weight:600;}
@@ -92,7 +90,6 @@
     .ai-thinking-dot:nth-child(2){animation-delay:0.2s;}
     .ai-thinking-dot:nth-child(3){animation-delay:0.4s;}
     @keyframes aiThink{0%,60%,100%{transform:scale(0.8);opacity:0.4}30%{transform:scale(1.2);opacity:1}}
-    /* SHARE MODAL */
     .share-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:20px;}
     .share-modal.open{display:flex;}
     .share-box{background:var(--white);border-radius:24px;padding:40px;max-width:480px;width:100%;text-align:center;position:relative;}
@@ -129,7 +126,6 @@
 <body>
   <canvas id="fireworks-canvas"></canvas>
 
-  <!-- SHARE MODAL -->
   <div class="share-modal" id="share-modal">
     <div class="share-box">
       <span class="share-box-emoji">🎉</span>
@@ -165,7 +161,6 @@
     <div class="form-card">
       <div id="message" class="message"></div>
 
-      <!-- AI WRITER BAR -->
       <div class="ai-writer-bar">
         <div class="ai-writer-text"><strong>✨ AI Writer</strong> — type a rough idea below and let Claude write your full XEKIE for you</div>
         <button class="btn-ai-write" id="btn-ai-write" onclick="aiWriteXekie()">
@@ -202,7 +197,6 @@
           <input type="checkbox" id="is-flexible" onchange="updatePreview()" />
           <label for="is-flexible">I'm flexible on price if the right item comes along</label>
         </div>
-        <!-- PRICE HINT -->
         <div class="price-hint" id="price-hint"></div>
       </div>
       <div class="form-group">
@@ -342,7 +336,7 @@
       const key = `${title}|${min}|${max}|${category}`;
       if (key === lastPriceCheckKey) return;
       clearTimeout(priceCheckTimer);
-      priceCheckTimer = setTimeout(() => runPriceCheck(title, min, max, category, key), 800);
+      priceCheckTimer = setTimeout(() => runPriceCheck(title, min, max, category, key), 600);
     }
 
     async function runPriceCheck(title, min, max, category, key) {
@@ -355,13 +349,17 @@
           body: JSON.stringify({ title, budget_min: min, budget_max: max, category })
         });
         const data = await res.json();
-        if (!data.message || data.status === 'unknown') { hintEl.style.display = 'none'; return; }
-        const icons = { low: '⚠️', good: '✓', high: 'ℹ️' };
+        if (!data.message || data.status === 'unknown') {
+          hintEl.style.display = 'none';
+          return;
+        }
+        const icons = { low: '⚠️', good: '✅', high: 'ℹ️' };
         const icon = icons[data.status] || 'ℹ️';
         let text = `${icon} ${data.message}`;
         if (data.typical_range) text += ` Typical range: ${data.typical_range}.`;
         hintEl.className = `price-hint ${data.status}`;
         hintEl.textContent = text;
+        hintEl.style.display = 'block';
       } catch(e) {
         hintEl.style.display = 'none';
       }
@@ -393,8 +391,7 @@
         }
         updatePreview();
         showMessage('✨ Claude wrote your XEKIE! Review and edit anything before posting.', 'success');
-        // Trigger price check after AI writer fills budget
-        setTimeout(triggerPriceCheck, 300);
+        setTimeout(triggerPriceCheck, 400);
       } catch(e) {
         showMessage('AI writer hit an error — please fill in manually.', 'error');
       } finally {
