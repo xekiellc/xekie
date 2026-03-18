@@ -33,10 +33,6 @@
     label{display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--black);}
     input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;background:var(--cream);color:var(--black);outline:none;transition:border-color 0.2s;}
     input:focus{border-color:var(--black);}
-    .password-wrap{position:relative;}
-    .password-wrap input{padding-right:48px;}
-    .btn-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mid);font-size:16px;padding:4px;line-height:1;display:flex;align-items:center;justify-content:center;transition:color 0.2s;}
-    .btn-eye:hover{color:var(--black);}
     .btn-submit{width:100%;padding:13px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;margin-top:4px;transition:background 0.2s;}
     .btn-submit:hover{background:var(--accent);}
     .btn-submit:disabled{background:#ccc;cursor:not-allowed;}
@@ -84,21 +80,9 @@
         <button class="tab" id="tab-signup" onclick="switchTab('signup')">Create account</button>
       </div>
 
-      <!-- SIGN IN -->
       <div class="tab-panel active" id="panel-signin">
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="signin-email" placeholder="you@example.com" />
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <div class="password-wrap">
-            <input type="password" id="signin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')signIn()" />
-            <button type="button" class="btn-eye" id="eye-signin" onclick="togglePassword('signin-password','eye-signin')" aria-label="Show password">
-              <svg id="eye-signin-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-        </div>
+        <div class="form-group"><label>Email</label><input type="email" id="signin-email" placeholder="you@example.com" /></div>
+        <div class="form-group"><label>Password</label><input type="password" id="signin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')signIn()" /></div>
         <button class="btn-submit" id="btn-signin" onclick="signIn()">Sign in</button>
         <div class="forgot" onclick="forgotPassword()">Forgot password?</div>
         <div class="divider">or</div>
@@ -109,25 +93,10 @@
         <div class="msg" id="signin-msg"></div>
       </div>
 
-      <!-- CREATE ACCOUNT -->
       <div class="tab-panel" id="panel-signup">
-        <div class="form-group">
-          <label>First name</label>
-          <input type="text" id="signup-name" placeholder="e.g. Zach" autocomplete="given-name" />
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="signup-email" placeholder="you@example.com" />
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <div class="password-wrap">
-            <input type="password" id="signup-password" placeholder="At least 6 characters" onkeydown="if(event.key==='Enter')signUp()" />
-            <button type="button" class="btn-eye" id="eye-signup" onclick="togglePassword('signup-password','eye-signup')" aria-label="Show password">
-              <svg id="eye-signup-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-        </div>
+        <div class="form-group"><label>First name</label><input type="text" id="signup-name" placeholder="e.g. Zach" autocomplete="given-name" /></div>
+        <div class="form-group"><label>Email</label><input type="email" id="signup-email" placeholder="you@example.com" /></div>
+        <div class="form-group"><label>Password</label><input type="password" id="signup-password" placeholder="At least 6 characters" onkeydown="if(event.key==='Enter')signUp()" /></div>
         <button class="btn-submit" id="btn-signup" onclick="signUp()">Create account</button>
         <div class="divider">or</div>
         <button class="btn-google" onclick="signInWithGoogle()">
@@ -153,6 +122,8 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    function trackEvent(name, params = {}) { if (typeof gtag !== 'undefined') gtag('event', name, params); }
+
     _sb.auth.getSession().then(({ data: { session } }) => { if (session) window.location.href = 'dashboard.html'; });
 
     function switchTab(tab) {
@@ -174,18 +145,6 @@
       el.textContent = msg;
     }
 
-    // ── SHOW/HIDE PASSWORD ──
-    function togglePassword(inputId, btnId) {
-      const input = document.getElementById(inputId);
-      const btn = document.getElementById(btnId);
-      const isHidden = input.type === 'password';
-      input.type = isHidden ? 'text' : 'password';
-      // Swap icon: open eye when visible, crossed eye when hidden
-      btn.innerHTML = isHidden
-        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
-        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-    }
-
     async function sendWelcomeEmail(email, name) {
       try {
         await fetch('/.netlify/functions/send-email', {
@@ -204,7 +163,10 @@
       btn.disabled = true; btn.textContent = 'Signing in...';
       const { error } = await _sb.auth.signInWithPassword({ email, password });
       if (error) { showMessage('signin-msg', error.message, 'error'); btn.disabled = false; btn.textContent = 'Sign in'; }
-      else window.location.href = 'dashboard.html';
+      else {
+        trackEvent('signin_completed', { method: 'email' });
+        window.location.href = 'dashboard.html';
+      }
     }
 
     async function signUp() {
@@ -220,6 +182,7 @@
         showMessage('signup-msg', error.message, 'error');
         btn.disabled = false; btn.textContent = 'Create account';
       } else {
+        trackEvent('signup_completed', { method: 'email' });
         sendWelcomeEmail(email, name);
         showToast();
         btn.textContent = 'Account created ✓';
@@ -228,6 +191,7 @@
     }
 
     async function signInWithGoogle() {
+      trackEvent('google_oauth_used');
       const { error } = await _sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/dashboard.html' } });
       if (error) showMessage('signin-msg', error.message, 'error');
     }
