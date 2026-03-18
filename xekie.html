@@ -19,7 +19,6 @@
   <link rel="apple-touch-icon" href="/icon-180x180.png">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
   <style>
@@ -72,41 +71,10 @@
     .btn-save{width:100%;padding:12px;background:transparent;color:var(--black);border:1.5px solid var(--border);border-radius:12px;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;margin-bottom:8px;}
     .btn-save:hover{border-color:var(--black);}
     .btn-save.saved{background:#EAF3DE;color:#3B6D11;border-color:#c0dd97;}
-    .btn-story{width:100%;padding:14px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:white;border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-bottom:8px;}
-    .btn-story:hover{opacity:0.9;transform:translateY(-1px);}
-    .btn-waitlist{width:100%;padding:16px;background:transparent;color:#1d4ed8;border:1.5px solid rgba(29,78,216,0.3);border-radius:12px;font-family:var(--font-body);font-size:16px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-bottom:12px;}
-    .btn-waitlist:hover{background:#eff6ff;border-color:#1d4ed8;transform:translateY(-1px);}
-    .btn-waitlist.joined{background:#eff6ff;color:#1d4ed8;border-color:#1d4ed8;cursor:default;}
-    .waitlist-banner{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid rgba(29,78,216,0.2);border-radius:12px;padding:20px 24px;margin-bottom:16px;text-align:center;}
-    .waitlist-banner-title{font-family:var(--font-display);font-size:18px;font-weight:700;color:#1d4ed8;margin-bottom:6px;}
-    .waitlist-banner-sub{font-size:14px;color:#3b82f6;font-weight:300;}
-    .waitlist-count{font-size:13px;color:#6b6b6b;text-align:center;margin-bottom:12px;}
     .meta-row{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mid);margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
     .cta-band{background:var(--black);border-radius:16px;padding:32px;text-align:center;margin-top:16px;}
     .cta-band h3{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--white);margin-bottom:8px;}
     .cta-band p{font-size:15px;color:#888;margin-bottom:20px;}
-    /* AI SUGGESTIONS */
-    .ai-suggest-section{margin-top:8px;margin-bottom:24px;}
-    .ai-suggest-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-    .ai-suggest-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);background:rgba(255,77,28,0.08);border:1px solid rgba(255,77,28,0.2);padding:4px 12px;border-radius:100px;}
-    .ai-badge-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:aiPulse 2s infinite;}
-    @keyframes aiPulse{0%,100%{opacity:1}50%{opacity:0.4}}
-    .ai-suggest-title{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--black);letter-spacing:-0.02em;}
-    .ai-suggest-sub{font-size:13px;color:var(--mid);margin-bottom:16px;}
-    .ai-cards{display:flex;flex-direction:column;gap:10px;}
-    .ai-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;display:block;transition:all 0.2s;}
-    .ai-card:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,77,28,0.08);}
-    .ai-card-reason{font-size:11px;font-weight:600;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
-    .ai-card-reason::before{content:'✦';font-size:9px;}
-    .ai-card-title{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:-0.01em;margin-bottom:4px;color:var(--black);}
-    .ai-card-meta{font-size:12px;color:var(--mid);display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-    .ai-card-budget{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--accent);}
-    .ai-loading{display:flex;align-items:center;gap:10px;padding:16px;color:var(--mid);font-size:14px;}
-    .ai-loading-dots{display:flex;gap:4px;}
-    .ai-loading-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:aiDot 1.2s infinite;}
-    .ai-loading-dot:nth-child(2){animation-delay:0.2s;}
-    .ai-loading-dot:nth-child(3){animation-delay:0.4s;}
-    @keyframes aiDot{0%,60%,100%{transform:scale(0.8);opacity:0.4}30%{transform:scale(1.2);opacity:1}}
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;padding:20px;}
     .modal-overlay.open{display:flex;}
     .modal{background:var(--white);border-radius:20px;padding:36px;max-width:480px;width:100%;position:relative;}
@@ -125,6 +93,12 @@
     .modal-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
     .btn-modal-submit{width:100%;padding:14px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
     .btn-modal-submit:hover{background:var(--accent);}
+    .qr-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;}
+    .qr-modal.open{display:flex;}
+    .qr-box{background:white;border-radius:20px;padding:36px;text-align:center;max-width:300px;width:100%;}
+    .qr-title{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:16px;}
+    .qr-sub{font-size:13px;color:var(--mid);margin-top:12px;}
+    .btn-qr-close{margin-top:16px;width:100%;padding:10px;background:var(--black);color:white;border:none;border-radius:10px;font-family:var(--font-body);cursor:pointer;}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
     .report-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center;padding:20px;}
@@ -145,16 +119,6 @@
     .report-msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;}
     .report-msg.error{background:#FCEBEB;color:#A32D2D;display:block;}
     .report-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
-    .story-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:400;align-items:center;justify-content:center;padding:20px;flex-direction:column;gap:16px;}
-    .story-modal.open{display:flex;}
-    .story-preview{border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);max-height:70vh;}
-    .story-preview canvas{display:block;max-height:70vh;width:auto;}
-    .story-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
-    .btn-download{padding:14px 28px;background:var(--accent);color:white;border:none;border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;}
-    .btn-download:hover{background:#e03a0a;transform:translateY(-1px);}
-    .btn-story-close{padding:14px 28px;background:rgba(255,255,255,0.15);color:white;border:1.5px solid rgba(255,255,255,0.3);border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s;}
-    .btn-story-close:hover{background:rgba(255,255,255,0.25);}
-    .story-hint{font-size:13px;color:rgba(255,255,255,0.6);text-align:center;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -184,7 +148,6 @@
   <div class="container">
     <a href="radar.html" class="back-link">← Back to Browse</a>
     <div id="content"><div class="loading">Loading XEKIE...</div></div>
-    <div id="ai-suggest-container"></div>
   </div>
 
   <div class="modal-overlay" id="modal-overlay">
@@ -211,16 +174,16 @@
     <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)">›</button>
   </div>
 
-  <div class="share-toast" id="share-toast">Link copied! 🔗</div>
-
-  <div class="story-modal" id="story-modal">
-    <div class="story-preview"><canvas id="story-canvas"></canvas></div>
-    <div class="story-actions">
-      <button class="btn-download" onclick="downloadStory()">⬇️ Download Story</button>
-      <button class="btn-story-close" onclick="closeStoryModal()">Close</button>
+  <div class="qr-modal" id="qr-modal" onclick="if(event.target===this)closeQR()">
+    <div class="qr-box">
+      <div class="qr-title">Scan to view XEKIE</div>
+      <div id="qr-code"></div>
+      <div class="qr-sub">Share this code anywhere — print it, text it, post it.</div>
+      <button class="btn-qr-close" onclick="closeQR()">Close</button>
     </div>
-    <div class="story-hint">Save and share to Instagram Stories, TikTok, Snapchat & more</div>
   </div>
+
+  <div class="share-toast" id="share-toast">Link copied! 🔗</div>
 
   <div class="report-modal" id="report-modal">
     <div class="report-box">
@@ -228,11 +191,11 @@
       <div class="report-title">🚩 Report this XEKIE</div>
       <div class="report-sub">Help keep XEKIE safe. We'll review every report.</div>
       <div class="report-reasons">
-        <div class="report-reason" onclick="selectReason(this,'Prohibited item')"><label>🚫 Prohibited item</label></div>
-        <div class="report-reason" onclick="selectReason(this,'Spam or fake listing')"><label>📢 Spam or fake listing</label></div>
-        <div class="report-reason" onclick="selectReason(this,'Scam or fraud')"><label>💸 Scam or fraud</label></div>
-        <div class="report-reason" onclick="selectReason(this,'Offensive content')"><label>⚠️ Offensive content</label></div>
-        <div class="report-reason" onclick="selectReason(this,'Other')"><label>📝 Other</label></div>
+        <div class="report-reason" onclick="selectReason(this, 'Prohibited item')"><label>🚫 Prohibited item</label></div>
+        <div class="report-reason" onclick="selectReason(this, 'Spam or fake listing')"><label>📢 Spam or fake listing</label></div>
+        <div class="report-reason" onclick="selectReason(this, 'Scam or fraud')"><label>💸 Scam or fraud</label></div>
+        <div class="report-reason" onclick="selectReason(this, 'Offensive content')"><label>⚠️ Offensive content</label></div>
+        <div class="report-reason" onclick="selectReason(this, 'Other')"><label>📝 Other</label></div>
       </div>
       <textarea class="report-details" id="report-details" placeholder="Any additional details? (optional)"></textarea>
       <div class="report-msg" id="report-msg"></div>
@@ -261,386 +224,235 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     const BETA_CUTOFF = new Date('2026-06-01');
-    const VIEW_MILESTONES = [5,10,25,50,100];
     let currentXekie = null, currentUser = null;
     let lightboxPhotos = [], lightboxIndex = 0;
-    let aiLoaded = false;
     const params = new URLSearchParams(window.location.search);
     const xekieId = params.get('id');
 
+    function trackEvent(name, params = {}) { if (typeof gtag !== 'undefined') gtag('event', name, params); }
+
     function formatBudget(x) {
-      if(x.budget_min&&x.budget_max)return'$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
-      if(x.budget_min)return'$'+Number(x.budget_min).toLocaleString()+'+';
-      if(x.budget_max)return'Up to $'+Number(x.budget_max).toLocaleString();
-      if(x.budget)return'$'+Number(x.budget).toLocaleString();
-      return'$—';
+      if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
+      if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
+      if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
+      if (x.budget) return '$'+Number(x.budget).toLocaleString();
+      return '$—';
     }
 
     function timeAgo(ts) {
-      const s=Math.floor((new Date()-new Date(ts))/1000);
-      for(const[l,sec]of[["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]){const c=Math.floor(s/sec);if(c>=1)return c+" "+l+(c>1?"s":"")+" ago";}
-      return"just now";
-    }
-
-    async function incrementViewAndNotify(xekie) {
-      if(currentUser&&currentUser.id===xekie.user_id)return;
-      const newCount=(xekie.view_count||0)+1;
-      const alreadyNotified=xekie.view_notified_milestones||[];
-      const hitMilestone=VIEW_MILESTONES.find(m=>newCount>=m&&!alreadyNotified.includes(m));
-      await _sb.from('xekies').update({view_count:newCount}).eq('id',xekie.id);
-      if(hitMilestone){
-        const newMilestones=[...alreadyNotified,hitMilestone];
-        await _sb.from('xekies').update({view_notified_milestones:newMilestones}).eq('id',xekie.id);
-        fetch('/.netlify/functions/send-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'view_milestone',to:xekie.owner_email,data:{name:xekie.owner_name,xekieTitle:xekie.title,xekieId:xekie.id,viewCount:newCount,milestone:hitMilestone}})}).catch(()=>{});
+      const s = Math.floor((new Date() - new Date(ts)) / 1000);
+      for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
+        const c = Math.floor(s/sec); if (c>=1) return c+" "+l+(c>1?"s":"")+" ago";
       }
+      return "just now";
     }
-
-    // ── AI SUGGESTIONS ──
-    async function loadAISuggestions(xekie, offerCount) {
-      if(aiLoaded) return;
-      aiLoaded = true;
-      const container = document.getElementById('ai-suggest-container');
-      if(!container) return;
-      const shouldShow = offerCount === 0 || xekie.is_fulfilled || (xekie.expires_at && new Date(xekie.expires_at) < new Date());
-      if(!shouldShow) return;
-      const label = xekie.is_fulfilled
-        ? "This was fulfilled — but others are looking for similar things"
-        : "No offers yet — but you might also like these";
-      container.innerHTML = `
-        <div class="ai-suggest-section">
-          <div class="ai-suggest-header">
-            <div class="ai-suggest-badge"><div class="ai-badge-dot"></div> AI Powered</div>
-          </div>
-          <div class="ai-suggest-title">You might also like...</div>
-          <div class="ai-suggest-sub">${label}</div>
-          <div class="ai-cards" id="ai-cards">
-            <div class="ai-loading">
-              <div class="ai-loading-dots">
-                <div class="ai-loading-dot"></div>
-                <div class="ai-loading-dot"></div>
-                <div class="ai-loading-dot"></div>
-              </div>
-              Finding related XEKIEs...
-            </div>
-          </div>
-        </div>`;
-      try {
-        const res = await fetch('/.netlify/functions/ai-suggest', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({xekieId:xekie.id,title:xekie.title,description:xekie.description||'',category:xekie.category||''})
-        });
-        const data = await res.json();
-        const suggestions = data.suggestions || [];
-        const cardsEl = document.getElementById('ai-cards');
-        if(!cardsEl) return;
-        if(!suggestions.length){container.innerHTML='';return;}
-        cardsEl.innerHTML = suggestions.map(s=>`
-          <a href="xekie.html?id=${s.id}" class="ai-card">
-            <div class="ai-card-reason">${s.reason}</div>
-            <div class="ai-card-title">${s.title}</div>
-            <div class="ai-card-meta">
-              ${s.budget?`<span class="ai-card-budget">${s.budget}</span>`:''}
-              ${s.category?`<span>📦 ${s.category}</span>`:''}
-              ${s.location?`<span>📍 ${s.location}</span>`:''}
-            </div>
-          </a>`).join('');
-      } catch(e){container.innerHTML='';}
-    }
-
-    // ── WAITLIST ──
-    async function joinWaitlist() {
-      if(!currentUser){window.location.href='login.html';return;}
-      const btn=document.getElementById('btn-waitlist');
-      btn.disabled=true;btn.textContent='Creating your XEKIE...';
-      const x=currentXekie;
-      const newXekie={title:x.title,description:x.description||null,budget:x.budget||null,budget_min:x.budget_min||null,budget_max:x.budget_max||null,is_flexible:x.is_flexible||false,location:x.location||null,category:x.category||null,user_id:currentUser.id,view_count:0,is_fulfilled:false,expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString()};
-      const{data:created,error}=await _sb.from('xekies').insert(newXekie).select().single();
-      if(error){btn.disabled=false;btn.textContent='🙋 I want this too';showToast('Something went wrong — please try again.');return;}
-      if(created){fetch('/.netlify/functions/notify-sellers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(created)}).catch(()=>{});}
-      btn.classList.add('joined');btn.textContent='✓ Your XEKIE is live!';btn.disabled=false;
-      const countEl=document.getElementById('waitlist-count');
-      if(countEl){const current=parseInt(countEl.dataset.count||'0')+1;countEl.dataset.count=current;countEl.textContent=`${current} ${current===1?'person':'people'} looking for this`;}
-      showToast('🎉 Your XEKIE is live — sellers will find you!');
-      setTimeout(()=>{window.location.href=`xekie.html?id=${created.id}`;},2000);
-    }
-
-    // ── STORY CARD ──
-    async function generateStoryCard(xekie) {
-      const canvas=document.getElementById('story-canvas');
-      const ctx=canvas.getContext('2d');
-      const W=1080,H=1920;
-      canvas.width=W;canvas.height=H;
-      const grad=ctx.createLinearGradient(0,0,0,H);
-      grad.addColorStop(0,'#0a0a0a');grad.addColorStop(0.5,'#1a0a05');grad.addColorStop(1,'#0a0a0a');
-      ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-      const orbGrad=ctx.createRadialGradient(W*0.8,H*0.2,0,W*0.8,H*0.2,500);
-      orbGrad.addColorStop(0,'rgba(255,77,28,0.25)');orbGrad.addColorStop(1,'rgba(255,77,28,0)');
-      ctx.fillStyle=orbGrad;ctx.fillRect(0,0,W,H);
-      const orbGrad2=ctx.createRadialGradient(W*0.2,H*0.8,0,W*0.2,H*0.8,400);
-      orbGrad2.addColorStop(0,'rgba(255,140,0,0.15)');orbGrad2.addColorStop(1,'rgba(255,140,0,0)');
-      ctx.fillStyle=orbGrad2;ctx.fillRect(0,0,W,H);
-      ctx.font='900 72px Arial';ctx.fillStyle='#fafaf8';ctx.textAlign='center';ctx.fillText('XEKIE',W/2,140);
-      ctx.font='300 28px Arial';ctx.fillStyle='rgba(255,255,255,0.4)';ctx.fillText('TRADE DIFFERENT',W/2,185);
-      ctx.strokeStyle='rgba(255,77,28,0.4)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(80,220);ctx.lineTo(W-80,220);ctx.stroke();
-      ctx.font='600 26px Arial';ctx.fillStyle='#ff4d1c';ctx.textAlign='left';ctx.fillText('LOOKING FOR',80,300);
-      ctx.font='800 72px Arial';ctx.fillStyle='#fafaf8';
-      const titleWords=xekie.title.split(' ');let titleLines=[],titleLine='';
-      for(const word of titleWords){const test=titleLine+(titleLine?' ':'')+word;if(ctx.measureText(test).width>W-160){titleLines.push(titleLine);titleLine=word;}else titleLine=test;}
-      if(titleLine)titleLines.push(titleLine);
-      titleLines.slice(0,3).forEach((line,i)=>{ctx.fillText(line,80,390+i*88);});
-      const titleBottom=390+Math.min(titleLines.length,3)*88;
-      let descBottom=titleBottom+40;
-      if(xekie.description){
-        ctx.font='300 36px Arial';ctx.fillStyle='rgba(255,255,255,0.6)';
-        const descWords=xekie.description.split(' ');let descLines=[],descLine='';
-        for(const word of descWords){const test=descLine+(descLine?' ':'')+word;if(ctx.measureText(test).width>W-160){descLines.push(descLine);descLine=word;}else descLine=test;if(descLines.length>=2)break;}
-        if(descLine&&descLines.length<2)descLines.push(descLine);
-        descLines.slice(0,2).forEach((line,i)=>{ctx.fillText(line,80,descBottom+i*50);});
-        descBottom+=descLines.length*50+20;
-      }
-      const cardY=Math.max(descBottom+40,titleBottom+140);
-      const cardH=140,cardGap=20,cardW=(W-160-cardGap)/2;
-      roundRect(ctx,80,cardY,cardW,cardH,20);ctx.fillStyle='rgba(255,77,28,0.15)';ctx.fill();ctx.strokeStyle='rgba(255,77,28,0.4)';ctx.lineWidth=1.5;ctx.stroke();
-      ctx.font='500 24px Arial';ctx.fillStyle='rgba(255,255,255,0.5)';ctx.textAlign='left';ctx.fillText('BUDGET',80+24,cardY+44);
-      ctx.font='800 42px Arial';ctx.fillStyle='#ff4d1c';ctx.fillText(formatBudget(xekie),80+24,cardY+100);
-      if(xekie.location){
-        roundRect(ctx,80+cardW+cardGap,cardY,cardW,cardH,20);ctx.fillStyle='rgba(255,255,255,0.06)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=1.5;ctx.stroke();
-        ctx.font='500 24px Arial';ctx.fillStyle='rgba(255,255,255,0.5)';ctx.fillText('LOCATION',80+cardW+cardGap+24,cardY+44);
-        ctx.font='700 36px Arial';ctx.fillStyle='#fafaf8';
-        const locText=xekie.location.length>16?xekie.location.slice(0,16)+'…':xekie.location;
-        ctx.fillText(locText,80+cardW+cardGap+24,cardY+100);
-      }
-      if(xekie.category){
-        const pillY=cardY+cardH+32;ctx.font='600 28px Arial';ctx.fillStyle='#ff4d1c';ctx.textAlign='center';
-        const pillW=ctx.measureText(xekie.category).width+60;
-        roundRect(ctx,W/2-pillW/2,pillY-36,pillW,56,28);ctx.fillStyle='rgba(255,77,28,0.15)';ctx.fill();ctx.strokeStyle='rgba(255,77,28,0.5)';ctx.lineWidth=1.5;ctx.stroke();
-        ctx.fillStyle='#ff4d1c';ctx.fillText(xekie.category,W/2,pillY+8);
-      }
-      const ctaY=H-420;
-      ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(80,ctaY);ctx.lineTo(W-80,ctaY);ctx.stroke();
-      ctx.font='700 40px Arial';ctx.fillStyle='#fafaf8';ctx.textAlign='center';ctx.fillText('Can you help?',W/2,ctaY+70);
-      ctx.font='300 32px Arial';ctx.fillStyle='rgba(255,255,255,0.5)';ctx.fillText('Respond with your best offer at',W/2,ctaY+120);
-      roundRect(ctx,W/2-240,ctaY+148,480,72,36);ctx.fillStyle='#ff4d1c';ctx.fill();
-      ctx.font='700 36px Arial';ctx.fillStyle='#ffffff';ctx.textAlign='center';ctx.fillText('xekie.com',W/2,ctaY+195);
-      await drawQRCode(ctx,`https://xekie.com/xekie.html?id=${xekie.id}`,W/2-100,ctaY+250,200);
-      ctx.font='300 26px Arial';ctx.fillStyle='rgba(255,255,255,0.4)';ctx.textAlign='center';ctx.fillText('Scan to respond',W/2,ctaY+490);
-    }
-
-    function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
-
-    async function drawQRCode(ctx,url,x,y,size){
-      try{
-        const qrDiv=document.createElement('div');qrDiv.style.position='absolute';qrDiv.style.left='-9999px';document.body.appendChild(qrDiv);
-        new QRCode(qrDiv,{text:url,width:size,height:size,colorDark:'#0a0a0a',colorLight:'#fafaf8'});
-        await new Promise(r=>setTimeout(r,200));
-        const qrImg=qrDiv.querySelector('img')||qrDiv.querySelector('canvas');
-        if(qrImg){if(qrImg.tagName==='IMG'){await new Promise((resolve)=>{const img=new Image();img.onload=()=>{ctx.drawImage(img,x,y,size,size);resolve();};img.src=qrImg.src;});}else{ctx.drawImage(qrImg,x,y,size,size);}}
-        document.body.removeChild(qrDiv);
-      }catch(e){roundRect(ctx,x,y,size,size,12);ctx.fillStyle='#fafaf8';ctx.fill();ctx.font='500 20px Arial';ctx.fillStyle='#0a0a0a';ctx.textAlign='center';ctx.fillText('xekie.com',x+size/2,y+size/2);}
-    }
-
-    async function openStoryModal(){if(!currentXekie)return;document.getElementById('story-modal').classList.add('open');await generateStoryCard(currentXekie);}
-    function closeStoryModal(){document.getElementById('story-modal').classList.remove('open');}
-    function downloadStory(){const canvas=document.getElementById('story-canvas');const link=document.createElement('a');link.download=`xekie-story-${currentXekie?.id?.slice(0,8)||'share'}.png`;link.href=canvas.toDataURL('image/png');link.click();showToast('Story card downloaded! 📸');}
 
     async function loadXekie() {
-      if(!xekieId){document.getElementById('content').innerHTML='<div class="loading">No XEKIE specified.</div>';return;}
-      const{data:x,error}=await _sb.from('xekies').select('*').eq('id',xekieId).single();
-      if(error||!x){document.getElementById('content').innerHTML='<div class="loading">XEKIE not found.</div>';return;}
-      currentXekie=x;
+      if (!xekieId) { document.getElementById('content').innerHTML = '<div class="loading">No XEKIE specified.</div>'; return; }
+      const { data: x, error } = await _sb.from('xekies').select('*').eq('id', xekieId).single();
+      if (error || !x) { document.getElementById('content').innerHTML = '<div class="loading">XEKIE not found.</div>'; return; }
+      currentXekie = x;
 
-      let userMetaData=null;
-      try{const r=await _sb.from('user_profiles').select('display_name').eq('user_id',x.user_id).single();userMetaData=r.data;}catch(e){}
-      x.owner_name=userMetaData?.display_name||null;
+      trackEvent('xekie_viewed', { xekie_id: xekieId, category: x.category || 'uncategorized' });
 
-      let waitlistCount=0;
-      try{const r=await _sb.from('xekies').select('*',{count:'exact',head:true}).eq('title',x.title).eq('is_fulfilled',false).neq('id',x.id);waitlistCount=r.count||0;}catch(e){}
+      document.title = `XEKIE — ${x.title}`;
+      document.querySelector('meta[property="og:title"]').setAttribute('content', `${x.title} — XEKIE`);
+      document.querySelector('meta[property="og:description"]').setAttribute('content', x.description || `Budget: ${formatBudget(x)}. Respond with your best offer on XEKIE.`);
+      document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
+      document.querySelector('meta[name="twitter:title"]').setAttribute('content', `${x.title} — XEKIE`);
+      document.querySelector('meta[name="twitter:description"]').setAttribute('content', x.description || `Budget: ${formatBudget(x)}`);
+      const ogParams = new URLSearchParams({ title: x.title, budget: formatBudget(x), location: x.location || '', category: x.category || '' });
+      const ogImg = `https://xekie.com/.netlify/functions/og-image?${ogParams}`;
+      document.querySelector('meta[property="og:image"]').setAttribute('content', ogImg);
+      document.querySelector('meta[name="twitter:image"]').setAttribute('content', ogImg);
 
-      let offerCount=0;
-      try{const r=await _sb.from('offers').select('*',{count:'exact',head:true}).eq('xekie_id',x.id);offerCount=r.count||0;}catch(e){}
+      const isExpired = x.expires_at && new Date(x.expires_at) < new Date();
+      const isFulfilled = x.is_fulfilled;
+      const isEarly = new Date(x.created_at) < BETA_CUTOFF;
+      const canRespond = !isFulfilled && !isExpired;
 
-      document.title=`XEKIE — ${x.title}`;
-      document.querySelector('meta[property="og:title"]').setAttribute('content',`${x.title} — XEKIE`);
-      document.querySelector('meta[property="og:description"]').setAttribute('content',x.description||`Budget: ${formatBudget(x)}. Respond with your best offer on XEKIE.`);
-      document.querySelector('meta[property="og:url"]').setAttribute('content',window.location.href);
-      document.querySelector('meta[name="twitter:title"]').setAttribute('content',`${x.title} — XEKIE`);
-      document.querySelector('meta[name="twitter:description"]').setAttribute('content',x.description||`Budget: ${formatBudget(x)}`);
-      const ogParams=new URLSearchParams({title:x.title,budget:formatBudget(x),location:x.location||'',category:x.category||''});
-      const ogImg=`https://xekie.com/.netlify/functions/og-image?${ogParams}`;
-      document.querySelector('meta[property="og:image"]').setAttribute('content',ogImg);
-      document.querySelector('meta[name="twitter:image"]').setAttribute('content',ogImg);
+      let statusBadge = '';
+      if (isFulfilled) statusBadge = '<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
+      else if (isExpired) statusBadge = '<span class="status-badge status-expired">⏰ Expired</span>';
 
-      const isExpired=x.expires_at&&new Date(x.expires_at)<new Date();
-      const isFulfilled=x.is_fulfilled;
-      const isEarly=new Date(x.created_at)<BETA_CUTOFF;
-      const canRespond=!isFulfilled&&!isExpired;
-      const isOwn=currentUser&&currentUser.id===x.user_id;
-
-      let statusBadge='';
-      if(isFulfilled)statusBadge='<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
-      else if(isExpired)statusBadge='<span class="status-badge status-expired">⏰ Expired</span>';
-
-      let expiryDisplay='';
-      if(x.expires_at&&!isExpired&&!isFulfilled){
-        const hoursLeft=Math.floor((new Date(x.expires_at)-new Date())/3600000);
-        if(hoursLeft<24)expiryDisplay=`<span>⚠️ Expires in ${hoursLeft}h</span>`;
-        else expiryDisplay=`<span>⏱ ${Math.floor(hoursLeft/24)} days left</span>`;
+      let expiryDisplay = '';
+      if (x.expires_at && !isExpired && !isFulfilled) {
+        const hoursLeft = Math.floor((new Date(x.expires_at) - new Date()) / 3600000);
+        if (hoursLeft < 24) expiryDisplay = `<span>⚠️ Expires in ${hoursLeft}h</span>`;
+        else expiryDisplay = `<span>⏱ ${Math.floor(hoursLeft/24)} days left</span>`;
       }
 
-      let photoGallery='';
-      if(x.photos&&x.photos.length){
-        lightboxPhotos=x.photos;
-        const cls=x.photos.length===1?'single':x.photos.length===3?'three':'';
-        photoGallery=`<div class="photo-gallery ${cls}">${x.photos.map((url,i)=>`<div class="photo-item" onclick="openLightbox(${i})"><img src="${url}" alt="Photo ${i+1}" loading="lazy" /></div>`).join('')}</div>`;
+      let photoGallery = '';
+      if (x.photos && x.photos.length) {
+        const cls = x.photos.length === 1 ? 'single' : x.photos.length === 3 ? 'three' : '';
+        photoGallery = `<div class="photo-gallery ${cls}">${x.photos.map((url, i) => `<div class="photo-item" onclick="openLightbox(${i})"><img src="${url}" alt="Photo ${i+1}" loading="lazy" /></div>`).join('')}</div>`;
       }
 
-      let isSaved=false;
-      try{const r=await _sb.from('saved_xekies').select('id').eq('xekie_id',xekieId).eq('user_id',currentUser?.id||'').limit(1);isSaved=(r.data||[]).length>0;}catch(e){}
-
-      let hasResponded=false;
-      try{const r=await _sb.from('offers').select('id').eq('xekie_id',xekieId).eq('seller_id',currentUser?.id||'').limit(1);hasResponded=(r.data||[]).length>0;}catch(e){}
-
-      let fulfilledSection='';
-      if(isFulfilled&&!isOwn){
-        const wCount=waitlistCount||0;
-        fulfilledSection=`
-          <div class="waitlist-banner">
-            <div class="waitlist-banner-title">✓ This XEKIE has been fulfilled!</div>
-            <div class="waitlist-banner-sub">But the demand is real — want one too?</div>
-          </div>
-          ${wCount>0?`<div class="waitlist-count" id="waitlist-count" data-count="${wCount}">🙋 ${wCount} ${wCount===1?'person is':'people are'} also looking for this</div>`:`<div class="waitlist-count" id="waitlist-count" data-count="0"></div>`}
-          <button class="btn-waitlist" id="btn-waitlist" onclick="joinWaitlist()">🙋 I want this too — post my own XEKIE</button>`;
-      }else if(isFulfilled&&isOwn){
-        fulfilledSection='<div style="text-align:center;padding:16px;color:#3B6D11;background:#EAF3DE;border-radius:12px;font-size:15px;font-weight:500;">✓ You marked this XEKIE as fulfilled. Deal done! 🎉</div>';
-      }else if(isExpired){
-        fulfilledSection='<div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">⏰ This XEKIE has expired.</div>';
-      }
-
-      document.getElementById('content').innerHTML=`
+      document.getElementById('content').innerHTML = `
         <div class="xekie-card">
           <div class="card-badge-row">
-            ${isEarly?'<span class="early-badge">⚡ Early Adopter</span>':''}
+            ${isEarly ? '<span class="early-badge">⚡ Early Adopter</span>' : ''}
             ${statusBadge}
-            ${x.category?`<span class="category-pill">${x.category}</span>`:''}
+            ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
           </div>
           <div class="xekie-title">${x.title}</div>
-          ${x.description?`<div class="xekie-desc">${x.description}</div>`:''}
+          ${x.description ? `<div class="xekie-desc">${x.description}</div>` : ''}
           ${photoGallery}
           <div class="detail-grid">
             <div class="detail-item">
               <div class="detail-label">Budget</div>
-              <div class="detail-value accent">${formatBudget(x)}${x.is_flexible?' <span style="font-size:12px;color:var(--mid);font-weight:400;">(flexible)</span>':''}</div>
+              <div class="detail-value accent">${formatBudget(x)}${x.is_flexible ? ' <span style="font-size:12px;color:var(--mid);font-weight:400;">(flexible)</span>' : ''}</div>
             </div>
             <div class="detail-item">
               <div class="detail-label">Location</div>
-              <div class="detail-value">${x.location||'Not specified'}</div>
+              <div class="detail-value">${x.location || 'Not specified'}</div>
             </div>
           </div>
-          ${canRespond?`
-            ${hasResponded?`<div style="text-align:center;padding:14px;background:#EAF3DE;border-radius:12px;color:#3B6D11;font-size:15px;font-weight:500;margin-bottom:12px;">✓ You've already responded to this XEKIE</div>`:''}
-            <button class="btn-respond-big" onclick="openModal()" ${hasResponded?'style="background:#666;"':''}>
-              ${hasResponded?'Send another offer →':'Respond with an offer →'}
-            </button>`:fulfilledSection}
-          <button class="btn-save ${isSaved?'saved':''}" id="btn-save" onclick="toggleSave()">
-            ${isSaved?'🔖 Saved':'🔖 Save this XEKIE'}
-          </button>
-          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+          ${canRespond ? `<button class="btn-respond-big" onclick="openModal()">Respond with an offer →</button>` : `<div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">${isFulfilled ? '✓ This XEKIE has been fulfilled.' : '⏰ This XEKIE has expired.'}</div>`}
+          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareThis()">🔗 Copy link</button>
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareToSMS()">💬 iMessage</button>
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareToFacebook()">📘 Facebook</button>
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareToX()">𝕏 Post</button>
           </div>
-          <button class="btn-story" onclick="openStoryModal()">📸 Create Story Card — Share to Instagram & TikTok</button>
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button class="btn-save" id="btn-save" onclick="toggleSave()" style="flex:1;">🔖 Save XEKIE</button>
+            <button class="btn-share-big" onclick="showQR()" style="flex:1;">📲 QR Code</button>
+            <button class="btn-share-big" onclick="openReport()" style="flex:1;color:#ef4444;border-color:rgba(239,68,68,0.3);">🚩 Report</button>
+          </div>
           <div class="meta-row">
             <span>👁 ${x.view_count||0} views</span>
             <span>⏱ Posted ${timeAgo(x.created_at)}</span>
             ${expiryDisplay}
-            <span style="margin-left:auto;cursor:pointer;color:var(--mid);" onclick="openReport()">🚩 Report</span>
           </div>
         </div>
-        ${!currentUser?`
         <div class="cta-band">
-          <h3>Have what they're looking for?</h3>
-          <p>Sign in to respond with your offer and connect with the buyer directly.</p>
-          <a href="login.html" class="btn-nav primary" style="display:inline-block;font-size:15px;padding:12px 28px;">Sign in to respond →</a>
-        </div>`:''}`;
+          <h3>Just XEKIE it.</h3>
+          <p>Can't find what you're looking for? XEKIE it — tell sellers what you want and let offers roll in.</p>
+          <a href="request.html" class="btn-nav primary" style="display:inline-block;font-size:15px;padding:12px 28px;">XEKIE it →</a>
+        </div>`;
 
-      incrementViewAndNotify(x);
-      // AI suggestions: wait 500ms after DOM settles, only run once
-      setTimeout(()=>loadAISuggestions(x,offerCount), 500);
+      _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', xekieId).then(() => {});
+      checkSaved();
     }
 
-    function openLightbox(i){lightboxIndex=i;document.getElementById('lightbox-img').src=lightboxPhotos[i];document.getElementById('photo-lightbox').classList.add('open');}
-    function closeLightbox(){document.getElementById('photo-lightbox').classList.remove('open');}
-    function lightboxNav(dir){lightboxIndex=(lightboxIndex+dir+lightboxPhotos.length)%lightboxPhotos.length;document.getElementById('lightbox-img').src=lightboxPhotos[lightboxIndex];}
+    function openLightbox(i) { lightboxPhotos = currentXekie?.photos || []; lightboxIndex = i; document.getElementById('lightbox-img').src = lightboxPhotos[i]; document.getElementById('photo-lightbox').classList.add('open'); }
+    function closeLightbox() { document.getElementById('photo-lightbox').classList.remove('open'); }
+    function lightboxNav(dir) { lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length; document.getElementById('lightbox-img').src = lightboxPhotos[lightboxIndex]; }
+    document.getElementById('photo-lightbox').addEventListener('click', e => { if (e.target === document.getElementById('photo-lightbox')) closeLightbox(); });
 
-    async function toggleSave(){
-      if(!currentUser){window.location.href='login.html';return;}
-      const btn=document.getElementById('btn-save');
-      const isSaved=btn.classList.contains('saved');
-      if(isSaved){await _sb.from('saved_xekies').delete().eq('xekie_id',xekieId).eq('user_id',currentUser.id);btn.classList.remove('saved');btn.textContent='🔖 Save this XEKIE';}
-      else{await _sb.from('saved_xekies').insert({xekie_id:xekieId,user_id:currentUser.id});btn.classList.add('saved');btn.textContent='🔖 Saved';}
-    }
-
-    function openModal(){
-      if(!currentUser){window.location.href='login.html';return;}
-      document.getElementById('modal-message').value='';
-      document.getElementById('modal-price').value='';
-      document.getElementById('modal-msg').className='modal-msg';
-      document.getElementById('modal-msg').style.display='none';
-      document.getElementById('modal-submit').disabled=false;
-      document.getElementById('modal-submit').textContent='Send & open chat →';
+    function openModal() {
+      if (!currentUser) { window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href); return; }
+      trackEvent('respond_clicked', { xekie_id: xekieId, category: currentXekie?.category || 'uncategorized' });
+      document.getElementById('modal-message').value = '';
+      document.getElementById('modal-price').value = '';
+      document.getElementById('modal-msg').className = 'modal-msg';
+      document.getElementById('modal-msg').style.display = 'none';
+      document.getElementById('modal-submit').disabled = false;
+      document.getElementById('modal-submit').textContent = 'Send & open chat →';
       document.getElementById('modal-overlay').classList.add('open');
     }
-    function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+    function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 
-    async function submitResponse(){
-      const message=document.getElementById('modal-message').value.trim();
-      const price=document.getElementById('modal-price').value;
-      const btn=document.getElementById('modal-submit');
-      const msgEl=document.getElementById('modal-msg');
-      if(!message){msgEl.className='modal-msg error';msgEl.style.display='block';msgEl.textContent='Please write a message to the buyer.';return;}
-      btn.disabled=true;btn.textContent='Sending...';
-      const{error}=await _sb.from('offers').insert({xekie_id:xekieId,seller_id:currentUser.id,message,price:price?parseInt(price):null});
-      if(error){msgEl.className='modal-msg error';msgEl.style.display='block';msgEl.textContent='Error: '+error.message;btn.disabled=false;btn.textContent='Send & open chat →';return;}
-      try{await fetch('/.netlify/functions/send-push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:currentXekie.user_id,title:'New offer on your XEKIE!',body:`Someone responded to "${currentXekie.title}"`})});}catch(e){}
-      msgEl.className='modal-msg success';msgEl.style.display='block';
-      msgEl.textContent='Offer sent! Opening chat...';
+    async function submitResponse() {
+      const message = document.getElementById('modal-message').value.trim();
+      const price = document.getElementById('modal-price').value;
+      const btn = document.getElementById('modal-submit');
+      const msgEl = document.getElementById('modal-msg');
+      if (!message) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Please write a message to the buyer.'; return; }
+      btn.disabled = true; btn.textContent = 'Sending...';
+      const { error } = await _sb.from('offers').insert({ xekie_id: xekieId, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
+      if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send & open chat →'; return; }
+      trackEvent('offer_submitted', { xekie_id: xekieId, has_price: !!price });
+      const buyerId = currentXekie?.user_id;
+      if (buyerId && buyerId !== currentUser.id) {
+        const firstMsg = price ? `${message}\n\n💰 Asking price: $${Number(price).toLocaleString()}` : message;
+        await _sb.from('messages').insert({ xekie_id: xekieId, sender_id: currentUser.id, recipient_id: buyerId, content: firstMsg });
+      }
+      msgEl.className='modal-msg success'; msgEl.style.display='block';
+      msgEl.textContent='Sent! Opening your conversation...';
       btn.textContent='Sent ✓';
-      setTimeout(()=>{window.location.href=`messages.html?xekie=${xekieId}&other=${currentUser.id}`;},1200);
+      if (buyerId) setTimeout(() => { window.location.href = `messages.html?xekie=${xekieId}&other=${buyerId}`; }, 1200);
+      else setTimeout(closeModal, 2000);
     }
 
-    function shareThis(){const url=window.location.href;if(navigator.share){navigator.share({title:currentXekie?.title,url}).catch(()=>{});}else{navigator.clipboard.writeText(url).then(()=>showToast('Link copied! 🔗'));}}
-    function shareToSMS(){window.open(`sms:?body=${encodeURIComponent('Check this out on XEKIE: '+window.location.href)}`);}
-    function shareToFacebook(){window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`,'_blank');}
-    function shareToX(){window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent((currentXekie?.title||'Check this XEKIE')+' — '+window.location.href)}`,'_blank');}
-    function showToast(msg){const t=document.getElementById('share-toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-
-    let selectedReportReason='';
-    function selectReason(el,reason){document.querySelectorAll('.report-reason').forEach(r=>r.classList.remove('selected'));el.classList.add('selected');selectedReportReason=reason;}
-    function openReport(){document.getElementById('report-modal').classList.add('open');}
-    function closeReport(){document.getElementById('report-modal').classList.remove('open');}
-    async function submitReport(){
-      if(!selectedReportReason){const m=document.getElementById('report-msg');m.className='report-msg error';m.style.display='block';m.textContent='Please select a reason.';return;}
-      const details=document.getElementById('report-details').value.trim();
-      const btn=document.getElementById('btn-report-submit');
-      btn.disabled=true;btn.textContent='Submitting...';
-      const{error}=await _sb.from('reports').insert({xekie_id:xekieId,reason:selectedReportReason,details:details||null,reporter_id:currentUser?.id||null});
-      if(!error){
-        try{await fetch('/.netlify/functions/send-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'report',to:'zach@xekie.com',data:{xekieId,xekieTitle:currentXekie?.title,reason:selectedReportReason,details,reporterEmail:currentUser?.email}})});}catch(e){}
-        const m=document.getElementById('report-msg');m.className='report-msg success';m.style.display='block';m.textContent='Report submitted. Thank you for keeping XEKIE safe.';
-        btn.textContent='Submitted ✓';setTimeout(closeReport,2000);
-      }else{btn.disabled=false;btn.textContent='Submit report';}
+    function shareThis() {
+      trackEvent('xekie_shared', { method: 'link', xekie_id: xekieId });
+      if (navigator.share) { navigator.share({ title: `XEKIE — ${currentXekie?.title}`, url: window.location.href }).catch(() => {}); }
+      else { navigator.clipboard.writeText(window.location.href).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
+    }
+    function shareToSMS() {
+      trackEvent('xekie_shared', { method: 'sms', xekie_id: xekieId });
+      window.open(`sms:&body=${encodeURIComponent((currentXekie?.title || 'Check this XEKIE') + ' — ' + window.location.href)}`);
+    }
+    function shareToFacebook() {
+      trackEvent('xekie_shared', { method: 'facebook', xekie_id: xekieId });
+      window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), '_blank');
+    }
+    function shareToX() {
+      trackEvent('xekie_shared', { method: 'x', xekie_id: xekieId });
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent((currentXekie?.title || 'Check this XEKIE') + ' — respond with your best offer on XEKIE') + '&url=' + encodeURIComponent(window.location.href), '_blank');
     }
 
-    document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
-    document.getElementById('report-modal').addEventListener('click',e=>{if(e.target===document.getElementById('report-modal'))closeReport();});
-    document.getElementById('photo-lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('photo-lightbox'))closeLightbox();});
-    document.getElementById('story-modal').addEventListener('click',e=>{if(e.target===document.getElementById('story-modal'))closeStoryModal();});
+    function checkSaved() {
+      const saved = JSON.parse(localStorage.getItem('savedXekies') || '[]');
+      if (xekieId && saved.includes(xekieId)) { const btn = document.getElementById('btn-save'); if (btn) { btn.textContent = '✓ Saved'; btn.classList.add('saved'); } }
+    }
+    function toggleSave() {
+      if (!xekieId) return;
+      let saved = JSON.parse(localStorage.getItem('savedXekies') || '[]');
+      const btn = document.getElementById('btn-save');
+      if (saved.includes(xekieId)) {
+        saved = saved.filter(id => id !== xekieId); btn.textContent = '🔖 Save XEKIE'; btn.classList.remove('saved');
+      } else {
+        saved.push(xekieId); btn.textContent = '✓ Saved'; btn.classList.add('saved');
+        trackEvent('xekie_saved', { xekie_id: xekieId });
+      }
+      localStorage.setItem('savedXekies', JSON.stringify(saved));
+    }
+    function showQR() {
+      document.getElementById('qr-code').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.href)}" style="width:200px;height:200px;border-radius:12px;" />`;
+      document.getElementById('qr-modal').classList.add('open');
+    }
+    function closeQR() { document.getElementById('qr-modal').classList.remove('open'); }
+    document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
 
-    // Single entry point — auth resolves once, loadXekie fires once
-    _sb.auth.getSession().then(({data:{session}})=>{
-      currentUser=session?.user||null;
+    let selectedReason = '';
+    function openReport() {
+      if (!currentUser) { window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href); return; }
+      selectedReason = '';
+      document.querySelectorAll('.report-reason').forEach(r => r.classList.remove('selected'));
+      document.getElementById('report-details').value = '';
+      document.getElementById('report-msg').className = 'report-msg';
+      document.getElementById('btn-report-submit').disabled = false;
+      document.getElementById('btn-report-submit').textContent = 'Submit report';
+      document.getElementById('report-modal').classList.add('open');
+    }
+    function closeReport() { document.getElementById('report-modal').classList.remove('open'); }
+    function selectReason(el, reason) {
+      selectedReason = reason;
+      document.querySelectorAll('.report-reason').forEach(r => r.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+    async function submitReport() {
+      if (!selectedReason) { const m = document.getElementById('report-msg'); m.className='report-msg error'; m.textContent='Please select a reason.'; return; }
+      const details = document.getElementById('report-details').value.trim();
+      const btn = document.getElementById('btn-report-submit');
+      btn.disabled = true; btn.textContent = 'Submitting...';
+      const { error } = await _sb.from('reports').insert({ reporter_id: currentUser.id, xekie_id: xekieId, reason: selectedReason, details: details || null, status: 'pending' });
+      if (error) { const m = document.getElementById('report-msg'); m.className='report-msg error'; m.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Submit report'; return; }
+      try {
+        await fetch('/.netlify/functions/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'report', to: 'zach@xekie.com', data: { xekieId, xekieTitle: currentXekie?.title, reason: selectedReason, details, reporterEmail: currentUser.email } }) });
+      } catch(e) {}
+      const m = document.getElementById('report-msg'); m.className='report-msg success'; m.textContent='Report submitted. Thank you for keeping XEKIE safe. ✓';
+      btn.textContent='Submitted ✓';
+      setTimeout(closeReport, 2000);
+    }
+    document.getElementById('report-modal').addEventListener('click', e => { if (e.target === document.getElementById('report-modal')) closeReport(); });
+
+    _sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) currentUser = session.user;
       loadXekie();
     });
   </script>
