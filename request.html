@@ -44,10 +44,6 @@
     .flexible-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
     .flexible-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--black);}
     .flexible-row label{font-size:13px;color:var(--mid);margin:0;cursor:pointer;}
-    .price-hint{display:none;margin-top:12px;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.5;gap:8px;align-items:flex-start;}
-    .price-hint.low{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
-    .price-hint.good{background:#EAF3DE;color:#3B6D11;border:1px solid #C0DD97;}
-    .price-hint.high{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;}
     .char-count{font-size:12px;color:var(--mid);text-align:right;margin-top:5px;}
     .expiry-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
     .expiry-btn{padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;background:var(--white);font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--mid);cursor:pointer;text-align:center;transition:all 0.2s;line-height:1.3;}
@@ -77,40 +73,7 @@
     .preview-desc{font-size:14px;color:var(--mid);font-weight:300;line-height:1.5;min-height:20px;}
     .preview-budget{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);margin-top:10px;}
     .preview-expiry{font-size:12px;color:var(--mid);margin-top:6px;}
-    #fireworks-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;display:none;}
-    .ai-writer-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:14px 18px;background:linear-gradient(135deg,rgba(255,77,28,0.06),rgba(255,140,0,0.04));border:1px solid rgba(255,77,28,0.2);border-radius:12px;}
-    .ai-writer-text{flex:1;font-size:14px;color:var(--mid);line-height:1.4;}
-    .ai-writer-text strong{color:var(--black);font-weight:600;}
-    .btn-ai-write{padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:100px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
-    .btn-ai-write:hover{background:#e03a0a;transform:translateY(-1px);}
-    .btn-ai-write:disabled{background:#ccc;cursor:not-allowed;transform:none;}
-    .ai-thinking{display:none;align-items:center;gap:8px;padding:12px 16px;background:rgba(255,77,28,0.05);border-radius:10px;margin-bottom:16px;font-size:13px;color:var(--mid);}
-    .ai-thinking.show{display:flex;}
-    .ai-thinking-dot{width:5px;height:5px;background:var(--accent);border-radius:50%;animation:aiThink 1.2s infinite;}
-    .ai-thinking-dot:nth-child(2){animation-delay:0.2s;}
-    .ai-thinking-dot:nth-child(3){animation-delay:0.4s;}
-    @keyframes aiThink{0%,60%,100%{transform:scale(0.8);opacity:0.4}30%{transform:scale(1.2);opacity:1}}
-    .share-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:20px;}
-    .share-modal.open{display:flex;}
-    .share-box{background:var(--white);border-radius:24px;padding:40px;max-width:480px;width:100%;text-align:center;position:relative;}
-    .share-box-emoji{font-size:56px;margin-bottom:16px;display:block;}
-    .share-box-title{font-family:var(--font-display);font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;}
-    .share-box-sub{font-size:15px;color:var(--mid);font-weight:300;margin-bottom:28px;line-height:1.5;}
-    .share-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-    .share-btn{padding:13px 16px;border:1.5px solid var(--border);border-radius:12px;background:var(--white);font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;color:var(--black);}
-    .share-btn:hover{border-color:var(--black);transform:translateY(-1px);}
-    .share-btn.twitter{background:#000;color:white;border-color:#000;}
-    .share-btn.twitter:hover{background:#333;}
-    .share-btn.facebook{background:#1877f2;color:white;border-color:#1877f2;}
-    .share-btn.facebook:hover{background:#166fe5;}
-    .share-btn.imessage{background:#22c55e;color:white;border-color:#22c55e;}
-    .share-btn.imessage:hover{background:#16a34a;}
-    .share-btn.copy{background:var(--cream);}
-    .share-link-box{background:var(--cream);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--mid);word-break:break-all;margin-bottom:16px;text-align:left;border:1px solid var(--border);}
-    .btn-share-done{width:100%;padding:13px;background:var(--black);color:white;border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
-    .btn-share-done:hover{background:var(--accent);}
-    .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:99999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
-    .share-toast.show{opacity:1;}
+    #fireworks-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;display:none;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -120,30 +83,11 @@
     .footer-links a{font-size:13px;color:#666;text-decoration:none;}
     .footer-links a:hover{color:var(--white);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
-    @media(max-width:480px){.form-card{padding:28px 20px;}nav{padding:0 20px;}.expiry-grid{grid-template-columns:repeat(2,1fr);}.share-buttons{grid-template-columns:1fr;}}
+    @media(max-width:480px){.form-card{padding:28px 20px;}nav{padding:0 20px;}.expiry-grid{grid-template-columns:repeat(2,1fr);}}
   </style>
 </head>
 <body>
   <canvas id="fireworks-canvas"></canvas>
-
-  <div class="share-modal" id="share-modal">
-    <div class="share-box">
-      <span class="share-box-emoji">🎉</span>
-      <div class="share-box-title">Your XEKIE is live!</div>
-      <div class="share-box-sub">Share it everywhere — the more eyes on it, the faster sellers respond.</div>
-      <div class="share-link-box" id="share-link-box"></div>
-      <div class="share-buttons">
-        <button class="share-btn twitter" onclick="shareToX()">𝕏 Post on X</button>
-        <button class="share-btn facebook" onclick="shareToFacebook()">📘 Facebook</button>
-        <button class="share-btn imessage" onclick="shareToSMS()">💬 iMessage</button>
-        <button class="share-btn copy" onclick="copyShareLink()">🔗 Copy link</button>
-      </div>
-      <button class="btn-share-done" onclick="closeShareModal()">Go to my XEKIE →</button>
-    </div>
-  </div>
-
-  <div class="share-toast" id="share-toast">Link copied! 🔗</div>
-
   <nav>
     <a href="index.html" class="nav-logo">
       <span><span class="xe">XE</span>KIE</span>
@@ -160,20 +104,6 @@
     <p class="page-sub">Can't find it? Just XEKIE it. Tell sellers exactly what you want — better details get better responses.</p>
     <div class="form-card">
       <div id="message" class="message"></div>
-
-      <div class="ai-writer-bar">
-        <div class="ai-writer-text"><strong>✨ AI Writer</strong> — type a rough idea below and let Claude write your full XEKIE for you</div>
-        <button class="btn-ai-write" id="btn-ai-write" onclick="aiWriteXekie()">
-          <span>✨</span> Write for me
-        </button>
-      </div>
-      <div class="ai-thinking" id="ai-thinking">
-        <div class="ai-thinking-dot"></div>
-        <div class="ai-thinking-dot"></div>
-        <div class="ai-thinking-dot"></div>
-        <span>Claude is writing your XEKIE...</span>
-      </div>
-
       <div class="form-group">
         <label>What do you want to find? <span class="label-hint">Be specific</span></label>
         <input type="text" id="title" placeholder="e.g. First edition Hell's Angels by Hunter S. Thompson" maxlength="100" oninput="updatePreview()" />
@@ -188,20 +118,19 @@
         <div class="budget-section-title">Your budget</div>
         <div class="budget-row">
           <div class="budget-prefix">$</div>
-          <input type="number" id="budget-min" placeholder="Min (e.g. 400)" min="1" oninput="updatePreview()" onblur="triggerPriceCheck()" />
+          <input type="number" id="budget-min" placeholder="Min (e.g. 400)" min="1" oninput="updatePreview()" />
           <span class="budget-separator">—</span>
           <div class="budget-prefix">$</div>
-          <input type="number" id="budget-max" placeholder="Max (e.g. 700)" min="1" oninput="updatePreview()" onblur="triggerPriceCheck()" />
+          <input type="number" id="budget-max" placeholder="Max (e.g. 700)" min="1" oninput="updatePreview()" />
         </div>
         <div class="flexible-row">
           <input type="checkbox" id="is-flexible" onchange="updatePreview()" />
           <label for="is-flexible">I'm flexible on price if the right item comes along</label>
         </div>
-        <div class="price-hint" id="price-hint"></div>
       </div>
       <div class="form-group">
         <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
-        <input type="text" id="location" placeholder="e.g. Carolina Beach, NC or Ships anywhere" />
+        <input type="text" id="location" placeholder="e.g. Akron, OH or Ships anywhere" />
       </div>
       <div class="form-group">
         <label>Category</label>
@@ -276,8 +205,8 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null, selectedExpiryHours = 168, selectedPhotos = [];
-    let postedXekieId = null, postedXekieTitle = null;
-    let priceCheckTimer = null, lastPriceCheckKey = '';
+
+    function trackEvent(name, params = {}) { if (typeof gtag !== 'undefined') gtag('event', name, params); }
 
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (!session) { window.location.href = 'login.html'; return; }
@@ -324,105 +253,6 @@
       const el = document.getElementById('message');
       el.textContent = text; el.className = 'message ' + type;
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    // ── AI PRICE CHECK ──
-    function triggerPriceCheck() {
-      const title = document.getElementById('title').value.trim();
-      const min = document.getElementById('budget-min').value;
-      const max = document.getElementById('budget-max').value;
-      const category = document.getElementById('category').value;
-      if (!title || (!min && !max)) return;
-      const key = `${title}|${min}|${max}|${category}`;
-      if (key === lastPriceCheckKey) return;
-      clearTimeout(priceCheckTimer);
-      priceCheckTimer = setTimeout(() => runPriceCheck(title, min, max, category, key), 600);
-    }
-
-    async function runPriceCheck(title, min, max, category, key) {
-      lastPriceCheckKey = key;
-      const hintEl = document.getElementById('price-hint');
-      try {
-        const res = await fetch('/.netlify/functions/ai-price', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, budget_min: min, budget_max: max, category })
-        });
-        const data = await res.json();
-        if (!data.message || data.status === 'unknown') {
-          hintEl.style.display = 'none';
-          return;
-        }
-        const icons = { low: '⚠️', good: '✅', high: 'ℹ️' };
-        const icon = icons[data.status] || 'ℹ️';
-        let text = `${icon} ${data.message}`;
-        if (data.typical_range) text += ` Typical range: ${data.typical_range}.`;
-        hintEl.className = `price-hint ${data.status}`;
-        hintEl.textContent = text;
-        hintEl.style.display = 'block';
-      } catch(e) {
-        hintEl.style.display = 'none';
-      }
-    }
-
-    // ── AI XEKIE WRITER ──
-    async function aiWriteXekie() {
-      const title = document.getElementById('title').value.trim();
-      if (!title) { showMessage('Type a rough idea in the title field first — then let Claude expand it!', 'error'); return; }
-      const btn = document.getElementById('btn-ai-write');
-      const thinking = document.getElementById('ai-thinking');
-      btn.disabled = true; btn.innerHTML = '<span>✨</span> Writing...';
-      thinking.classList.add('show');
-      try {
-        const res = await fetch('/.netlify/functions/ai-writer', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title })
-        });
-        const result = await res.json();
-        if (result.title) { document.getElementById('title').value = result.title.slice(0, 100); document.getElementById('title-count').textContent = result.title.slice(0,100).length; }
-        if (result.description) { document.getElementById('description').value = result.description.slice(0, 500); document.getElementById('desc-count').textContent = result.description.slice(0,500).length; }
-        if (result.category) { const sel = document.getElementById('category'); for (let i = 0; i < sel.options.length; i++) { if (sel.options[i].text === result.category) { sel.selectedIndex = i; break; } } }
-        if (result.budget_hint) {
-          const parts = result.budget_hint.split('-');
-          if (parts.length === 2) {
-            document.getElementById('budget-min').value = parts[0].trim().replace(/\D/g,'');
-            document.getElementById('budget-max').value = parts[1].trim().replace(/\D/g,'');
-          }
-        }
-        updatePreview();
-        showMessage('✨ Claude wrote your XEKIE! Review and edit anything before posting.', 'success');
-        setTimeout(triggerPriceCheck, 400);
-      } catch(e) {
-        showMessage('AI writer hit an error — please fill in manually.', 'error');
-      } finally {
-        btn.disabled = false; btn.innerHTML = '<span>✨</span> Write for me';
-        thinking.classList.remove('show');
-      }
-    }
-
-    // ── SHARE MODAL ──
-    function openShareModal(xekieId, title) {
-      postedXekieId = xekieId; postedXekieTitle = title;
-      const url = `https://xekie.com/xekie.html?id=${xekieId}`;
-      document.getElementById('share-link-box').textContent = url;
-      document.getElementById('share-modal').classList.add('open');
-    }
-    function closeShareModal() {
-      document.getElementById('share-modal').classList.remove('open');
-      if (postedXekieId) window.location.href = `xekie.html?id=${postedXekieId}`;
-    }
-    function shareToX() { const url = `https://xekie.com/xekie.html?id=${postedXekieId}`; window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I'm looking for: "${postedXekieTitle}" — respond with your best offer on XEKIE 🔶`)}&url=${encodeURIComponent(url)}`, '_blank'); }
-    function shareToFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://xekie.com/xekie.html?id=${postedXekieId}`)}`, '_blank'); }
-    function shareToSMS() {
-      const url = `https://xekie.com/xekie.html?id=${postedXekieId}`;
-      const text = `I just posted a XEKIE — looking for "${postedXekieTitle}". Can you help? ${url}`;
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      window.open(isIOS ? `sms:&body=${encodeURIComponent(text)}` : `sms:?body=${encodeURIComponent(text)}`);
-    }
-    function copyShareLink() {
-      navigator.clipboard.writeText(`https://xekie.com/xekie.html?id=${postedXekieId}`).then(() => {
-        const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500);
-      });
     }
 
     function launchFireworks() {
@@ -472,8 +302,10 @@
       const dropZone = document.getElementById('photo-drop-zone');
       dropZone.style.display = selectedPhotos.length >= 4 ? 'none' : 'block';
       container.innerHTML = selectedPhotos.map((p, i) => `
-        <div class="photo-preview-item"><img src="${p.previewUrl}" alt="Photo ${i+1}" />
-        <button class="photo-remove" onclick="removePhoto(${i})">✕</button></div>`).join('');
+        <div class="photo-preview-item">
+          <img src="${p.previewUrl}" alt="Photo ${i+1}" />
+          <button class="photo-remove" onclick="removePhoto(${i})">✕</button>
+        </div>`).join('');
     }
 
     function removePhoto(i) { selectedPhotos.splice(i, 1); renderPhotoPreviews(); }
@@ -484,7 +316,10 @@
         const ext = p.file.name.split('.').pop() || 'jpg';
         const path = `${currentUser.id}/${xekieId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
         const { error } = await _sb.storage.from('xekie-photos').upload(path, p.file, { contentType: p.file.type, upsert: true });
-        if (!error) { const { data: urlData } = _sb.storage.from('xekie-photos').getPublicUrl(path); urls.push(urlData.publicUrl); }
+        if (!error) {
+          const { data: urlData } = _sb.storage.from('xekie-photos').getPublicUrl(path);
+          urls.push(urlData.publicUrl);
+        }
       }
       return urls;
     }
@@ -507,33 +342,24 @@
       if (selectedExpiryHours > 0) expires_at = new Date(Date.now() + selectedExpiryHours * 60 * 60 * 1000).toISOString();
       const insertData = { title, description, budget: budget_max ? parseInt(budget_max) : parseInt(budget_min), budget_min: budget_min ? parseInt(budget_min) : null, budget_max: budget_max ? parseInt(budget_max) : null, is_flexible, location, category, user_id: currentUser.id, view_count: 0, is_fulfilled: false };
       if (expires_at) insertData.expires_at = expires_at;
-      let newXekie = null;
-      const { data: nx, error } = await _sb.from('xekies').insert(insertData).select().single();
+      const { data: newXekie, error } = await _sb.from('xekies').insert(insertData).select().single();
       if (error) {
         if (error.message && error.message.includes('expires_at')) {
           delete insertData.expires_at;
-          const { data: nx2, error: e2 } = await _sb.from('xekies').insert(insertData).select().single();
+          const { data: nX2, error: e2 } = await _sb.from('xekies').insert(insertData).select().single();
           if (e2) { showMessage('Something went wrong: ' + e2.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
-          newXekie = nx2;
         } else { showMessage('Something went wrong: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
-      } else { newXekie = nx; }
+      }
       if (selectedPhotos.length && newXekie) {
         btn.textContent = 'Uploading photos...';
         const photoUrls = await uploadPhotos(newXekie.id);
         if (photoUrls.length) await _sb.from('xekies').update({ photos: photoUrls }).eq('id', newXekie.id);
       }
+      trackEvent('xekie_posted', { category: category, location: location, has_photos: selectedPhotos.length > 0 });
+      showMessage('🎆 Your XEKIE is live! Sellers will find you.', 'success');
+      launchFireworks(); btn.textContent = 'XEKIE\'d! ✓';
       if (newXekie) { fetch('/.netlify/functions/notify-sellers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newXekie) }).catch(() => {}); }
-      launchFireworks();
-      btn.textContent = 'XEKIE\'d! 🎉';
-      setTimeout(() => {
-        btn.disabled = false; btn.textContent = 'Just XEKIE it →';
-        document.getElementById('title').value = ''; document.getElementById('description').value = '';
-        document.getElementById('budget-min').value = ''; document.getElementById('budget-max').value = '';
-        document.getElementById('is-flexible').checked = false; document.getElementById('location').value = '';
-        document.getElementById('category').value = ''; document.getElementById('price-hint').style.display = 'none';
-        selectedPhotos = []; renderPhotoPreviews(); updatePreview();
-      }, 500);
-      setTimeout(() => { if (newXekie) openShareModal(newXekie.id, title); }, 1200);
+      setTimeout(() => window.location.href = 'dashboard.html', 2500);
     }
   </script>
 </body>
