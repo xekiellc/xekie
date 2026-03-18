@@ -51,7 +51,6 @@
     .xekie-card.fulfilled{opacity:0.6;background:#f8f8f6;}
     .xekie-card.expired{opacity:0.5;background:#f8f8f6;}
     .xekie-card.promoted-card{border:2px solid #7c3aed !important;background:linear-gradient(135deg,#faf5ff,#fff) !important;}
-    .xekie-card.hot-card{border:2px solid #ff4d1c !important;background:linear-gradient(135deg,#fff8f6,#fff) !important;}
     .xekie-card.swiping{transition:transform 0.1s;}
     .xekie-card.swipe-right{transform:translateX(120%) rotate(8deg) !important;opacity:0;transition:all 0.4s ease;}
     .xekie-card.swipe-left{transform:translateX(-120%) rotate(-8deg) !important;opacity:0;transition:all 0.4s ease;}
@@ -60,9 +59,7 @@
     .status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin-bottom:8px;}
     .status-fulfilled{background:#EAF3DE;color:#3B6D11;}
     .status-expired{background:#f4f2ec;color:#6b6b6b;}
-    .promoted-label{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;margin-right:6px;}
-    .hot-label{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;margin-right:6px;animation:hotPulse 2s infinite;}
-    @keyframes hotPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,28,0.4)}50%{box-shadow:0 0 0 6px rgba(255,77,28,0)}}
+    .promoted-label{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;margin-bottom:8px;}
     .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px;}
     .card-title{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-0.02em;color:var(--black);}
     .card-budget{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--accent);white-space:nowrap;text-align:right;}
@@ -71,17 +68,18 @@
     .card-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
     .card-meta{font-size:13px;color:var(--mid);display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
     .category-pill{display:inline-block;font-size:12px;font-weight:500;padding:3px 10px;border-radius:100px;background:var(--cream);color:var(--mid);border:1px solid var(--border);}
-    .card-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .card-actions{display:flex;gap:8px;align-items:center;}
     .btn-respond{font-size:13px;font-weight:500;padding:9px 18px;border-radius:100px;background:var(--black);color:var(--white);border:none;cursor:pointer;transition:background 0.2s,transform 0.15s;}
     .btn-respond:hover{background:var(--accent);transform:translateY(-1px);}
     .btn-share{font-size:13px;font-weight:500;padding:9px 14px;border-radius:100px;background:transparent;color:var(--mid);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;}
     .btn-share:hover{border-color:var(--black);color:var(--black);}
-    .btn-have-this{font-size:13px;font-weight:500;padding:9px 14px;border-radius:100px;background:transparent;color:#3B6D11;border:1.5px solid #c0dd97;cursor:pointer;transition:all 0.2s;}
-    .btn-have-this:hover{background:#EAF3DE;}
-    .btn-have-this.bookmarked{background:#EAF3DE;color:#3B6D11;border-color:#c0dd97;}
     .view-count{font-size:12px;color:var(--mid);}
     .response-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:#EAF3DE;color:#3B6D11;}
+    .hot-badge{background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;}
     .early-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;letter-spacing:0.03em;}
+    .card-photo-strip{display:flex;gap:6px;margin-bottom:14px;border-radius:10px;overflow:hidden;max-height:160px;}
+    .card-photo-strip img{flex:1;height:160px;object-fit:cover;min-width:0;border-radius:0;}
+    .card-photo-strip.single img{border-radius:10px;max-height:200px;height:200px;}
     .empty-state{text-align:center;padding:80px 20px;}
     .empty-icon{font-size:48px;margin-bottom:16px;}
     .empty-title{font-family:var(--font-display);font-size:24px;font-weight:700;margin-bottom:8px;}
@@ -117,7 +115,7 @@
     .footer-links a{font-size:13px;color:#666;text-decoration:none;}
     .footer-links a:hover{color:var(--white);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
-    @media(max-width:600px){nav{padding:0 20px;}.card-top{flex-direction:column;}.swipe-tip{display:block;}.filter-grid{grid-template-columns:1fr 1fr;}}
+    @media(max-width:600px){nav{padding:0 20px;}.card-top{flex-direction:column;}.swipe-tip{display:block;}.filter-grid{grid-template-columns:1fr 1fr;}.card-photo-strip{max-height:120px;}.card-photo-strip img{height:120px;}.card-photo-strip.single img{height:160px;max-height:160px;}}
   </style>
 </head>
 <body>
@@ -208,7 +206,7 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let allXekies = [], activeCategory = '', currentUser = null, activeXekieId = null, activeXekieOwner = null;
-    let offerCounts = {}, bookmarkedIds = new Set();
+    let offerCounts = {};
     const BETA_CUTOFF = new Date('2026-06-01');
 
     const radarParams = new URLSearchParams(window.location.search);
@@ -246,12 +244,6 @@
         const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
         offerCounts = {};
         (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
-
-        // Load seller bookmarks if logged in
-        if (currentUser) {
-          const { data: bookmarks } = await _sb.from('seller_bookmarks').select('xekie_id').eq('seller_id', currentUser.id);
-          bookmarkedIds = new Set((bookmarks || []).map(b => b.xekie_id));
-        }
       }
       if (urlCategory) {
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -305,27 +297,29 @@
         const earlyBadge = new Date(x.created_at) < BETA_CUTOFF ? '<span class="early-badge">⚡ Early Adopter</span>' : '';
         const expired = isExpired(x), fulfilled = x.is_fulfilled;
         const isPromoted = x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date();
-        const cnt = offerCounts[x.id] || 0;
-        const isHot = cnt >= 3 && !fulfilled && !expired;
-        const isBookmarked = bookmarkedIds.has(x.id);
-        const isOwn = currentUser && currentUser.id === x.user_id;
         let statusBadge = '';
         if (fulfilled) statusBadge = '<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
         else if (expired) statusBadge = '<span class="status-badge status-expired">⏰ Expired</span>';
-        const cardClass = fulfilled ? 'fulfilled' : expired ? 'expired' : isPromoted ? 'promoted-card' : isHot ? 'hot-card' : '';
-        const promotedLabel = isPromoted ? '<span class="promoted-label">⚡ Promoted</span>' : '';
-        const hotLabel = isHot ? '<span class="hot-label">🔥 Hot</span>' : '';
+        const cardClass = fulfilled ? 'fulfilled' : expired ? 'expired' : isPromoted ? 'promoted-card' : '';
+        const promotedLabel = isPromoted ? '<div class="promoted-label">⚡ Promoted</div>' : '';
         const canRespond = !fulfilled && !expired;
-        const photoStrip = x.photos && x.photos.length ? `<div style="display:flex;gap:4px;margin-bottom:10px;border-radius:8px;overflow:hidden;max-height:80px;">${x.photos.slice(0,3).map(url => `<img src="${url}" style="flex:1;height:80px;object-fit:cover;" loading="lazy" />`).join('')}</div>` : '';
+        const cnt = offerCounts[x.id] || 0;
+
+        // Photo strip — shows up to 3 photos if they exist
+        let photoStrip = '';
+        if (x.photos && x.photos.length > 0) {
+          const photos = x.photos.slice(0, 3);
+          const stripClass = photos.length === 1 ? 'card-photo-strip single' : 'card-photo-strip';
+          photoStrip = `<div class="${stripClass}">${photos.map(url => `<img src="${url}" alt="XEKIE photo" loading="lazy" onerror="this.parentElement.style.display='none'" />`).join('')}</div>`;
+        }
+
         return `
         <div class="xekie-card ${cardClass}" id="card-${x.id}" data-id="${x.id}">
           <div class="swipe-hint-right">SAVE ✓</div>
           <div class="swipe-hint-left">SKIP ✕</div>
-          <div style="margin-bottom:${promotedLabel||hotLabel||statusBadge?'8px':'0'};display:flex;flex-wrap:wrap;gap:4px;align-items:center;">
-            ${promotedLabel}${hotLabel}${statusBadge}${earlyBadge}
-          </div>
+          ${promotedLabel}${statusBadge}
           <div class="card-top">
-            <div class="card-title">${x.title}</div>
+            <div><div class="card-title">${x.title}</div>${earlyBadge}</div>
             <div class="card-budget">${budget}${flexTag}</div>
           </div>
           ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
@@ -336,14 +330,10 @@
               <span>⏱ ${timeAgo(x.created_at)}</span>
               ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
               <span class="view-count">👁 ${x.view_count||0}</span>
-              ${cnt > 0 ? `<span class="response-badge">💬 ${cnt} response${cnt!==1?'s':''}</span>` : ''}
+              ${cnt > 0 ? `<span class="response-badge ${cnt >= 5 ? 'hot-badge' : ''}">${cnt >= 5 ? '🔥' : '💬'} ${cnt} response${cnt!==1?'s':''}</span>` : ''}
             </div>
             <div class="card-actions">
               <button class="btn-share" onclick="shareXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
-              ${canRespond && !isOwn && currentUser ? `
-                <button class="btn-have-this ${isBookmarked ? 'bookmarked' : ''}" id="bookmark-${x.id}" onclick="toggleBookmark('${x.id}', this)">
-                  ${isBookmarked ? '✓ I have this' : '🙋 I have this'}
-                </button>` : ''}
               ${canRespond ? `<button class="btn-respond" onclick="openModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}', '${x.user_id}')">Respond</button>` : ''}
             </div>
           </div>
@@ -351,31 +341,6 @@
       }).join('');
       xekies.forEach(x => { _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {}); });
       document.querySelectorAll('.xekie-card').forEach(card => addSwipe(card));
-    }
-
-    async function toggleBookmark(xekieId, btn) {
-      if (!currentUser) { window.location.href = 'login.html'; return; }
-      const isBookmarked = bookmarkedIds.has(xekieId);
-      if (isBookmarked) {
-        await _sb.from('seller_bookmarks').delete().eq('xekie_id', xekieId).eq('seller_id', currentUser.id);
-        bookmarkedIds.delete(xekieId);
-        btn.classList.remove('bookmarked');
-        btn.textContent = '🙋 I have this';
-        showToast('Bookmark removed');
-      } else {
-        await _sb.from('seller_bookmarks').insert({ xekie_id: xekieId, seller_id: currentUser.id });
-        bookmarkedIds.add(xekieId);
-        btn.classList.add('bookmarked');
-        btn.textContent = '✓ I have this';
-        showToast('Saved! Find it in your Profile → I Have This 🙋');
-      }
-    }
-
-    function showToast(msg) {
-      const t = document.getElementById('share-toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => { t.classList.remove('show'); t.textContent = 'Link copied! 🔗'; }, 3000);
     }
 
     function addSwipe(card) {
@@ -402,7 +367,7 @@
     function shareXekie(id, title) {
       const url = `${window.location.origin}/xekie.html?id=${id}`;
       if (navigator.share) { navigator.share({ title: 'XEKIE — ' + title, url }).catch(() => {}); }
-      else { navigator.clipboard.writeText(url).then(() => showToast('Link copied! 🔗')); }
+      else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
     }
 
     function openModal(xekieId, title, ownerId) {
