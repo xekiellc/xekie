@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Edit XEKIE</title>
+  <meta name="description" content="Edit your XEKIE listing.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff4d1c">
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
+    .nav-right{display:flex;align-items:center;gap:16px;}
+    .nav-user{font-size:14px;color:var(--mid);}
+    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;}
+    .btn-nav:hover{border-color:var(--black);color:var(--black);}
+    .container{max-width:640px;margin:0 auto;padding:48px 20px;flex:1;}
+    .page-title{font-family:var(--font-display);font-weight:800;font-size:36px;letter-spacing:-0.03em;margin-bottom:6px;}
+    .page-sub{font-size:15px;font-weight:300;color:var(--mid);margin-bottom:40px;line-height:1.5;}
+    .form-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:40px;}
+    .form-group{margin-bottom:24px;}
+    label{display:block;font-size:13px;font-weight:500;color:var(--black);margin-bottom:7px;}
+    .label-hint{font-size:12px;font-weight:400;color:var(--mid);margin-left:6px;}
+    input,textarea,select{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;color:var(--black);background:var(--white);outline:none;transition:border-color 0.2s;}
+    input:focus,textarea:focus,select:focus{border-color:var(--black);}
+    input::placeholder,textarea::placeholder{color:#bbb;}
+    textarea{resize:vertical;min-height:100px;line-height:1.5;}
+    .budget-section{background:var(--cream);border-radius:12px;padding:20px;margin-bottom:24px;}
+    .budget-section-title{font-size:13px;font-weight:500;margin-bottom:14px;}
+    .budget-row{display:flex;gap:10px;align-items:center;margin-bottom:12px;}
+    .budget-prefix{display:flex;align-items:center;justify-content:center;width:44px;height:46px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;font-size:16px;font-weight:500;color:var(--mid);flex-shrink:0;}
+    .budget-row input{flex:1;margin:0;}
+    .budget-separator{font-size:14px;color:var(--mid);font-weight:500;padding:0 4px;}
+    .flexible-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
+    .flexible-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--black);}
+    .flexible-row label{font-size:13px;color:var(--mid);margin:0;cursor:pointer;}
+    .char-count{font-size:12px;color:var(--mid);text-align:right;margin-top:5px;}
+    .expiry-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
+    .expiry-btn{padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;background:var(--white);font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--mid);cursor:pointer;text-align:center;transition:all 0.2s;line-height:1.3;}
+    .expiry-btn:hover{border-color:var(--black);color:var(--black);}
+    .expiry-btn.active{background:var(--black);color:var(--white);border-color:var(--black);}
+    .expiry-btn .expiry-sub{display:block;font-size:10px;font-weight:400;opacity:0.7;margin-top:2px;}
+    .photo-upload-section{background:var(--cream);border-radius:12px;padding:20px;margin-bottom:24px;}
+    .photo-upload-title{font-size:13px;font-weight:500;margin-bottom:12px;}
+    .photo-drop-zone{border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--white);}
+    .photo-drop-zone:hover,.photo-drop-zone.dragover{border-color:var(--accent);background:#fff8f6;}
+    .photo-drop-icon{font-size:32px;margin-bottom:8px;}
+    .photo-drop-text{font-size:14px;color:var(--mid);}
+    .photo-drop-sub{font-size:12px;color:#bbb;margin-top:4px;}
+    .photo-previews{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
+    .photo-preview-item{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--cream);}
+    .photo-preview-item img{width:100%;height:100%;object-fit:cover;}
+    .photo-remove{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:100px;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .existing-label{font-size:11px;color:var(--mid);text-align:center;margin-top:4px;}
+    .btn-submit{width:100%;padding:15px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:16px;font-weight:500;cursor:pointer;margin-top:8px;transition:background 0.2s,transform 0.15s;}
+    .btn-submit:hover{background:var(--accent);transform:translateY(-1px);}
+    .btn-submit:disabled{background:#ccc;cursor:not-allowed;transform:none;}
+    .btn-cancel{width:100%;padding:13px;background:transparent;color:var(--mid);border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;margin-top:10px;transition:all 0.2s;}
+    .btn-cancel:hover{border-color:var(--black);color:var(--black);}
+    .message{padding:14px 18px;border-radius:10px;font-size:14px;margin-bottom:20px;display:none;}
+    .message.error{background:#FCEBEB;color:#A32D2D;border:1px solid #F7C1C1;display:block;}
+    .message.success{background:#EAF3DE;color:#3B6D11;border:1px solid #C0DD97;display:block;}
+    .loading-state{text-align:center;padding:60px;color:var(--mid);}
+    footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
+    .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+    .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
+    .footer-logo .xe{color:var(--accent);}
+    .footer-tagline{font-size:11px;letter-spacing:0.2em;color:#555;text-transform:uppercase;}
+    .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
+    .footer-links a:hover{color:var(--white);}
+    .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
+    @media(max-width:480px){.form-card{padding:28px 20px;}nav{padding:0 20px;}.expiry-grid{grid-template-columns:repeat(2,1fr);}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
+    <div class="nav-right">
+      <span class="nav-user" id="nav-user"></span>
+      <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1 class="page-title">Edit XEKIE</h1>
+    <p class="page-sub">Update your listing — changes go live instantly.</p>
+    <div id="form-container">
+      <div class="loading-state">Loading your XEKIE...</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+        <div class="footer-tagline">Trade Different</div>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Community Guidelines</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentUser = null;
+    let xekieId = null;
+    let selectedExpiryHours = 168;
+    let newPhotos = [];
+    let existingPhotoUrls = [];
+
+    const params = new URLSearchParams(window.location.search);
+    xekieId = params.get('id');
+
+    _sb.auth.getSession().then(({ data: { session } }) => {
+      if (!session) { window.location.href = 'login.html'; return; }
+      currentUser = session.user;
+      document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
+      if (!xekieId) { window.location.href = 'dashboard.html'; return; }
+      loadXekie();
+    });
+
+    async function loadXekie() {
+      const { data: x, error } = await _sb.from('xekies').select('*').eq('id', xekieId).single();
+      if (error || !x) { window.location.href = 'dashboard.html'; return; }
+      if (x.user_id !== currentUser.id) { window.location.href = 'dashboard.html'; return; }
+
+      existingPhotoUrls = x.photos || [];
+
+      let expiryHours = 168;
+      if (!x.expires_at) expiryHours = 0;
+      else {
+        const hoursRemaining = Math.round((new Date(x.expires_at) - new Date()) / 3600000);
+        if (hoursRemaining <= 0) expiryHours = 168;
+        else if (hoursRemaining <= 30) expiryHours = 24;
+        else if (hoursRemaining <= 54) expiryHours = 48;
+        else if (hoursRemaining <= 78) expiryHours = 72;
+        else if (hoursRemaining <= 200) expiryHours = 168;
+        else expiryHours = 720;
+      }
+      selectedExpiryHours = expiryHours;
+
+      document.getElementById('form-container').innerHTML = `
+        <div class="form-card">
+          <div id="message" class="message"></div>
+          <div class="form-group">
+            <label>What do you want to find? <span class="label-hint">Be specific</span></label>
+            <input type="text" id="title" placeholder="e.g. First edition Hell's Angels by Hunter S. Thompson" maxlength="100" oninput="updateCharCount()" value="${escHtml(x.title||'')}" />
+            <div class="char-count"><span id="title-count">${(x.title||'').length}</span>/100</div>
+          </div>
+          <div class="form-group">
+            <label>Describe exactly what you're looking for <span class="label-hint">Condition, specs, preferences</span></label>
+            <textarea id="description" maxlength="500" oninput="updateCharCount()">${escHtml(x.description||'')}</textarea>
+            <div class="char-count"><span id="desc-count">${(x.description||'').length}</span>/500</div>
+          </div>
+          <div class="budget-section">
+            <div class="budget-section-title">Your budget</div>
+            <div class="budget-row">
+              <div class="budget-prefix">$</div>
+              <input type="number" id="budget-min" placeholder="Min (e.g. 400)" min="1" value="${x.budget_min||''}" />
+              <span class="budget-separator">—</span>
+              <div class="budget-prefix">$</div>
+              <input type="number" id="budget-max" placeholder="Max (e.g. 700)" min="1" value="${x.budget_max||''}" />
+            </div>
+            <div class="flexible-row">
+              <input type="checkbox" id="is-flexible" ${x.is_flexible ? 'checked' : ''} />
+              <label for="is-flexible">I'm flexible on price if the right item comes along</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
+            <input type="text" id="location" placeholder="e.g. Akron, OH or Ships anywhere" value="${escHtml(x.location||'')}" />
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="category">
+              <option value="">Select a category...</option>
+              ${['Electronics','Trading Cards','Vehicles','Tools','Services','Household Items','Clothes & Apparel','Books','Toys','Music & Movies','Collectibles','Other'].map(c => `<option ${x.category===c?'selected':''}>${c}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>How long should your XEKIE stay active?</label>
+            <div class="expiry-grid">
+              <button class="expiry-btn${expiryHours===24?' active':''}" data-hours="24" onclick="setExpiry(this)">24 Hours<span class="expiry-sub">Quick find</span></button>
+              <button class="expiry-btn${expiryHours===48?' active':''}" data-hours="48" onclick="setExpiry(this)">48 Hours<span class="expiry-sub">Short window</span></button>
+              <button class="expiry-btn${expiryHours===72?' active':''}" data-hours="72" onclick="setExpiry(this)">72 Hours<span class="expiry-sub">3 days</span></button>
+              <button class="expiry-btn${expiryHours===168?' active':''}" data-hours="168" onclick="setExpiry(this)">1 Week<span class="expiry-sub">Recommended</span></button>
+              <button class="expiry-btn${expiryHours===720?' active':''}" data-hours="720" onclick="setExpiry(this)">1 Month<span class="expiry-sub">30 days</span></button>
+              <button class="expiry-btn${expiryHours===0?' active':''}" data-hours="0" onclick="setExpiry(this)">Until Fulfilled<span class="expiry-sub">No expiry</span></button>
+            </div>
+          </div>
+          <div class="photo-upload-section">
+            <div class="photo-upload-title">Photos <span style="font-size:12px;font-weight:400;color:var(--mid);">Optional — up to 4 photos help sellers know exactly what you want</span></div>
+            <div class="photo-drop-zone" id="photo-drop-zone" onclick="document.getElementById('photo-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+              <div class="photo-drop-icon">📷</div>
+              <div class="photo-drop-text">Tap to add photos</div>
+              <div class="photo-drop-sub">JPG, PNG, WEBP · Max 5MB each · Up to 4 photos total</div>
+            </div>
+            <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect(event)" />
+            <div class="photo-previews" id="photo-previews"></div>
+          </div>
+          <button class="btn-submit" id="btn-submit" onclick="saveXekie()">Save changes</button>
+          <button class="btn-cancel" onclick="window.location.href='dashboard.html'">Cancel</button>
+        </div>`;
+
+      renderPhotoPreviews();
+    }
+
+    function escHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    function setExpiry(btn) {
+      document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedExpiryHours = parseInt(btn.dataset.hours);
+    }
+
+    function updateCharCount() {
+      const title = document.getElementById('title')?.value || '';
+      const desc = document.getElementById('description')?.value || '';
+      document.getElementById('title-count').textContent = title.length;
+      document.getElementById('desc-count').textContent = desc.length;
+    }
+
+    function showMessage(text, type) {
+      const el = document.getElementById('message');
+      el.textContent = text; el.className = 'message ' + type;
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function handleDragOver(e) { e.preventDefault(); document.getElementById('photo-drop-zone').classList.add('dragover'); }
+    function handleDragLeave(e) { document.getElementById('photo-drop-zone').classList.remove('dragover'); }
+    function handleDrop(e) { e.preventDefault(); document.getElementById('photo-drop-zone').classList.remove('dragover'); addPhotos(Array.from(e.dataTransfer.files)); }
+    function handlePhotoSelect(e) { addPhotos(Array.from(e.target.files)); e.target.value = ''; }
+
+    function addPhotos(files) {
+      const totalSlots = 4 - existingPhotoUrls.length - newPhotos.length;
+      const imageFiles = files.filter(f => f.type.startsWith('image/'));
+      imageFiles.slice(0, totalSlots).forEach(file => {
+        if (file.size > 5 * 1024 * 1024) { alert(file.name + ' is too large. Max 5MB per photo.'); return; }
+        const reader = new FileReader();
+        reader.onload = (e) => { newPhotos.push({ file, previewUrl: e.target.result }); renderPhotoPreviews(); };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function removeExistingPhoto(i) { existingPhotoUrls.splice(i, 1); renderPhotoPreviews(); }
+    function removeNewPhoto(i) { newPhotos.splice(i, 1); renderPhotoPreviews(); }
+
+    function renderPhotoPreviews() {
+      const container = document.getElementById('photo-previews');
+      const dropZone = document.getElementById('photo-drop-zone');
+      if (!container || !dropZone) return;
+      const total = existingPhotoUrls.length + newPhotos.length;
+      dropZone.style.display = total >= 4 ? 'none' : 'block';
+      const existingHtml = existingPhotoUrls.map((url, i) => `
+        <div class="photo-preview-item">
+          <img src="${url}" alt="Photo ${i+1}" />
+          <button class="photo-remove" onclick="removeExistingPhoto(${i})">✕</button>
+          <div class="existing-label">Saved</div>
+        </div>`).join('');
+      const newHtml = newPhotos.map((p, i) => `
+        <div class="photo-preview-item">
+          <img src="${p.previewUrl}" alt="New photo ${i+1}" />
+          <button class="photo-remove" onclick="removeNewPhoto(${i})">✕</button>
+          <div class="existing-label">New</div>
+        </div>`).join('');
+      container.innerHTML = existingHtml + newHtml;
+    }
+
+    async function uploadNewPhotos() {
+      const urls = [];
+      for (const p of newPhotos) {
+        const ext = p.file.name.split('.').pop() || 'jpg';
+        const path = `${currentUser.id}/${xekieId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error } = await _sb.storage.from('xekie-photos').upload(path, p.file, { contentType: p.file.type, upsert: true });
+        if (!error) {
+          const { data: urlData } = _sb.storage.from('xekie-photos').getPublicUrl(path);
+          urls.push(urlData.publicUrl);
+        }
+      }
+      return urls;
+    }
+
+    async function saveXekie() {
+      const title = document.getElementById('title').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const budget_min = document.getElementById('budget-min').value;
+      const budget_max = document.getElementById('budget-max').value;
+      const is_flexible = document.getElementById('is-flexible').checked;
+      const location = document.getElementById('location').value.trim();
+      const category = document.getElementById('category').value;
+      const btn = document.getElementById('btn-submit');
+
+      if (!title) return showMessage('Please add a title — what do you want to find?', 'error');
+      if (!budget_min && !budget_max) return showMessage('Please enter at least a minimum or maximum budget.', 'error');
+      if (!location) return showMessage('Please add a location or write "Ships anywhere".', 'error');
+      if (!category) return showMessage('Please select a category.', 'error');
+
+      btn.disabled = true; btn.textContent = 'Saving...';
+
+      let finalPhotoUrls = [...existingPhotoUrls];
+      if (newPhotos.length) {
+        btn.textContent = 'Uploading photos...';
+        const uploadedUrls = await uploadNewPhotos();
+        finalPhotoUrls = [...finalPhotoUrls, ...uploadedUrls];
+      }
+
+      let expires_at = null;
+      if (selectedExpiryHours > 0) {
+        expires_at = new Date(Date.now() + selectedExpiryHours * 60 * 60 * 1000).toISOString();
+      }
+
+      const updateData = {
+        title, description,
+        budget: budget_max ? parseInt(budget_max) : parseInt(budget_min),
+        budget_min: budget_min ? parseInt(budget_min) : null,
+        budget_max: budget_max ? parseInt(budget_max) : null,
+        is_flexible, location, category,
+        photos: finalPhotoUrls,
+        expires_at
+      };
+
+      const { error } = await _sb.from('xekies').update(updateData).eq('id', xekieId).eq('user_id', currentUser.id);
+
+      if (error) {
+        showMessage('Something went wrong: ' + error.message, 'error');
+        btn.disabled = false; btn.textContent = 'Save changes';
+      } else {
+        showMessage('✓ XEKIE updated successfully!', 'success');
+        btn.textContent = 'Saved ✓';
+        setTimeout(() => window.location.href = 'dashboard.html', 1500);
+      }
+    }
+  </script>
+</body>
+</html>
