@@ -195,6 +195,8 @@
     let currentUser = null;
     const BETA_CUTOFF = new Date('2026-06-01');
 
+    function trackEvent(name, params = {}) { if (typeof gtag !== 'undefined') gtag('event', name, params); }
+
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
@@ -316,6 +318,7 @@
       if (!confirm('Mark this XEKIE as fulfilled?')) return;
       const { error } = await _sb.from('xekies').update({ is_fulfilled: true }).eq('id', id).eq('user_id', currentUser.id);
       if (!error) {
+        trackEvent('fulfilled_marked', { xekie_id: id });
         loadDashboard();
         const { data: offers } = await _sb.from('offers').select('seller_id').eq('xekie_id', id).limit(1);
         if (offers && offers.length) {
