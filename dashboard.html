@@ -40,6 +40,9 @@
     .xekie-card.fulfilled{border-color:#c0dd97;background:#f9fdf5;}
     .xekie-card.expired{opacity:0.65;}
     .xekie-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06);}
+    .card-inner{display:flex;gap:16px;align-items:flex-start;}
+    .card-thumbnail{width:90px;height:90px;border-radius:10px;object-fit:cover;flex-shrink:0;}
+    .card-body{flex:1;min-width:0;}
     .card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
     .card-title{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.02em;}
     .card-budget{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);white-space:nowrap;}
@@ -104,7 +107,7 @@
     .footer-links a{font-size:13px;color:#666;text-decoration:none;}
     .footer-links a:hover{color:var(--white);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
-    @media(max-width:600px){nav{padding:0 20px;}.stats-row{grid-template-columns:1fr 1fr;}}
+    @media(max-width:600px){nav{padding:0 20px;}.stats-row{grid-template-columns:1fr 1fr;}.card-thumbnail{width:72px;height:72px;}}
   </style>
 </head>
 <body>
@@ -266,33 +269,41 @@
         const isExpired = !isFulfilled && x.expires_at && new Date(x.expires_at) < new Date();
         const cardClass = isFulfilled ? 'fulfilled' : isExpired ? 'expired' : '';
         const isPromoted = x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date();
+        const thumbnail = x.photos && x.photos.length
+          ? `<img class="card-thumbnail" src="${x.photos[0]}" alt="Photo" loading="lazy" onerror="this.style.display='none'" />`
+          : '';
         return `<div class="xekie-card ${cardClass}" id="card-${x.id}">
-          <div class="card-header">
-            <div>
-              ${isFulfilled ? '<span class="status-badge status-fulfilled">✓ Fulfilled</span>' : ''}
-              <div class="card-title">${x.title}</div>
-            </div>
-            <div class="card-budget">${budget}${flexTag}</div>
-          </div>
-          ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
-          <div class="card-footer">
-            <div class="card-meta">
-              ${x.location ? `<span>📍 ${x.location}</span>` : ''}
-              <span>⏱ ${timeAgo(x.created_at)}</span>
-              ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
-              <span class="view-count">👁 ${x.view_count||0} views</span>
-              ${expiryDisplay}
-            </div>
-            <div class="card-actions">
-              <button class="btn-view-offers" onclick="viewOffers('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">
-                Responses${offerCount?`<span class="offers-badge">${offerCount}</span>`:''}
-              </button>
-              <button class="btn-share-xekie" onclick="shareXekie('${x.id}')">Share</button>
-              <a href="edit.html?id=${x.id}" class="btn-edit">✏️ Edit</a>
-              ${!isFulfilled && !isExpired ? `<button class="btn-fulfill" onclick="markFulfilled('${x.id}')">✓ Fulfilled</button>` : ''}
-              ${isExpired ? `<button class="btn-repost" onclick="repostXekie('${x.id}')">🔁 Repost</button>` : ''}
-              ${!isPromoted && !isFulfilled ? `<button class="btn-promote" onclick="promoteXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">⚡ Promote $5</button>` : isPromoted ? '<span class="promoted-badge">⚡ Promoted</span>' : ''}
-              <button class="btn-delete" onclick="deleteXekie('${x.id}')">Delete</button>
+          <div class="card-inner">
+            ${thumbnail}
+            <div class="card-body">
+              <div class="card-header">
+                <div>
+                  ${isFulfilled ? '<span class="status-badge status-fulfilled">✓ Fulfilled</span>' : ''}
+                  <div class="card-title">${x.title}</div>
+                </div>
+                <div class="card-budget">${budget}${flexTag}</div>
+              </div>
+              ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
+              <div class="card-footer">
+                <div class="card-meta">
+                  ${x.location ? `<span>📍 ${x.location}</span>` : ''}
+                  <span>⏱ ${timeAgo(x.created_at)}</span>
+                  ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
+                  <span class="view-count">👁 ${x.view_count||0} views</span>
+                  ${expiryDisplay}
+                </div>
+                <div class="card-actions">
+                  <button class="btn-view-offers" onclick="viewOffers('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">
+                    Responses${offerCount?`<span class="offers-badge">${offerCount}</span>`:''}
+                  </button>
+                  <button class="btn-share-xekie" onclick="shareXekie('${x.id}')">Share</button>
+                  <a href="edit.html?id=${x.id}" class="btn-edit">✏️ Edit</a>
+                  ${!isFulfilled && !isExpired ? `<button class="btn-fulfill" onclick="markFulfilled('${x.id}')">✓ Fulfilled</button>` : ''}
+                  ${isExpired ? `<button class="btn-repost" onclick="repostXekie('${x.id}')">🔁 Repost</button>` : ''}
+                  ${!isPromoted && !isFulfilled ? `<button class="btn-promote" onclick="promoteXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">⚡ Promote $5</button>` : isPromoted ? '<span class="promoted-badge">⚡ Promoted</span>' : ''}
+                  <button class="btn-delete" onclick="deleteXekie('${x.id}')">Delete</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>`;
