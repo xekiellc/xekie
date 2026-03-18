@@ -295,9 +295,12 @@
       for (const p of newPhotos) {
         const ext = p.file.name.split('.').pop() || 'jpg';
         const path = `${currentUser.id}/${xekieId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const { error } = await _sb.storage.from('xekie-photos').upload(path, p.file, { contentType: p.file.type, upsert: true });
+        console.log('Uploading to path:', path);
+        const { data: uploadData, error } = await _sb.storage.from('xekie-photos').upload(path, p.file, { contentType: p.file.type, upsert: true });
+        console.log('Upload result:', uploadData, 'Error:', error);
         if (!error) {
           const { data: urlData } = _sb.storage.from('xekie-photos').getPublicUrl(path);
+          console.log('Public URL:', urlData.publicUrl);
           urls.push(urlData.publicUrl);
         }
       }
@@ -325,8 +328,11 @@
       if (newPhotos.length) {
         btn.textContent = 'Uploading photos...';
         const uploadedUrls = await uploadNewPhotos();
+        console.log('Final uploaded URLs:', uploadedUrls);
         finalPhotoUrls = [...finalPhotoUrls, ...uploadedUrls];
       }
+
+      console.log('Saving photos array to DB:', finalPhotoUrls);
 
       let expires_at = null;
       if (selectedExpiryHours > 0) {
@@ -343,7 +349,10 @@
         expires_at
       };
 
-      const { error } = await _sb.from('xekies').update(updateData).eq('id', xekieId).eq('user_id', currentUser.id);
+      console.log('Update payload:', updateData);
+
+      const { data, error } = await _sb.from('xekies').update(updateData).eq('id', xekieId).eq('user_id', currentUser.id).select();
+      console.log('DB update result:', data, 'Error:', error);
 
       if (error) {
         showMessage('Something went wrong: ' + error.message, 'error');
