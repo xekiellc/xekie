@@ -155,6 +155,8 @@
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null;
 
+    function trackEvent(name, params = {}) { if (typeof gtag !== 'undefined') gtag('event', name, params); }
+
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('keyword')) document.getElementById('watch-keyword').value = urlParams.get('keyword');
     if (urlParams.get('category')) {
@@ -212,6 +214,7 @@
       const { error } = await _sb.from('watches').insert({ user_id: currentUser.id, email, keyword: keyword || null, category: category || null, location: location || null, is_active: true });
       btn.disabled = false; btn.textContent = '🔔 Start watching →';
       if (error) { showMsg('Error: ' + error.message, 'error'); return; }
+      trackEvent('watch_created', { keyword: keyword || null, category: category || null, has_location: !!location });
       showMsg('Watch added! You\'ll get an email the moment a matching XEKIE is posted. ✓', 'success');
       document.getElementById('watch-keyword').value = '';
       document.getElementById('watch-category').selectedIndex = 0;
