@@ -2,11 +2,35 @@
   "name": "XEKIE — Trade Different",
   "short_name": "XEKIE",
   "description": "The demand-side marketplace. Want it. Post it. Get it.",
-  "start_url": "/index.html",
+  "start_url": "/index.html?source=pwa",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#ff4d1c",
   "orientation": "portrait",
+  "categories": ["shopping", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "XEKIE it",
+      "short_name": "Post",
+      "description": "Post a new XEKIE",
+      "url": "/request.html?source=pwa_shortcut",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your XEKIEs",
+      "url": "/dashboard.html?source=pwa_shortcut",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Browse XEKIEs",
+      "short_name": "Browse",
+      "description": "Browse all XEKIEs",
+      "url": "/radar.html?source=pwa_shortcut",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     { "src": "/icon-16x16.png",   "sizes": "16x16",   "type": "image/png" },
     { "src": "/icon-32x32.png",   "sizes": "32x32",   "type": "image/png" },
