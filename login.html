@@ -143,47 +143,25 @@
       el.textContent = msg;
     }
 
-    // ── WINE GLASSES CLINK SOUND (Web Audio API — no files needed) ──
+    // ── WINE GLASSES CLINK (fixed — crisp high ping, not balloon) ──
     function playWineGlassClink() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        function clink(time, freq) {
+        const now = ctx.currentTime;
+        [[2637, 0], [3136, 0.07]].forEach(([freq, t]) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
-          osc.connect(gain);
-          gain.connect(ctx.destination);
+          osc.connect(gain); gain.connect(ctx.destination);
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, time);
-          osc.frequency.exponentialRampToValueAtTime(freq * 0.5, time + 1.2);
-          gain.gain.setValueAtTime(0.4, time);
-          gain.gain.exponentialRampToValueAtTime(0.001, time + 1.5);
-          osc.start(time);
-          osc.stop(time + 1.5);
-        }
-        const now = ctx.currentTime;
-        clink(now, 1046);       // high C
-        clink(now + 0.05, 1318); // E
-        clink(now + 0.1, 1568);  // G
-        // Add a subtle "clink" transient
-        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
-        const data = buf.getChannelData(0);
-        for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i/data.length);
-        const src = ctx.createBufferSource();
-        const filt = ctx.createBiquadFilter();
-        filt.type = 'highpass';
-        filt.frequency.value = 4000;
-        const g = ctx.createGain();
-        g.gain.setValueAtTime(0.3, now);
-        g.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-        src.buffer = buf;
-        src.connect(filt);
-        filt.connect(g);
-        g.connect(ctx.destination);
-        src.start(now);
+          osc.frequency.setValueAtTime(freq, now + t);
+          gain.gain.setValueAtTime(0.18, now + t);
+          gain.gain.setTargetAtTime(0.001, now + t + 0.02, 0.18);
+          osc.start(now + t);
+          osc.stop(now + t + 1.2);
+        });
       } catch(e) {}
     }
 
-    // ── WELCOME EMAIL — await it before redirecting ──
     async function sendWelcomeEmail(email, name) {
       try {
         await fetch('/.netlify/functions/send-email', {
@@ -191,7 +169,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: 'welcome', to: email, data: { name } })
         });
-      } catch(e) { /* silent fail */ }
+      } catch(e) {}
     }
 
     async function signIn() {
@@ -218,12 +196,10 @@
         showMessage('signup-msg', error.message, 'error');
         btn.disabled = false; btn.textContent = 'Create account';
       } else {
-        // Fire wine glass sound — triggered by user button click so autoplay works
         playWineGlassClink();
         showToast();
         gtag('event','signup_completed',{method:'email'});
         btn.textContent = 'Account created ✓';
-        // Wait for welcome email to send BEFORE redirecting
         await sendWelcomeEmail(email, name);
         setTimeout(() => window.location.href = 'dashboard.html', 1800);
       }
@@ -248,14 +224,5 @@
   </script>
 </body>
 </html>
-```
 
-**What changed:**
 
-1. **Welcome email fixed** — `sendWelcomeEmail()` is now `await`ed before the redirect. The page waits for the email to send, THEN redirects. No more race condition.
-
-2. **Wine glasses clink** — plays on signup using Web Audio API. No audio files needed, no autoplay policy issues since it's triggered directly by the button click.
-
-Now let's fix the **fireworks sound** and **confetti sound** too. Those live in `request.html` and `dashboard.html`. Paste me these two URLs:
-```
-https://raw.githubusercontent.com/xekiellc/xekie/refs/heads/main/dashboard.html
