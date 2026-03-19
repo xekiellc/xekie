@@ -44,10 +44,6 @@
     .flexible-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
     .flexible-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--black);}
     .flexible-row label{font-size:13px;color:var(--mid);margin:0;cursor:pointer;}
-    .price-hint{display:none;margin-top:12px;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.5;}
-    .price-hint.low{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
-    .price-hint.good{background:#EAF3DE;color:#3B6D11;border:1px solid #C0DD97;}
-    .price-hint.high{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;}
     .char-count{font-size:12px;color:var(--mid);text-align:right;margin-top:5px;}
     .expiry-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
     .expiry-btn{padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;background:var(--white);font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--mid);cursor:pointer;text-align:center;transition:all 0.2s;line-height:1.3;}
@@ -77,37 +73,7 @@
     .preview-desc{font-size:14px;color:var(--mid);font-weight:300;line-height:1.5;min-height:20px;}
     .preview-budget{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);margin-top:10px;}
     .preview-expiry{font-size:12px;color:var(--mid);margin-top:6px;}
-    #fireworks-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;display:none;}
-    .ai-writer-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:14px 18px;background:linear-gradient(135deg,rgba(255,77,28,0.06),rgba(255,140,0,0.04));border:1px solid rgba(255,77,28,0.2);border-radius:12px;}
-    .ai-writer-text{flex:1;font-size:14px;color:var(--mid);line-height:1.4;}
-    .ai-writer-text strong{color:var(--black);font-weight:600;}
-    .btn-ai-write{padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:100px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
-    .btn-ai-write:hover{background:#e03a0a;transform:translateY(-1px);}
-    .btn-ai-write:disabled{background:#ccc;cursor:not-allowed;transform:none;}
-    .ai-thinking{display:none;align-items:center;gap:8px;padding:12px 16px;background:rgba(255,77,28,0.05);border-radius:10px;margin-bottom:16px;font-size:13px;color:var(--mid);}
-    .ai-thinking.show{display:flex;}
-    .ai-thinking-dot{width:5px;height:5px;background:var(--accent);border-radius:50%;animation:aiThink 1.2s infinite;}
-    .ai-thinking-dot:nth-child(2){animation-delay:0.2s;}
-    .ai-thinking-dot:nth-child(3){animation-delay:0.4s;}
-    @keyframes aiThink{0%,60%,100%{transform:scale(0.8);opacity:0.4}30%{transform:scale(1.2);opacity:1}}
-    .share-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:20px;}
-    .share-modal.open{display:flex;}
-    .share-box{background:var(--white);border-radius:24px;padding:40px;max-width:480px;width:100%;text-align:center;}
-    .share-box-emoji{font-size:56px;margin-bottom:16px;display:block;}
-    .share-box-title{font-family:var(--font-display);font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;}
-    .share-box-sub{font-size:15px;color:var(--mid);font-weight:300;margin-bottom:28px;line-height:1.5;}
-    .share-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-    .share-btn{padding:13px 16px;border:1.5px solid var(--border);border-radius:12px;background:var(--white);font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;color:var(--black);}
-    .share-btn:hover{border-color:var(--black);transform:translateY(-1px);}
-    .share-btn.twitter{background:#000;color:white;border-color:#000;}
-    .share-btn.facebook{background:#1877f2;color:white;border-color:#1877f2;}
-    .share-btn.imessage{background:#22c55e;color:white;border-color:#22c55e;}
-    .share-btn.copy{background:var(--cream);}
-    .share-link-box{background:var(--cream);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--mid);word-break:break-all;margin-bottom:16px;text-align:left;border:1px solid var(--border);}
-    .btn-share-done{width:100%;padding:13px;background:var(--black);color:white;border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;}
-    .btn-share-done:hover{background:var(--accent);}
-    .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:99999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
-    .share-toast.show{opacity:1;}
+    #fireworks-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;display:none;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -117,30 +83,16 @@
     .footer-links a{font-size:13px;color:#666;text-decoration:none;}
     .footer-links a:hover{color:var(--white);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
-    @media(max-width:480px){.form-card{padding:28px 20px;}nav{padding:0 20px;}.expiry-grid{grid-template-columns:repeat(2,1fr);}.share-buttons{grid-template-columns:1fr;}}
+    @media(max-width:480px){.form-card{padding:28px 20px;}nav{padding:0 20px;}.expiry-grid{grid-template-columns:repeat(2,1fr);}}
   </style>
 </head>
 <body>
   <canvas id="fireworks-canvas"></canvas>
-  <div class="share-modal" id="share-modal">
-    <div class="share-box">
-      <span class="share-box-emoji">🎉</span>
-      <div class="share-box-title">Your XEKIE is live!</div>
-      <div class="share-box-sub">Share it everywhere — the more eyes on it, the faster sellers respond.</div>
-      <div class="share-link-box" id="share-link-box"></div>
-      <div class="share-buttons">
-        <button class="share-btn twitter" onclick="shareToX()">𝕏 Post on X</button>
-        <button class="share-btn facebook" onclick="shareToFacebook()">📘 Facebook</button>
-        <button class="share-btn imessage" onclick="shareToSMS()">💬 iMessage</button>
-        <button class="share-btn copy" onclick="copyShareLink()">🔗 Copy link</button>
-      </div>
-      <button class="btn-share-done" onclick="closeShareModal()">Go to my XEKIE →</button>
-    </div>
-  </div>
-  <div class="share-toast" id="share-toast">Link copied! 🔗</div>
-
   <nav>
-    <a href="index.html" class="nav-logo"><span><span class="xe">XE</span>KIE</span><span class="nav-tagline">Trade Different</span></a>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
     <div class="nav-right">
       <span class="nav-user" id="nav-user"></span>
       <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
@@ -152,22 +104,40 @@
     <p class="page-sub">Can't find it? Just XEKIE it. Tell sellers exactly what you want — better details get better responses.</p>
     <div class="form-card">
       <div id="message" class="message"></div>
-      <div class="ai-writer-bar">
-        <div class="ai-writer-text"><strong>✨ AI Writer</strong> — type a rough idea in the title below and let Claude write your full XEKIE for you</div>
-        <button class="btn-ai-write" id="btn-ai-write" onclick="aiWriteXekie()"><span>✨</span> Write for me</button>
+      <div class="form-group">
+        <label>What do you want to find? <span class="label-hint">Be specific</span></label>
+        <input type="text" id="title" placeholder="e.g. First edition Hell's Angels by Hunter S. Thompson" maxlength="100" oninput="updatePreview()" />
+        <div class="char-count"><span id="title-count">0</span>/100</div>
       </div>
-      <div class="ai-thinking" id="ai-thinking">
-        <div class="ai-thinking-dot"></div><div class="ai-thinking-dot"></div><div class="ai-thinking-dot"></div>
-        <span>Claude is writing your XEKIE...</span>
+      <div class="form-group">
+        <label>Describe exactly what you're looking for <span class="label-hint">Condition, specs, preferences</span></label>
+        <textarea id="description" placeholder="e.g. Looking for a first print in good condition. No major damage to spine or cover." maxlength="500" oninput="updatePreview()"></textarea>
+        <div class="char-count"><span id="desc-count">0</span>/500</div>
       </div>
-
+      <div class="budget-section">
+        <div class="budget-section-title">Your budget</div>
+        <div class="budget-row">
+          <div class="budget-prefix">$</div>
+          <input type="number" id="budget-min" placeholder="Min (e.g. 400)" min="1" oninput="updatePreview()" />
+          <span class="budget-separator">—</span>
+          <div class="budget-prefix">$</div>
+          <input type="number" id="budget-max" placeholder="Max (e.g. 700)" min="1" oninput="updatePreview()" />
+        </div>
+        <div class="flexible-row">
+          <input type="checkbox" id="is-flexible" onchange="updatePreview()" />
+          <label for="is-flexible">I'm flexible on price if the right item comes along</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
+        <input type="text" id="location" placeholder="e.g. Akron, OH or Ships anywhere" />
+      </div>
       <div class="form-group">
         <label>Category</label>
-        <select id="category" onchange="handleCategoryChange()">
+        <select id="category">
           <option value="">Select a category...</option>
           <option>Electronics</option>
           <option>Trading Cards</option>
-          <option>Sports Cards</option>
           <option>Vehicles</option>
           <option>Tools</option>
           <option>Services</option>
@@ -176,56 +146,10 @@
           <option>Books</option>
           <option>Toys</option>
           <option>Music &amp; Movies</option>
-          <option>K-Pop</option>
-          <option>Sneakers</option>
-          <option>Swifties</option>
-          <option>Star Wars</option>
-          <option>Soccer</option>
-          <option>Vinyl Records</option>
-          <option>Retro Tech</option>
           <option>Collectibles</option>
           <option>Other</option>
         </select>
       </div>
-
-      <div class="form-group" id="subcategory-group" style="display:none;">
-        <label id="subcategory-label">Type <span class="label-hint">Optional — helps sellers find you faster</span></label>
-        <select id="subcategory"></select>
-      </div>
-
-      <div class="form-group">
-        <label>What do you want to find? <span class="label-hint">Be specific</span></label>
-        <input type="text" id="title" placeholder="e.g. BTS Magic Shop album — sealed, all versions welcome" maxlength="100" oninput="updatePreview()" />
-        <div class="char-count"><span id="title-count">0</span>/100</div>
-      </div>
-
-      <div class="form-group">
-        <label>Describe exactly what you're looking for <span class="label-hint">Condition, specs, preferences</span></label>
-        <textarea id="description" placeholder="e.g. Looking for a sealed copy in perfect condition. Any version welcome." maxlength="500" oninput="updatePreview()"></textarea>
-        <div class="char-count"><span id="desc-count">0</span>/500</div>
-      </div>
-
-      <div class="budget-section">
-        <div class="budget-section-title">Your budget</div>
-        <div class="budget-row">
-          <div class="budget-prefix">$</div>
-          <input type="number" id="budget-min" placeholder="Min" min="1" oninput="updatePreview()" onblur="triggerPriceCheck()" />
-          <span class="budget-separator">—</span>
-          <div class="budget-prefix">$</div>
-          <input type="number" id="budget-max" placeholder="Max" min="1" oninput="updatePreview()" onblur="triggerPriceCheck()" />
-        </div>
-        <div class="flexible-row">
-          <input type="checkbox" id="is-flexible" onchange="updatePreview()" />
-          <label for="is-flexible">I'm flexible on price if the right item comes along</label>
-        </div>
-        <div class="price-hint" id="price-hint"></div>
-      </div>
-
-      <div class="form-group">
-        <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
-        <input type="text" id="location" placeholder="e.g. Carolina Beach, NC or Ships anywhere" value="Carolina Beach, NC" />
-      </div>
-
       <div class="form-group">
         <label>How long should your XEKIE stay active?</label>
         <div class="expiry-grid">
@@ -238,7 +162,6 @@
           <button class="expiry-btn" data-hours="-1" onclick="setExpiry(this)">Buy Now<span class="expiry-sub">Urgent</span></button>
         </div>
       </div>
-
       <div class="photo-upload-section">
         <div class="photo-upload-title">Photos <span style="font-size:12px;font-weight:400;color:var(--mid);">Optional — up to 4 photos help sellers know exactly what you want</span></div>
         <div class="photo-drop-zone" id="photo-drop-zone" onclick="document.getElementById('photo-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
@@ -249,7 +172,6 @@
         <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect(event)" />
         <div class="photo-previews" id="photo-previews"></div>
       </div>
-
       <div class="preview-box">
         <div class="preview-label">Live preview</div>
         <div class="preview-title" id="preview-title">Your XEKIE title will appear here</div>
@@ -264,329 +186,219 @@
 
   <footer>
     <div class="footer-inner">
-      <div><div class="footer-logo"><span class="xe">XE</span>KIE</div><div class="footer-tagline">Trade Different</div></div>
+      <div>
+        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+        <div class="footer-tagline">Trade Different</div>
+      </div>
       <div class="footer-links">
-        <a href="privacy.html">Privacy Policy</a><a href="prohibited-items.html">Prohibited Items</a>
-        <a href="guidelines.html">Community Guidelines</a><a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Community Guidelines</a>
+        <a href="terms.html">Terms of Service</a>
       </div>
       <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
     </div>
   </footer>
 
   <script>
-    const SUPABASE_URL="https://jlcrarqiyejgjbdesxik.supabase.co";
-    const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
-    const _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    let currentUser=null,selectedExpiryHours=168,selectedPhotos=[];
-    let postedXekieId=null,postedXekieTitle=null;
-    let priceCheckTimer=null,lastPriceCheckKey='';
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let currentUser = null, selectedExpiryHours = 168, selectedPhotos = [];
 
-    function trackEvent(n,p={}){if(typeof gtag!=='undefined')gtag('event',n,p);}
-
-    const NICHE_CONFIG={
-      'K-Pop':{
-        location:'Busan, South Korea',
-        label:'K-Pop Type',
-        subcats:['Albums','Photocards','Merch','Lightsticks','Signed Items','POBs','Mystery Boxes'],
-        titlePlaceholder:'e.g. BTS Magic Shop 5th Muster — sealed, all versions welcome',
-        descPlaceholder:'e.g. Looking for a sealed copy of the BTS 5th Muster Magic Shop DVD. Either version (Seoul or Busan). Must be complete with all inclusions. Happy to pay fair market price.'
-      },
-      'Sneakers':{
-        location:'New York, NY',
-        label:'Brand',
-        subcats:['Nike','Jordan','Adidas','New Balance','Yeezy','Other'],
-        titlePlaceholder:'e.g. Air Jordan 1 Retro High OG Chicago — size 11',
-        descPlaceholder:'e.g. Looking for a DS (deadstock) pair in size 11. No yellowing on the sole. Original box required. Will consider lightly worn if condition is 9/10 or better.'
-      },
-      'Trading Cards':{
-        location:'Tokyo, Japan',
-        label:'Card Type',
-        subcats:['Pokémon','MTG','Yu-Gi-Oh','One Piece','Flesh & Blood','Digimon','Other'],
-        titlePlaceholder:'e.g. Charizard Base Set Holo — PSA 9 or raw NM',
-        descPlaceholder:'e.g. Looking for a Base Set Unlimited Charizard, either PSA 9 graded or raw in Near Mint condition. No creases, no whitening on edges. Will consider both 1st edition and Unlimited.'
-      },
-      'Sports Cards':{
-        location:'Chicago, IL',
-        label:'Sport',
-        subcats:['Baseball','Basketball','Football','Soccer','Hockey','UFC & MMA','Other'],
-        titlePlaceholder:'e.g. LeBron James 2003 Topps Chrome Rookie — PSA 8+',
-        descPlaceholder:'e.g. Hunting a LeBron James 2003-04 Topps Chrome rookie card graded PSA 8 or higher. No cracks in the slab. Raw cards considered if centering is good and corners are sharp.'
-      },
-      'Swifties':{
-        location:'Nashville, TN',
-        label:'Item Type',
-        subcats:['Vinyl','Tour Merch','Friendship Bracelets','Signed Items','Posters & Photos','Clothing','Other'],
-        titlePlaceholder:'e.g. Eras Tour merch — navy crewneck from the Nashville show',
-        descPlaceholder:'e.g. Looking for the navy blue Eras Tour crewneck sweatshirt from the Nashville shows. Size Medium. Must be unworn with original tags if possible. Also interested in other Nashville night exclusive items.'
-      },
-      'Star Wars':{
-        location:'A Galaxy Far Far Away',
-        label:'Item Type',
-        subcats:['Vintage Figures','Modern Figures','LEGO Star Wars','Props & Replicas','Signed Items','Posters & Art','Other'],
-        titlePlaceholder:'e.g. Vintage Kenner Boba Fett — 1979, rocket-firing, complete',
-        descPlaceholder:'e.g. Looking for a vintage 1979 Kenner Boba Fett. Ideally rocket-firing version but will consider standard. Must be complete with all accessories. Good paint, no major scratches. COO stamp a bonus.'
-      },
-      'Soccer':{
-        location:'London, England',
-        label:'Item Type',
-        subcats:['Shirts & Kits','Signed Items','Match Programs','Scarves & Flags','Boots','Other'],
-        titlePlaceholder:'e.g. Manchester United 1999 Champions League Final shirt — XL',
-        descPlaceholder:'e.g. Looking for the Manchester United 1999 Champions League Final home shirt in size XL. Umbro kit with Champions League badge. Player issue preferred but replica considered if in excellent condition.'
-      },
-      'Vinyl Records':{
-        location:'Nashville, TN',
-        label:'Genre',
-        subcats:['Rock','Jazz','Hip-Hop','Soul & R&B','Classical','Country','K-Pop','Other'],
-        titlePlaceholder:'e.g. Miles Davis Kind of Blue — original Columbia 6-eye pressing',
-        descPlaceholder:'e.g. Looking for an original 1959 Columbia 6-eye pressing of Kind of Blue. VG+ or better condition. No deep scratches or heavy surface noise. Cover should be VG at minimum — no splits or major tears.'
-      },
-      'Retro Tech':{
-        location:'Cupertino, CA',
-        label:'Category',
-        subcats:['Vintage Apple','Film Cameras','Synthesizers','Early Gaming','Hi-Fi Audio','Vintage Phones','Other'],
-        titlePlaceholder:'e.g. Apple Macintosh 128K — original 1984, working condition',
-        descPlaceholder:'e.g. Looking for an original 1984 Apple Macintosh 128K in working condition. Original keyboard and mouse preferred. Some yellowing acceptable. Must power on and boot. All ports functional.'
-      },
-      'Collectibles':{
-        location:'Ships anywhere',
-        label:'Type',
-        subcats:['Action Figures','Die-Cast','Coins','Stamps','Other'],
-        titlePlaceholder:'e.g. Hot Wheels Super Treasure Hunt — 2026 Ferrari F40',
-        descPlaceholder:'e.g. Looking for the 2026 Hot Wheels Super Treasure Hunt Ferrari F40 Competizione. Must be in original blister card, undamaged. Will pay above retail for a confirmed STH.'
-      },
-      'Electronics':{
-        location:'Carolina Beach, NC',
-        label:null,subcats:[],
-        titlePlaceholder:'e.g. Sony WH-1000XM5 headphones — black, like new',
-        descPlaceholder:'e.g. Looking for Sony WH-1000XM5 in black. Like new condition with original box and all accessories. No cracks or deep scratches. Prefer local pickup but will consider shipped with insurance.'
-      },
-      'Vehicles':{
-        location:'Carolina Beach, NC',
-        label:null,subcats:[],
-        titlePlaceholder:'e.g. 1967 Ford Mustang Fastback — any condition considered',
-        descPlaceholder:'e.g. Looking for a 1967 Ford Mustang Fastback. Any condition considered including project cars. Must have original VIN and title. Prefer Carolina/Southeast but will consider shipping for the right car.'
-      },
-      'Books':{
-        location:'Carolina Beach, NC',
-        label:null,subcats:[],
-        titlePlaceholder:'e.g. First edition Dune by Frank Herbert — 1965 Chilton',
-        descPlaceholder:'e.g. Looking for a first edition first printing of Dune (1965, Chilton Books). Good condition or better. Dust jacket preferred but not required. No writing or heavy damage to pages.'
-      },
-    };
-
-    const DEFAULT_TITLE_PLACEHOLDER='e.g. BTS Magic Shop album — sealed, all versions welcome';
-    const DEFAULT_DESC_PLACEHOLDER='e.g. Looking for a sealed copy in perfect condition. Any version welcome.';
-
-    _sb.auth.getSession().then(({data:{session}})=>{
-      if(!session){window.location.href='login.html';return;}
-      currentUser=session.user;
-      document.getElementById('nav-user').textContent=session.user.user_metadata?.full_name||session.user.email;
+    _sb.auth.getSession().then(({ data: { session } }) => {
+      if (!session) { window.location.href = 'login.html'; return; }
+      currentUser = session.user;
+      document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
     });
 
-    function handleCategoryChange(){
-      const cat=document.getElementById('category').value;
-      const subcatGroup=document.getElementById('subcategory-group');
-      const locationField=document.getElementById('location');
-      const titleInput=document.getElementById('title');
-      const descInput=document.getElementById('description');
-      const config=NICHE_CONFIG[cat];
-      if(config){
-        locationField.value=config.location;
-        titleInput.placeholder=config.titlePlaceholder||DEFAULT_TITLE_PLACEHOLDER;
-        descInput.placeholder=config.descPlaceholder||DEFAULT_DESC_PLACEHOLDER;
-        if(config.subcats&&config.subcats.length){
-          subcatGroup.style.display='block';
-          document.getElementById('subcategory-label').textContent=config.label;
-          const sel=document.getElementById('subcategory');
-          sel.innerHTML='<option value="">Select '+config.label.toLowerCase()+'... (optional)</option>'+config.subcats.map(s=>`<option>${s}</option>`).join('');
-        } else {
-          subcatGroup.style.display='none';
-          document.getElementById('subcategory').innerHTML='';
+    function setExpiry(btn) {
+      document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active'); selectedExpiryHours = parseInt(btn.dataset.hours); updatePreview();
+    }
+
+    function getExpiryLabel(hours) {
+      if (hours === -1) return '🔥 Buy Now — urgent!';
+      if (hours === 0) return '♾️ Until fulfilled — no expiry';
+      if (hours === 24) return '⏱ Active for 24 hours';
+      if (hours === 48) return '⏱ Active for 48 hours';
+      if (hours === 72) return '⏱ Active for 72 hours';
+      if (hours === 168) return '⏱ Active for 1 week';
+      if (hours === 720) return '⏱ Active for 1 month';
+      return '⏱ Active for ' + hours + ' hours';
+    }
+
+    function updatePreview() {
+      const title = document.getElementById('title').value;
+      const desc = document.getElementById('description').value;
+      const min = document.getElementById('budget-min').value;
+      const max = document.getElementById('budget-max').value;
+      const flexible = document.getElementById('is-flexible').checked;
+      document.getElementById('title-count').textContent = title.length;
+      document.getElementById('desc-count').textContent = desc.length;
+      document.getElementById('preview-title').textContent = title || 'Your XEKIE title will appear here';
+      document.getElementById('preview-desc').textContent = desc || 'Your description will appear here...';
+      let budgetStr = '$—';
+      if (min && max) budgetStr = '$' + Number(min).toLocaleString() + ' – $' + Number(max).toLocaleString();
+      else if (min) budgetStr = '$' + Number(min).toLocaleString() + '+';
+      else if (max) budgetStr = 'Up to $' + Number(max).toLocaleString();
+      if (flexible && (min || max)) budgetStr += ' (flexible)';
+      document.getElementById('preview-budget').textContent = budgetStr;
+      document.getElementById('preview-expiry').textContent = getExpiryLabel(selectedExpiryHours);
+    }
+
+    function showMessage(text, type) {
+      const el = document.getElementById('message');
+      el.textContent = text; el.className = 'message ' + type;
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ── FIREWORKS SOUND (Web Audio API — no files needed) ──
+    function playFireworksSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        // Launch whistle — rising pitch
+        const whistle = ctx.createOscillator();
+        const whistleGain = ctx.createGain();
+        whistle.connect(whistleGain); whistleGain.connect(ctx.destination);
+        whistle.type = 'sine';
+        whistle.frequency.setValueAtTime(400, now);
+        whistle.frequency.exponentialRampToValueAtTime(1200, now + 0.4);
+        whistleGain.gain.setValueAtTime(0.15, now);
+        whistleGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        whistle.start(now); whistle.stop(now + 0.4);
+        // Explosion burst — noise pop
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.3, ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = (Math.random()*2-1) * Math.pow(1 - i/data.length, 1.5);
+        const burst = ctx.createBufferSource();
+        const filt = ctx.createBiquadFilter();
+        filt.type = 'bandpass'; filt.frequency.value = 600; filt.Q.value = 0.8;
+        const burstGain = ctx.createGain();
+        burstGain.gain.setValueAtTime(0.5, now + 0.4);
+        burstGain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+        burst.buffer = buf; burst.connect(filt); filt.connect(burstGain); burstGain.connect(ctx.destination);
+        burst.start(now + 0.4);
+        // Sparkle notes — descending celebratory fanfare after the pop
+        [[1568,0.5],[1319,0.65],[1047,0.8],[1319,0.9],[1568,1.0],[2093,1.15]].forEach(([freq, t]) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + t);
+          gain.gain.setValueAtTime(0.2, now + t);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + t + 0.35);
+          osc.start(now + t); osc.stop(now + t + 0.35);
+        });
+      } catch(e) {}
+    }
+
+    function launchFireworks() {
+      playFireworksSound();
+      const canvas = document.getElementById('fireworks-canvas');
+      canvas.style.display = 'block';
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+      const particles = [];
+      for (let i = 0; i < 8; i++) {
+        const x = Math.random() * canvas.width, y = Math.random() * canvas.height * 0.6;
+        const colors = ['#ff4d1c','#ffd700','#ff69b4','#00cfff','#7fff00','#ff4500'];
+        const color = colors[Math.floor(Math.random()*colors.length)];
+        for (let j = 0; j < 40; j++) {
+          const angle = (j/40)*Math.PI*2, speed = 2+Math.random()*4;
+          particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, color, alpha: 1, size: 2+Math.random()*3 });
         }
-      } else {
-        const niches=Object.values(NICHE_CONFIG).map(c=>c.location);
-        if(niches.includes(locationField.value))locationField.value='Carolina Beach, NC';
-        titleInput.placeholder=DEFAULT_TITLE_PLACEHOLDER;
-        descInput.placeholder=DEFAULT_DESC_PLACEHOLDER;
-        subcatGroup.style.display='none';
-        document.getElementById('subcategory').innerHTML='';
       }
-    }
-
-    window.addEventListener('DOMContentLoaded',()=>{
-      const params=new URLSearchParams(window.location.search);
-      const presetCat=params.get('category');
-      if(presetCat){
-        const sel=document.getElementById('category');
-        for(let i=0;i<sel.options.length;i++){
-          if(sel.options[i].value===presetCat){sel.selectedIndex=i;handleCategoryChange();break;}
-        }
+      let frame = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.08; p.alpha-=0.012; ctx.globalAlpha=Math.max(0,p.alpha); ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill(); });
+        frame++;
+        if (frame < 120) requestAnimationFrame(animate);
+        else { canvas.style.display='none'; ctx.clearRect(0,0,canvas.width,canvas.height); }
       }
-    });
-
-    function setExpiry(btn){document.querySelectorAll('.expiry-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');selectedExpiryHours=parseInt(btn.dataset.hours);updatePreview();}
-
-    function getExpiryLabel(hours){
-      if(hours===-1)return'🔥 Buy Now — urgent!';if(hours===0)return'♾️ Until fulfilled — no expiry';
-      if(hours===24)return'⏱ Active for 24 hours';if(hours===48)return'⏱ Active for 48 hours';
-      if(hours===72)return'⏱ Active for 72 hours';if(hours===168)return'⏱ Active for 1 week';
-      if(hours===720)return'⏱ Active for 1 month';return'⏱ Active for '+hours+' hours';
-    }
-
-    function updatePreview(){
-      const title=document.getElementById('title').value;
-      const desc=document.getElementById('description').value;
-      const min=document.getElementById('budget-min').value;
-      const max=document.getElementById('budget-max').value;
-      const flexible=document.getElementById('is-flexible').checked;
-      document.getElementById('title-count').textContent=title.length;
-      document.getElementById('desc-count').textContent=desc.length;
-      document.getElementById('preview-title').textContent=title||'Your XEKIE title will appear here';
-      document.getElementById('preview-desc').textContent=desc||'Your description will appear here...';
-      let budgetStr='$—';
-      if(min&&max)budgetStr='$'+Number(min).toLocaleString()+' – $'+Number(max).toLocaleString();
-      else if(min)budgetStr='$'+Number(min).toLocaleString()+'+';
-      else if(max)budgetStr='Up to $'+Number(max).toLocaleString();
-      if(flexible&&(min||max))budgetStr+=' (flexible)';
-      document.getElementById('preview-budget').textContent=budgetStr;
-      document.getElementById('preview-expiry').textContent=getExpiryLabel(selectedExpiryHours);
-    }
-
-    function showMessage(text,type){const el=document.getElementById('message');el.textContent=text;el.className='message '+type;el.scrollIntoView({behavior:'smooth',block:'nearest'});}
-
-    function triggerPriceCheck(){
-      const title=document.getElementById('title').value.trim();
-      const min=document.getElementById('budget-min').value;
-      const max=document.getElementById('budget-max').value;
-      const category=document.getElementById('category').value;
-      if(!title||(!min&&!max))return;
-      const key=`${title}|${min}|${max}|${category}`;
-      if(key===lastPriceCheckKey)return;
-      clearTimeout(priceCheckTimer);
-      priceCheckTimer=setTimeout(()=>runPriceCheck(title,min,max,category,key),600);
-    }
-
-    async function runPriceCheck(title,min,max,category,key){
-      lastPriceCheckKey=key;
-      const hintEl=document.getElementById('price-hint');
-      try{
-        const res=await fetch('/.netlify/functions/ai-price',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,budget_min:min,budget_max:max,category})});
-        const data=await res.json();
-        if(!data.message||data.status==='unknown'){hintEl.style.display='none';return;}
-        const icons={low:'⚠️',good:'✅',high:'ℹ️'};
-        let text=`${icons[data.status]||'ℹ️'} ${data.message}`;
-        if(data.typical_range)text+=` Typical range: ${data.typical_range}.`;
-        hintEl.className=`price-hint ${data.status}`;hintEl.textContent=text;hintEl.style.display='block';
-      }catch(e){hintEl.style.display='none';}
-    }
-
-    async function aiWriteXekie(){
-      const title=document.getElementById('title').value.trim();
-      if(!title){showMessage('Type a rough idea in the title field first — then let Claude expand it!','error');return;}
-      const btn=document.getElementById('btn-ai-write');
-      const thinking=document.getElementById('ai-thinking');
-      btn.disabled=true;btn.innerHTML='<span>✨</span> Writing...';thinking.classList.add('show');
-      try{
-        const res=await fetch('/.netlify/functions/ai-writer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title})});
-        const result=await res.json();
-        if(result.title){document.getElementById('title').value=result.title.slice(0,100);document.getElementById('title-count').textContent=result.title.slice(0,100).length;}
-        if(result.description){document.getElementById('description').value=result.description.slice(0,500);document.getElementById('desc-count').textContent=result.description.slice(0,500).length;}
-        if(result.category){const sel=document.getElementById('category');for(let i=0;i<sel.options.length;i++){if(sel.options[i].text===result.category){sel.selectedIndex=i;handleCategoryChange();break;}}}
-        if(result.budget_hint){const parts=result.budget_hint.split('-');if(parts.length===2){document.getElementById('budget-min').value=parts[0].trim().replace(/\D/g,'');document.getElementById('budget-max').value=parts[1].trim().replace(/\D/g,'');}}
-        updatePreview();
-        trackEvent('ai_writer_used',{prompt_length:title.length});
-        showMessage('✨ Claude wrote your XEKIE! Review and edit anything before posting.','success');
-        setTimeout(triggerPriceCheck,400);
-      }catch(e){showMessage('AI writer is temporarily unavailable. Please fill in manually.','error');}
-      finally{btn.disabled=false;btn.innerHTML='<span>✨</span> Write for me';thinking.classList.remove('show');}
-    }
-
-    function openShareModal(xekieId,title){postedXekieId=xekieId;postedXekieTitle=title;document.getElementById('share-link-box').textContent=`https://xekie.com/xekie.html?id=${xekieId}`;document.getElementById('share-modal').classList.add('open');}
-    function closeShareModal(){document.getElementById('share-modal').classList.remove('open');if(postedXekieId)window.location.href=`xekie.html?id=${postedXekieId}`;}
-    function shareToX(){const url=`https://xekie.com/xekie.html?id=${postedXekieId}`;window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I'm looking for: "${postedXekieTitle}" — respond with your best offer on XEKIE 🔶`)}&url=${encodeURIComponent(url)}`,'_blank');}
-    function shareToFacebook(){window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://xekie.com/xekie.html?id=${postedXekieId}`)}`,'_blank');}
-    function shareToSMS(){const url=`https://xekie.com/xekie.html?id=${postedXekieId}`;const text=`I just posted a XEKIE — looking for "${postedXekieTitle}". Can you help? ${url}`;const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);window.open(isIOS?`sms:&body=${encodeURIComponent(text)}`:`sms:?body=${encodeURIComponent(text)}`);}
-    function copyShareLink(){navigator.clipboard.writeText(`https://xekie.com/xekie.html?id=${postedXekieId}`).then(()=>{const t=document.getElementById('share-toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);});}
-
-    function launchFireworks(){
-      const canvas=document.getElementById('fireworks-canvas');canvas.style.display='block';
-      const ctx=canvas.getContext('2d');canvas.width=window.innerWidth;canvas.height=window.innerHeight;
-      const particles=[];
-      for(let i=0;i<8;i++){const x=Math.random()*canvas.width,y=Math.random()*canvas.height*0.6;const colors=['#ff4d1c','#ffd700','#ff69b4','#00cfff','#7fff00','#ff4500'];const color=colors[Math.floor(Math.random()*colors.length)];for(let j=0;j<40;j++){const angle=(j/40)*Math.PI*2,speed=2+Math.random()*4;particles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,color,alpha:1,size:2+Math.random()*3});}}
-      let frame=0;
-      function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.08;p.alpha-=0.012;ctx.globalAlpha=Math.max(0,p.alpha);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();});frame++;if(frame<120)requestAnimationFrame(animate);else{canvas.style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height);}}
       animate();
     }
 
-    function handleDragOver(e){e.preventDefault();document.getElementById('photo-drop-zone').classList.add('dragover');}
-    function handleDragLeave(e){document.getElementById('photo-drop-zone').classList.remove('dragover');}
-    function handleDrop(e){e.preventDefault();document.getElementById('photo-drop-zone').classList.remove('dragover');addPhotos(Array.from(e.dataTransfer.files));}
-    function handlePhotoSelect(e){addPhotos(Array.from(e.target.files));e.target.value='';}
+    function handleDragOver(e) { e.preventDefault(); document.getElementById('photo-drop-zone').classList.add('dragover'); }
+    function handleDragLeave(e) { document.getElementById('photo-drop-zone').classList.remove('dragover'); }
+    function handleDrop(e) { e.preventDefault(); document.getElementById('photo-drop-zone').classList.remove('dragover'); addPhotos(Array.from(e.dataTransfer.files)); }
+    function handlePhotoSelect(e) { addPhotos(Array.from(e.target.files)); e.target.value = ''; }
 
-    function addPhotos(files){
-      const imageFiles=files.filter(f=>f.type.startsWith('image/'));
-      const remaining=4-selectedPhotos.length;
-      imageFiles.slice(0,remaining).forEach(file=>{if(file.size>5*1024*1024){alert(file.name+' is too large. Max 5MB.');return;}const reader=new FileReader();reader.onload=(e)=>{selectedPhotos.push({file,previewUrl:e.target.result});renderPhotoPreviews();};reader.readAsDataURL(file);});
+    function addPhotos(files) {
+      const imageFiles = files.filter(f => f.type.startsWith('image/'));
+      const remaining = 4 - selectedPhotos.length;
+      imageFiles.slice(0, remaining).forEach(file => {
+        if (file.size > 5 * 1024 * 1024) { alert(file.name + ' is too large. Max 5MB per photo.'); return; }
+        const reader = new FileReader();
+        reader.onload = (e) => { selectedPhotos.push({ file, previewUrl: e.target.result }); renderPhotoPreviews(); };
+        reader.readAsDataURL(file);
+      });
     }
 
-    function renderPhotoPreviews(){
-      const container=document.getElementById('photo-previews');const dropZone=document.getElementById('photo-drop-zone');
-      dropZone.style.display=selectedPhotos.length>=4?'none':'block';
-      container.innerHTML=selectedPhotos.map((p,i)=>`<div class="photo-preview-item"><img src="${p.previewUrl}" alt="Photo ${i+1}" /><button class="photo-remove" onclick="removePhoto(${i})">✕</button></div>`).join('');
+    function renderPhotoPreviews() {
+      const container = document.getElementById('photo-previews');
+      const dropZone = document.getElementById('photo-drop-zone');
+      dropZone.style.display = selectedPhotos.length >= 4 ? 'none' : 'block';
+      container.innerHTML = selectedPhotos.map((p, i) => `
+        <div class="photo-preview-item">
+          <img src="${p.previewUrl}" alt="Photo ${i+1}" />
+          <button class="photo-remove" onclick="removePhoto(${i})">✕</button>
+        </div>`).join('');
     }
 
-    function removePhoto(i){selectedPhotos.splice(i,1);renderPhotoPreviews();}
+    function removePhoto(i) { selectedPhotos.splice(i, 1); renderPhotoPreviews(); }
 
-    async function uploadPhotos(xekieId){
-      const urls=[];
-      for(const p of selectedPhotos){const ext=p.file.name.split('.').pop()||'jpg';const path=`${currentUser.id}/${xekieId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;const{error}=await _sb.storage.from('xekie-photos').upload(path,p.file,{contentType:p.file.type,upsert:true});if(!error){const{data:urlData}=_sb.storage.from('xekie-photos').getPublicUrl(path);urls.push(urlData.publicUrl);}}
+    async function uploadPhotos(xekieId) {
+      const urls = [];
+      for (const p of selectedPhotos) {
+        const ext = p.file.name.split('.').pop() || 'jpg';
+        const path = `${currentUser.id}/${xekieId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error } = await _sb.storage.from('xekie-photos').upload(path, p.file, { contentType: p.file.type, upsert: true });
+        if (!error) {
+          const { data: urlData } = _sb.storage.from('xekie-photos').getPublicUrl(path);
+          urls.push(urlData.publicUrl);
+        }
+      }
       return urls;
     }
 
-    async function postXekie(){
-      const title=document.getElementById('title').value.trim();
-      const description=document.getElementById('description').value.trim();
-      const budget_min=document.getElementById('budget-min').value;
-      const budget_max=document.getElementById('budget-max').value;
-      const is_flexible=document.getElementById('is-flexible').checked;
-      const location=document.getElementById('location').value.trim();
-      const category=document.getElementById('category').value;
-      const subcategory=document.getElementById('subcategory')?.value||null;
-      const btn=document.getElementById('btn-submit');
-      if(!title)return showMessage('Please add a title — what do you want to find?','error');
-      if(!budget_min&&!budget_max)return showMessage('Please enter at least a minimum or maximum budget.','error');
-      if(!location)return showMessage('Please add a location or write "Ships anywhere".','error');
-      if(!category)return showMessage('Please select a category.','error');
-      btn.disabled=true;btn.textContent='XEKIE\'ing...';
-      let expires_at=null;
-      if(selectedExpiryHours>0)expires_at=new Date(Date.now()+selectedExpiryHours*60*60*1000).toISOString();
-      const insertData={title,description,budget:budget_max?parseInt(budget_max):parseInt(budget_min),budget_min:budget_min?parseInt(budget_min):null,budget_max:budget_max?parseInt(budget_max):null,is_flexible,location,category,subcategory:subcategory||null,user_id:currentUser.id,view_count:0,is_fulfilled:false};
-      if(expires_at)insertData.expires_at=expires_at;
-      let newXekie=null;
-      const{data:nx,error}=await _sb.from('xekies').insert(insertData).select().single();
-      if(error){
-        if(error.message&&error.message.includes('expires_at')){delete insertData.expires_at;const{data:nx2,error:e2}=await _sb.from('xekies').insert(insertData).select().single();if(e2){showMessage('Something went wrong: '+e2.message,'error');btn.disabled=false;btn.textContent='Just XEKIE it →';return;}newXekie=nx2;}
-        else{showMessage('Something went wrong: '+error.message,'error');btn.disabled=false;btn.textContent='Just XEKIE it →';return;}
-      }else{newXekie=nx;}
-      if(selectedPhotos.length&&newXekie){btn.textContent='Uploading photos...';const photoUrls=await uploadPhotos(newXekie.id);if(photoUrls.length)await _sb.from('xekies').update({photos:photoUrls}).eq('id',newXekie.id);}
-      trackEvent('xekie_posted',{category,location,has_photos:selectedPhotos.length>0});
-      if(newXekie){fetch('/.netlify/functions/notify-sellers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(newXekie)}).catch(()=>{});}
-      launchFireworks();btn.textContent='XEKIE\'d! 🎉';
-      setTimeout(()=>{
-        btn.disabled=false;btn.textContent='Just XEKIE it →';
-        document.getElementById('title').value='';document.getElementById('description').value='';
-        document.getElementById('budget-min').value='';document.getElementById('budget-max').value='';
-        document.getElementById('is-flexible').checked=false;
-        document.getElementById('location').value='Carolina Beach, NC';
-        document.getElementById('category').value='';
-        document.getElementById('subcategory-group').style.display='none';
-        document.getElementById('subcategory').innerHTML='';
-        document.getElementById('price-hint').style.display='none';
-        document.getElementById('title').placeholder=DEFAULT_TITLE_PLACEHOLDER;
-        document.getElementById('description').placeholder=DEFAULT_DESC_PLACEHOLDER;
-        selectedPhotos=[];renderPhotoPreviews();updatePreview();
-      },500);
-      setTimeout(()=>{if(newXekie)openShareModal(newXekie.id,title);},1200);
+    async function postXekie() {
+      const title = document.getElementById('title').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const budget_min = document.getElementById('budget-min').value;
+      const budget_max = document.getElementById('budget-max').value;
+      const is_flexible = document.getElementById('is-flexible').checked;
+      const location = document.getElementById('location').value.trim();
+      const category = document.getElementById('category').value;
+      const btn = document.getElementById('btn-submit');
+      if (!title) return showMessage('Please add a title — what do you want to find?', 'error');
+      if (!budget_min && !budget_max) return showMessage('Please enter at least a minimum or maximum budget.', 'error');
+      if (!location) return showMessage('Please add a location or write "Ships anywhere".', 'error');
+      if (!category) return showMessage('Please select a category.', 'error');
+      btn.disabled = true; btn.textContent = 'XEKIE\'ing...';
+      let expires_at = null;
+      if (selectedExpiryHours > 0) expires_at = new Date(Date.now() + selectedExpiryHours * 60 * 60 * 1000).toISOString();
+      const insertData = { title, description, budget: budget_max ? parseInt(budget_max) : parseInt(budget_min), budget_min: budget_min ? parseInt(budget_min) : null, budget_max: budget_max ? parseInt(budget_max) : null, is_flexible, location, category, user_id: currentUser.id, view_count: 0, is_fulfilled: false };
+      if (expires_at) insertData.expires_at = expires_at;
+      const { data: newXekie, error } = await _sb.from('xekies').insert(insertData).select().single();
+      if (error) {
+        if (error.message && error.message.includes('expires_at')) {
+          delete insertData.expires_at;
+          const { data: nX2, error: e2 } = await _sb.from('xekies').insert(insertData).select().single();
+          if (e2) { showMessage('Something went wrong: ' + e2.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
+        } else { showMessage('Something went wrong: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
+      }
+      if (selectedPhotos.length && newXekie) {
+        btn.textContent = 'Uploading photos...';
+        const photoUrls = await uploadPhotos(newXekie.id);
+        if (photoUrls.length) await _sb.from('xekies').update({ photos: photoUrls }).eq('id', newXekie.id);
+      }
+      showMessage('🎆 Your XEKIE is live! Sellers will find you.', 'success');
+      launchFireworks(); btn.textContent = 'XEKIE\'d! ✓';
+      if (newXekie) { fetch('/.netlify/functions/notify-sellers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newXekie) }).catch(() => {}); }
+      setTimeout(() => window.location.href = 'dashboard.html', 2500);
     }
   </script>
 </body>
