@@ -38,7 +38,7 @@ Write a XEKIE listing for them. Return ONLY valid JSON with no markdown, no expl
 {
   "title": "A specific, compelling title (max 80 chars)",
   "description": "2-3 sentences describing exactly what they want, including condition, specs, and any preferences (max 300 chars)",
-  "category": "ONE of: Electronics, Trading Cards, Vehicles, Tools, Services, Household Items, Clothes & Apparel, Books, Toys, Music & Movies, Collectibles, Other",
+  "category": "ONE of: K-Pop, Sneakers, Trading Cards, Sports Cards, Swifties, Star Wars, Soccer, Vinyl Records, Retro Games, Vintage & Antique, Comics, Sports Memorabilia, Luxury Watches, Retro Tech, Electronics, Vehicles, Tools, Services, Household Items, Clothes & Apparel, Books, Toys, Music & Movies, Collectibles, Other",
   "budget_hint": "A suggested budget range as a string like '100-200' or '500-1000' based on typical market value"
 }`
         }]
