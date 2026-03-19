@@ -111,8 +111,6 @@
     .btn-share-done:hover{background:var(--accent);}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:99999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
-    .kpop-subcat-group{background:linear-gradient(135deg,rgba(255,107,157,0.06),rgba(255,107,157,0.02));border:1.5px solid rgba(255,107,157,0.25);border-radius:12px;padding:16px 20px;margin-bottom:24px;}
-    .kpop-subcat-label{font-size:13px;font-weight:600;color:#ff6b9d;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -225,10 +223,11 @@
         </select>
       </div>
 
-      <div id="subcategory-group" style="display:none;" class="kpop-subcat-group">
-        <div class="kpop-subcat-label">🎵 K-Pop Type</div>
-        <select id="subcategory">
-          <option value="">Select type... (optional)</option>
+      <!-- K-POP SUBCATEGORY -->
+      <div class="form-group" id="subcategory-group" style="display:none;">
+        <label>K-Pop Type <span class="label-hint">What kind of item?</span></label>
+        <select id="subcategory" style="border-color:rgba(124,58,237,0.4);">
+          <option value="">Select type...</option>
           <option>Albums</option>
           <option>Photocards</option>
           <option>Merch</option>
@@ -300,31 +299,37 @@
 
     function trackEvent(name, params = {}) { if (typeof gtag !== 'undefined') gtag('event', name, params); }
 
-    // ── CATEGORY CHANGE ──
-    function handleCategoryChange() {
-      const cat = document.getElementById('category').value;
-      const subcatGroup = document.getElementById('subcategory-group');
-      subcatGroup.style.display = cat === 'K-Pop' ? 'block' : 'none';
-      if (cat !== 'K-Pop') document.getElementById('subcategory').value = '';
-    }
-
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (!session) { window.location.href = 'login.html'; return; }
       currentUser = session.user;
       document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
     });
 
+    // ── CATEGORY CHANGE ──
+    function handleCategoryChange() {
+      const cat = document.getElementById('category').value;
+      const subcatGroup = document.getElementById('subcategory-group');
+      const locationField = document.getElementById('location');
+      subcatGroup.style.display = cat === 'K-Pop' ? 'block' : 'none';
+      if (cat !== 'K-Pop') {
+        document.getElementById('subcategory').value = '';
+        if (locationField.value === 'Busan, South Korea') locationField.value = 'Carolina Beach, NC';
+      } else {
+        locationField.value = 'Busan, South Korea';
+      }
+    }
+
     // Auto-select category from URL param
-    window.addEventListener('DOMContentLoaded', () => {
-      const params = new URLSearchParams(window.location.search);
-      const presetCat = params.get('category');
-      if (presetCat) {
+    const reqParams = new URLSearchParams(window.location.search);
+    const presetCat = reqParams.get('category');
+    if (presetCat) {
+      window.addEventListener('DOMContentLoaded', () => {
         const sel = document.getElementById('category');
         for (let i = 0; i < sel.options.length; i++) {
           if (sel.options[i].value === presetCat) { sel.selectedIndex = i; handleCategoryChange(); break; }
         }
-      }
-    });
+      });
+    }
 
     function setExpiry(btn) {
       document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
@@ -416,10 +421,7 @@
         const result = await res.json();
         if (result.title) { document.getElementById('title').value = result.title.slice(0, 100); document.getElementById('title-count').textContent = result.title.slice(0,100).length; }
         if (result.description) { document.getElementById('description').value = result.description.slice(0, 500); document.getElementById('desc-count').textContent = result.description.slice(0,500).length; }
-        if (result.category) {
-          const sel = document.getElementById('category');
-          for (let i = 0; i < sel.options.length; i++) { if (sel.options[i].text === result.category) { sel.selectedIndex = i; handleCategoryChange(); break; } }
-        }
+        if (result.category) { const sel = document.getElementById('category'); for (let i = 0; i < sel.options.length; i++) { if (sel.options[i].text === result.category) { sel.selectedIndex = i; handleCategoryChange(); break; } } }
         if (result.budget_hint) {
           const parts = result.budget_hint.split('-');
           if (parts.length === 2) {
@@ -536,7 +538,7 @@
       const is_flexible = document.getElementById('is-flexible').checked;
       const location = document.getElementById('location').value.trim();
       const category = document.getElementById('category').value;
-      const subcategory = document.getElementById('subcategory').value || null;
+      const subcategory = document.getElementById('subcategory')?.value || null;
       const btn = document.getElementById('btn-submit');
       if (!title) return showMessage('Please add a title — what do you want to find?', 'error');
       if (!budget_min && !budget_max) return showMessage('Please enter at least a minimum or maximum budget.', 'error');
@@ -545,7 +547,7 @@
       btn.disabled = true; btn.textContent = 'XEKIE\'ing...';
       let expires_at = null;
       if (selectedExpiryHours > 0) expires_at = new Date(Date.now() + selectedExpiryHours * 60 * 60 * 1000).toISOString();
-      const insertData = { title, description, budget: budget_max ? parseInt(budget_max) : parseInt(budget_min), budget_min: budget_min ? parseInt(budget_min) : null, budget_max: budget_max ? parseInt(budget_max) : null, is_flexible, location, category, subcategory, user_id: currentUser.id, view_count: 0, is_fulfilled: false };
+      const insertData = { title, description, budget: budget_max ? parseInt(budget_max) : parseInt(budget_min), budget_min: budget_min ? parseInt(budget_min) : null, budget_max: budget_max ? parseInt(budget_max) : null, is_flexible, location, category, subcategory: subcategory || null, user_id: currentUser.id, view_count: 0, is_fulfilled: false };
       if (expires_at) insertData.expires_at = expires_at;
       let newXekie = null;
       const { data: nx, error } = await _sb.from('xekies').insert(insertData).select().single();
@@ -562,7 +564,7 @@
         const photoUrls = await uploadPhotos(newXekie.id);
         if (photoUrls.length) await _sb.from('xekies').update({ photos: photoUrls }).eq('id', newXekie.id);
       }
-      trackEvent('xekie_posted', { category, location, has_photos: selectedPhotos.length > 0, subcategory: subcategory || 'none' });
+      trackEvent('xekie_posted', { category, location, has_photos: selectedPhotos.length > 0 });
       if (newXekie) { fetch('/.netlify/functions/notify-sellers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newXekie) }).catch(() => {}); }
       launchFireworks();
       btn.textContent = 'XEKIE\'d! 🎉';
@@ -570,9 +572,11 @@
         btn.disabled = false; btn.textContent = 'Just XEKIE it →';
         document.getElementById('title').value = ''; document.getElementById('description').value = '';
         document.getElementById('budget-min').value = ''; document.getElementById('budget-max').value = '';
-        document.getElementById('is-flexible').checked = false; document.getElementById('location').value = 'Carolina Beach, NC';
-        document.getElementById('category').value = ''; document.getElementById('subcategory').value = '';
+        document.getElementById('is-flexible').checked = false;
+        document.getElementById('location').value = 'Carolina Beach, NC';
+        document.getElementById('category').value = '';
         document.getElementById('subcategory-group').style.display = 'none';
+        document.getElementById('subcategory').value = '';
         document.getElementById('price-hint').style.display = 'none';
         selectedPhotos = []; renderPhotoPreviews(); updatePreview();
       }, 500);
