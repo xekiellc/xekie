@@ -40,9 +40,6 @@
     .xekie-card.fulfilled{border-color:#c0dd97;background:#f9fdf5;}
     .xekie-card.expired{opacity:0.65;}
     .xekie-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06);}
-    .card-inner{display:flex;gap:16px;align-items:flex-start;}
-    .card-thumbnail{width:90px;height:90px;border-radius:10px;object-fit:cover;flex-shrink:0;}
-    .card-body{flex:1;min-width:0;}
     .card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
     .card-title{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.02em;}
     .card-budget{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);white-space:nowrap;}
@@ -63,8 +60,6 @@
     .offers-badge{display:inline-block;background:var(--accent);color:white;border-radius:100px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px;}
     .btn-share-xekie{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:var(--mid);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;}
     .btn-share-xekie:hover{border-color:var(--black);color:var(--black);}
-    .btn-edit{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:var(--black);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
-    .btn-edit:hover{border-color:var(--black);background:var(--cream);}
     .btn-fulfill{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:#3B6D11;border:1.5px solid #c0dd97;cursor:pointer;transition:all 0.2s;}
     .btn-fulfill:hover{background:#EAF3DE;}
     .btn-repost{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:#1d4ed8;border:1.5px solid rgba(29,78,216,0.3);cursor:pointer;transition:all 0.2s;}
@@ -107,7 +102,7 @@
     .footer-links a{font-size:13px;color:#666;text-decoration:none;}
     .footer-links a:hover{color:var(--white);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
-    @media(max-width:600px){nav{padding:0 20px;}.stats-row{grid-template-columns:1fr 1fr;}.card-thumbnail{width:72px;height:72px;}}
+    @media(max-width:600px){nav{padding:0 20px;}.stats-row{grid-template-columns:1fr 1fr;}}
   </style>
 </head>
 <body>
@@ -195,8 +190,6 @@
     let currentUser = null;
     const BETA_CUTOFF = new Date('2026-06-01');
 
-    function trackEvent(name, params = {}) { if (typeof gtag !== 'undefined') gtag('event', name, params); }
-
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
@@ -271,41 +264,32 @@
         const isExpired = !isFulfilled && x.expires_at && new Date(x.expires_at) < new Date();
         const cardClass = isFulfilled ? 'fulfilled' : isExpired ? 'expired' : '';
         const isPromoted = x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date();
-        const thumbnail = x.photos && x.photos.length
-          ? `<img class="card-thumbnail" src="${x.photos[0]}" alt="Photo" loading="lazy" onerror="this.style.display='none'" />`
-          : '';
         return `<div class="xekie-card ${cardClass}" id="card-${x.id}">
-          <div class="card-inner">
-            ${thumbnail}
-            <div class="card-body">
-              <div class="card-header">
-                <div>
-                  ${isFulfilled ? '<span class="status-badge status-fulfilled">✓ Fulfilled</span>' : ''}
-                  <div class="card-title">${x.title}</div>
-                </div>
-                <div class="card-budget">${budget}${flexTag}</div>
-              </div>
-              ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
-              <div class="card-footer">
-                <div class="card-meta">
-                  ${x.location ? `<span>📍 ${x.location}</span>` : ''}
-                  <span>⏱ ${timeAgo(x.created_at)}</span>
-                  ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
-                  <span class="view-count">👁 ${x.view_count||0} views</span>
-                  ${expiryDisplay}
-                </div>
-                <div class="card-actions">
-                  <button class="btn-view-offers" onclick="viewOffers('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">
-                    Responses${offerCount?`<span class="offers-badge">${offerCount}</span>`:''}
-                  </button>
-                  <button class="btn-share-xekie" onclick="shareXekie('${x.id}')">Share</button>
-                  <a href="edit.html?id=${x.id}" class="btn-edit">✏️ Edit</a>
-                  ${!isFulfilled && !isExpired ? `<button class="btn-fulfill" onclick="markFulfilled('${x.id}')">✓ Fulfilled</button>` : ''}
-                  ${isExpired ? `<button class="btn-repost" onclick="repostXekie('${x.id}')">🔁 Repost</button>` : ''}
-                  ${!isPromoted && !isFulfilled ? `<button class="btn-promote" onclick="promoteXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">⚡ Promote $5</button>` : isPromoted ? '<span class="promoted-badge">⚡ Promoted</span>' : ''}
-                  <button class="btn-delete" onclick="deleteXekie('${x.id}')">Delete</button>
-                </div>
-              </div>
+          <div class="card-header">
+            <div>
+              ${isFulfilled ? '<span class="status-badge status-fulfilled">✓ Fulfilled</span>' : ''}
+              <div class="card-title">${x.title}</div>
+            </div>
+            <div class="card-budget">${budget}${flexTag}</div>
+          </div>
+          ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
+          <div class="card-footer">
+            <div class="card-meta">
+              ${x.location ? `<span>📍 ${x.location}</span>` : ''}
+              <span>⏱ ${timeAgo(x.created_at)}</span>
+              ${x.category ? `<span class="category-pill">${x.category}</span>` : ''}
+              <span class="view-count">👁 ${x.view_count||0} views</span>
+              ${expiryDisplay}
+            </div>
+            <div class="card-actions">
+              <button class="btn-view-offers" onclick="viewOffers('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">
+                Responses${offerCount?`<span class="offers-badge">${offerCount}</span>`:''}
+              </button>
+              <button class="btn-share-xekie" onclick="shareXekie('${x.id}')">Share</button>
+              ${!isFulfilled && !isExpired ? `<button class="btn-fulfill" onclick="markFulfilled('${x.id}')">✓ Fulfilled</button>` : ''}
+              ${isExpired ? `<button class="btn-repost" onclick="repostXekie('${x.id}')">🔁 Repost</button>` : ''}
+              ${!isPromoted && !isFulfilled ? `<button class="btn-promote" onclick="promoteXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">⚡ Promote $5</button>` : isPromoted ? '<span class="promoted-badge">⚡ Promoted</span>' : ''}
+              <button class="btn-delete" onclick="deleteXekie('${x.id}')">Delete</button>
             </div>
           </div>
         </div>`;
@@ -314,11 +298,42 @@
 
     let pendingFulfillId = null, selectedStar = 0, ratingXekieId = null;
 
+    // ── CONFETTI CELEBRATION SOUND (Web Audio API — no files needed) ──
+    function playConfettiSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        // Rising sparkle fanfare
+        [[523,0],[659,0.1],[784,0.2],[1047,0.3],[1319,0.4],[1047,0.55],[1319,0.65],[1568,0.75]].forEach(([freq, t]) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + t);
+          gain.gain.setValueAtTime(0.25, now + t);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + t + 0.4);
+          osc.start(now + t); osc.stop(now + t + 0.4);
+        });
+        // Pop burst at the start
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.15, ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = (Math.random()*2-1) * Math.pow(1 - i/data.length, 2);
+        const src = ctx.createBufferSource();
+        const filt = ctx.createBiquadFilter();
+        filt.type = 'bandpass'; filt.frequency.value = 800; filt.Q.value = 0.5;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.3, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+        src.buffer = buf; src.connect(filt); filt.connect(g); g.connect(ctx.destination);
+        src.start(now);
+      } catch(e) {}
+    }
+
     async function markFulfilled(id) {
       if (!confirm('Mark this XEKIE as fulfilled?')) return;
       const { error } = await _sb.from('xekies').update({ is_fulfilled: true }).eq('id', id).eq('user_id', currentUser.id);
       if (!error) {
-        trackEvent('fulfilled_marked', { xekie_id: id });
+        playConfettiSound();
         loadDashboard();
         const { data: offers } = await _sb.from('offers').select('seller_id').eq('xekie_id', id).limit(1);
         if (offers && offers.length) {
