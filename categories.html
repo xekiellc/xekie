@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XEKIE — Browse by Category</title>
-  <meta name="description" content="Browse XEKIEs by category. Find buyers looking for Electronics, Vehicles, Trading Cards and more.">
+  <meta name="description" content="Browse XEKIEs by category. Find buyers looking for Electronics, Vehicles, Trading Cards, K-Pop and more.">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
@@ -14,7 +14,7 @@
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--kpop:#ff6b9d;--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
     body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
     nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
     .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
@@ -29,7 +29,21 @@
     .hero-title span{color:var(--accent);}
     .hero-sub{font-size:18px;font-weight:300;color:#888;max-width:500px;margin:0 auto;}
     .container{max-width:900px;margin:0 auto;padding:56px 20px;flex:1;}
-    .section-title{font-family:var(--font-display);font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:24px;}
+    .section-title{font-family:var(--font-display);font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;}
+    .section-sub{font-size:14px;color:var(--mid);margin-bottom:24px;}
+    .featured-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:56px;}
+    .featured-card{border-radius:20px;padding:32px;text-decoration:none;color:var(--white);transition:transform 0.15s,box-shadow 0.15s;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;}
+    .featured-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.2);}
+    .featured-card-kpop{background:linear-gradient(135deg,#1a0a12,#3d1228);}
+    .featured-card-orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:0.4;width:200px;height:200px;top:-40px;right:-40px;background:rgba(255,107,157,0.5);}
+    .featured-card-content{position:relative;z-index:1;}
+    .featured-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;background:rgba(255,255,255,0.15);margin-bottom:12px;width:fit-content;}
+    .featured-icon{font-size:40px;margin-bottom:8px;}
+    .featured-name{font-family:var(--font-display);font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+    .featured-desc{font-size:14px;color:rgba(255,255,255,0.7);line-height:1.5;margin-bottom:16px;}
+    .featured-subcats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+    .featured-subcat{font-size:11px;font-weight:500;padding:3px 10px;border-radius:100px;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);}
+    .featured-cta{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px;color:#ffb3d1;}
     .categories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px;}
     .cat-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:28px 24px;text-decoration:none;color:var(--black);transition:transform 0.15s,box-shadow 0.15s;display:flex;flex-direction:column;gap:12px;}
     .cat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:var(--accent);}
@@ -67,7 +81,32 @@
   </div>
 
   <div class="container">
+
+    <div class="section-title">🔥 Featured Verticals</div>
+    <p class="section-sub">Specialized marketplaces built for passionate communities.</p>
+    <div class="featured-grid">
+      <a href="kpop.html" class="featured-card featured-card-kpop">
+        <div class="featured-card-orb"></div>
+        <div class="featured-card-content">
+          <div class="featured-badge">⚡ Live in Beta</div>
+          <div class="featured-icon">🎵</div>
+          <div class="featured-name">K-Pop</div>
+          <div class="featured-desc">The demand-side K-Pop marketplace. Hunt rare albums, photocards, merch and more.</div>
+          <div class="featured-subcats">
+            <span class="featured-subcat">Albums</span>
+            <span class="featured-subcat">Photocards</span>
+            <span class="featured-subcat">Merch</span>
+            <span class="featured-subcat">Lightsticks</span>
+            <span class="featured-subcat">POBs</span>
+            <span class="featured-subcat">+ more</span>
+          </div>
+          <div class="featured-cta">Explore K-Pop →</div>
+        </div>
+      </a>
+    </div>
+
     <div class="section-title">All Categories</div>
+    <p class="section-sub">Browse all active XEKIEs by category.</p>
     <div class="categories-grid">
       <a href="radar.html?category=Electronics" class="cat-card">
         <div class="cat-icon">📱</div>
@@ -129,6 +168,12 @@
         <div class="cat-count" id="count-Music & Movies">Loading...</div>
         <div class="cat-arrow">→</div>
       </a>
+      <a href="kpop.html" class="cat-card" style="border-color:rgba(255,107,157,0.3);background:linear-gradient(135deg,#fff0f6,#fff);">
+        <div class="cat-icon">🎵</div>
+        <div class="cat-name" style="color:var(--kpop);">K-Pop</div>
+        <div class="cat-count" id="count-K-Pop">Loading...</div>
+        <div class="cat-arrow" style="color:var(--kpop);">→</div>
+      </a>
       <a href="radar.html?category=Collectibles" class="cat-card">
         <div class="cat-icon">🏆</div>
         <div class="cat-name">Collectibles</div>
@@ -170,7 +215,7 @@
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const cats = ['Electronics','Trading Cards','Vehicles','Tools','Services','Household Items','Clothes & Apparel','Books','Toys','Music & Movies','Collectibles','Other'];
+    const cats = ['Electronics','Trading Cards','Vehicles','Tools','Services','Household Items','Clothes & Apparel','Books','Toys','Music & Movies','K-Pop','Collectibles','Other'];
 
     async function loadCounts() {
       const { data } = await _sb.from('xekies').select('category').eq('is_fulfilled', false);
