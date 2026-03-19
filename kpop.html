@@ -17,7 +17,7 @@
     :root{
       --black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;
       --mid:#6b6b6b;--border:rgba(10,10,10,0.12);
-      --kpop:#ff6b9d;--kpop-dim:rgba(255,107,157,0.12);--kpop-dark:#d4457a;
+      --kpop:#7c3aed;--kpop-dim:rgba(124,58,237,0.12);--kpop-dark:#5b21b6;--kpop-light:#a78bfa;
       --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
     }
     body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
@@ -34,25 +34,25 @@
     .btn-nav.kpop:hover{background:var(--kpop-dark);}
 
     /* HERO */
-    .kpop-hero{background:linear-gradient(135deg,#1a0a12 0%,#2d0f20 50%,#1a0a12 100%);padding:80px 40px;text-align:center;position:relative;overflow:hidden;}
+    .kpop-hero{background:linear-gradient(135deg,#0d0618 0%,#1e0a3c 50%,#0d0618 100%);padding:80px 40px;text-align:center;position:relative;overflow:hidden;}
     .kpop-hero-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.4;}
-    .kpop-hero-orb-1{width:500px;height:500px;background:rgba(255,107,157,0.3);top:-100px;left:-100px;}
-    .kpop-hero-orb-2{width:400px;height:400px;background:rgba(255,77,28,0.2);bottom:-80px;right:-80px;}
-    .kpop-hero-orb-3{width:300px;height:300px;background:rgba(168,85,247,0.2);top:50%;left:50%;transform:translate(-50%,-50%);}
+    .kpop-hero-orb-1{width:500px;height:500px;background:rgba(124,58,237,0.4);top:-100px;left:-100px;}
+    .kpop-hero-orb-2{width:400px;height:400px;background:rgba(109,40,217,0.3);bottom:-80px;right:-80px;}
+    .kpop-hero-orb-3{width:300px;height:300px;background:rgba(167,139,250,0.2);top:50%;left:50%;transform:translate(-50%,-50%);}
     .kpop-hero-content{position:relative;z-index:1;max-width:700px;margin:0 auto;}
-    .kpop-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--kpop);background:rgba(255,107,157,0.15);padding:6px 16px;border-radius:100px;margin-bottom:24px;border:1px solid rgba(255,107,157,0.3);}
+    .kpop-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--kpop-light);background:rgba(124,58,237,0.2);padding:6px 16px;border-radius:100px;margin-bottom:24px;border:1px solid rgba(124,58,237,0.4);}
     .kpop-hero-title{font-family:var(--font-display);font-size:clamp(40px,7vw,72px);font-weight:800;color:var(--white);letter-spacing:-0.03em;line-height:1.05;margin-bottom:16px;}
-    .kpop-hero-title .highlight{color:var(--kpop);}
+    .kpop-hero-title .highlight{color:var(--kpop-light);}
     .kpop-hero-sub{font-size:18px;font-weight:300;color:rgba(255,255,255,0.6);margin-bottom:36px;line-height:1.6;}
     .kpop-hero-sub strong{color:var(--white);font-weight:500;}
     .kpop-hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
     .btn-kpop-post{padding:14px 28px;background:var(--kpop);color:var(--white);border:none;border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
-    .btn-kpop-post:hover{background:var(--kpop-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,157,0.4);}
+    .btn-kpop-post:hover{background:var(--kpop-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,0.5);}
     .btn-kpop-browse{padding:14px 28px;background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,0.3);border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
     .btn-kpop-browse:hover{border-color:var(--white);background:rgba(255,255,255,0.1);}
 
     /* STATS BAR */
-    .kpop-stats{background:rgba(255,107,157,0.08);border-top:1px solid rgba(255,107,157,0.2);border-bottom:1px solid rgba(255,107,157,0.2);padding:20px 40px;display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;}
+    .kpop-stats{background:rgba(124,58,237,0.06);border-top:1px solid rgba(124,58,237,0.2);border-bottom:1px solid rgba(124,58,237,0.2);padding:20px 40px;display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;}
     .kpop-stat{text-align:center;}
     .kpop-stat-num{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--kpop);}
     .kpop-stat-label{font-size:12px;color:var(--mid);margin-top:2px;}
@@ -81,8 +81,7 @@
     .card-desc{font-size:14px;font-weight:300;color:var(--mid);line-height:1.5;margin-bottom:12px;}
     .card-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
     .card-meta{font-size:12px;color:var(--mid);display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-    .subcat-pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:var(--kpop-dim);color:var(--kpop);border:1px solid rgba(255,107,157,0.2);}
-    .cat-pill{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:100px;background:var(--cream);color:var(--mid);border:1px solid var(--border);}
+    .subcat-pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:var(--kpop-dim);color:var(--kpop);border:1px solid rgba(124,58,237,0.2);}
     .early-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;}
     .card-actions{display:flex;gap:8px;}
     .btn-respond{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;background:var(--kpop);color:var(--white);border:none;cursor:pointer;transition:all 0.2s;}
@@ -283,7 +282,7 @@
     }
 
     async function loadXekies() {
-      const { data, error } = await _sb.from('xekies').select('*').eq('category', 'K-Pop').order('created_at', { ascending: false });
+      const { data } = await _sb.from('xekies').select('*').eq('category', 'K-Pop').order('created_at', { ascending: false });
       allXekies = data || [];
       const active = allXekies.filter(x => !x.is_fulfilled && (!x.expires_at || new Date(x.expires_at) > new Date()));
       document.getElementById('stat-total').textContent = allXekies.length;
