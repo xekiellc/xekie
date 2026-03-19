@@ -160,35 +160,7 @@
         <div class="ai-thinking-dot"></div><div class="ai-thinking-dot"></div><div class="ai-thinking-dot"></div>
         <span>Claude is writing your XEKIE...</span>
       </div>
-      <div class="form-group">
-        <label>What do you want to find? <span class="label-hint">Be specific</span></label>
-        <input type="text" id="title" placeholder="e.g. BTS Magic Shop album — sealed, all versions welcome" maxlength="100" oninput="updatePreview()" />
-        <div class="char-count"><span id="title-count">0</span>/100</div>
-      </div>
-      <div class="form-group">
-        <label>Describe exactly what you're looking for <span class="label-hint">Condition, specs, preferences</span></label>
-        <textarea id="description" placeholder="e.g. Looking for a sealed copy in perfect condition. Any version welcome." maxlength="500" oninput="updatePreview()"></textarea>
-        <div class="char-count"><span id="desc-count">0</span>/500</div>
-      </div>
-      <div class="budget-section">
-        <div class="budget-section-title">Your budget</div>
-        <div class="budget-row">
-          <div class="budget-prefix">$</div>
-          <input type="number" id="budget-min" placeholder="Min" min="1" oninput="updatePreview()" onblur="triggerPriceCheck()" />
-          <span class="budget-separator">—</span>
-          <div class="budget-prefix">$</div>
-          <input type="number" id="budget-max" placeholder="Max" min="1" oninput="updatePreview()" onblur="triggerPriceCheck()" />
-        </div>
-        <div class="flexible-row">
-          <input type="checkbox" id="is-flexible" onchange="updatePreview()" />
-          <label for="is-flexible">I'm flexible on price if the right item comes along</label>
-        </div>
-        <div class="price-hint" id="price-hint"></div>
-      </div>
-      <div class="form-group">
-        <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
-        <input type="text" id="location" placeholder="e.g. Carolina Beach, NC or Ships anywhere" value="Carolina Beach, NC" />
-      </div>
+
       <div class="form-group">
         <label>Category</label>
         <select id="category" onchange="handleCategoryChange()">
@@ -216,10 +188,42 @@
         </select>
       </div>
 
-      <!-- SUBCATEGORY — shown per niche -->
       <div class="form-group" id="subcategory-group" style="display:none;">
         <label id="subcategory-label">Type <span class="label-hint">Optional — helps sellers find you faster</span></label>
         <select id="subcategory"></select>
+      </div>
+
+      <div class="form-group">
+        <label>What do you want to find? <span class="label-hint">Be specific</span></label>
+        <input type="text" id="title" placeholder="e.g. BTS Magic Shop album — sealed, all versions welcome" maxlength="100" oninput="updatePreview()" />
+        <div class="char-count"><span id="title-count">0</span>/100</div>
+      </div>
+
+      <div class="form-group">
+        <label>Describe exactly what you're looking for <span class="label-hint">Condition, specs, preferences</span></label>
+        <textarea id="description" placeholder="e.g. Looking for a sealed copy in perfect condition. Any version welcome." maxlength="500" oninput="updatePreview()"></textarea>
+        <div class="char-count"><span id="desc-count">0</span>/500</div>
+      </div>
+
+      <div class="budget-section">
+        <div class="budget-section-title">Your budget</div>
+        <div class="budget-row">
+          <div class="budget-prefix">$</div>
+          <input type="number" id="budget-min" placeholder="Min" min="1" oninput="updatePreview()" onblur="triggerPriceCheck()" />
+          <span class="budget-separator">—</span>
+          <div class="budget-prefix">$</div>
+          <input type="number" id="budget-max" placeholder="Max" min="1" oninput="updatePreview()" onblur="triggerPriceCheck()" />
+        </div>
+        <div class="flexible-row">
+          <input type="checkbox" id="is-flexible" onchange="updatePreview()" />
+          <label for="is-flexible">I'm flexible on price if the right item comes along</label>
+        </div>
+        <div class="price-hint" id="price-hint"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
+        <input type="text" id="location" placeholder="e.g. Carolina Beach, NC or Ships anywhere" value="Carolina Beach, NC" />
       </div>
 
       <div class="form-group">
@@ -234,6 +238,7 @@
           <button class="expiry-btn" data-hours="-1" onclick="setExpiry(this)">Buy Now<span class="expiry-sub">Urgent</span></button>
         </div>
       </div>
+
       <div class="photo-upload-section">
         <div class="photo-upload-title">Photos <span style="font-size:12px;font-weight:400;color:var(--mid);">Optional — up to 4 photos help sellers know exactly what you want</span></div>
         <div class="photo-drop-zone" id="photo-drop-zone" onclick="document.getElementById('photo-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
@@ -244,6 +249,7 @@
         <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect(event)" />
         <div class="photo-previews" id="photo-previews"></div>
       </div>
+
       <div class="preview-box">
         <div class="preview-label">Live preview</div>
         <div class="preview-title" id="preview-title">Your XEKIE title will appear here</div>
@@ -277,19 +283,99 @@
 
     function trackEvent(n,p={}){if(typeof gtag!=='undefined')gtag('event',n,p);}
 
-    // ── NICHE CONFIG ──
-    const NICHE_CONFIG = {
-      'K-Pop':            { location:'Busan, South Korea',   label:'K-Pop Type',      subcats:['Albums','Photocards','Merch','Lightsticks','Concert Tickets','Signed Items','POBs','Mystery Boxes'] },
-      'Sneakers':         { location:'New York, NY',         label:'Brand',           subcats:['Nike','Jordan','Adidas','New Balance','Yeezy','Other'] },
-      'Trading Cards':    { location:'Ships anywhere',       label:'Card Type',       subcats:['Pokémon','MTG','Yu-Gi-Oh','One Piece','Flesh & Blood','Digimon','Other'] },
-      'Sports Cards':     { location:'Ships anywhere',       label:'Sport',           subcats:['Baseball','Basketball','Football','Soccer','Hockey','UFC & MMA','Other'] },
-      'Swifties':         { location:'Nashville, TN',        label:'Item Type',       subcats:['Vinyl','Tour Merch','Friendship Bracelets','Signed Items','Posters & Photos','Clothing','Tickets','Other'] },
-      'Star Wars':        { location:'Ships anywhere',       label:'Item Type',       subcats:['Vintage Figures','Modern Figures','LEGO Star Wars','Props & Replicas','Signed Items','Posters & Art','Other'] },
-      'Soccer':           { location:'London, England',      label:'Item Type',       subcats:['Shirts & Kits','Signed Items','Match Programs','Scarves & Flags','Boots','Tickets & Stubs','Other'] },
-      'Vinyl Records':    { location:'Nashville, TN',        label:'Genre',           subcats:['Rock','Jazz','Hip-Hop','Soul & R&B','Classical','Other'] },
-      'Retro Tech':       { location:'Ships anywhere',       label:'Category',        subcats:['Vintage Apple','Film Cameras','Synthesizers','Early Gaming','Hi-Fi Audio','Vintage Phones','Other'] },
-      'Collectibles':     { location:'Ships anywhere',       label:'Type',            subcats:['Action Figures','Die-Cast','Coins','Stamps','Other'] },
+    const NICHE_CONFIG={
+      'K-Pop':{
+        location:'Busan, South Korea',
+        label:'K-Pop Type',
+        subcats:['Albums','Photocards','Merch','Lightsticks','Signed Items','POBs','Mystery Boxes'],
+        titlePlaceholder:'e.g. BTS Magic Shop 5th Muster — sealed, all versions welcome',
+        descPlaceholder:'e.g. Looking for a sealed copy of the BTS 5th Muster Magic Shop DVD. Either version (Seoul or Busan). Must be complete with all inclusions. Happy to pay fair market price.'
+      },
+      'Sneakers':{
+        location:'New York, NY',
+        label:'Brand',
+        subcats:['Nike','Jordan','Adidas','New Balance','Yeezy','Other'],
+        titlePlaceholder:'e.g. Air Jordan 1 Retro High OG Chicago — size 11',
+        descPlaceholder:'e.g. Looking for a DS (deadstock) pair in size 11. No yellowing on the sole. Original box required. Will consider lightly worn if condition is 9/10 or better.'
+      },
+      'Trading Cards':{
+        location:'Tokyo, Japan',
+        label:'Card Type',
+        subcats:['Pokémon','MTG','Yu-Gi-Oh','One Piece','Flesh & Blood','Digimon','Other'],
+        titlePlaceholder:'e.g. Charizard Base Set Holo — PSA 9 or raw NM',
+        descPlaceholder:'e.g. Looking for a Base Set Unlimited Charizard, either PSA 9 graded or raw in Near Mint condition. No creases, no whitening on edges. Will consider both 1st edition and Unlimited.'
+      },
+      'Sports Cards':{
+        location:'Chicago, IL',
+        label:'Sport',
+        subcats:['Baseball','Basketball','Football','Soccer','Hockey','UFC & MMA','Other'],
+        titlePlaceholder:'e.g. LeBron James 2003 Topps Chrome Rookie — PSA 8+',
+        descPlaceholder:'e.g. Hunting a LeBron James 2003-04 Topps Chrome rookie card graded PSA 8 or higher. No cracks in the slab. Raw cards considered if centering is good and corners are sharp.'
+      },
+      'Swifties':{
+        location:'Nashville, TN',
+        label:'Item Type',
+        subcats:['Vinyl','Tour Merch','Friendship Bracelets','Signed Items','Posters & Photos','Clothing','Other'],
+        titlePlaceholder:'e.g. Eras Tour merch — navy crewneck from the Nashville show',
+        descPlaceholder:'e.g. Looking for the navy blue Eras Tour crewneck sweatshirt from the Nashville shows. Size Medium. Must be unworn with original tags if possible. Also interested in other Nashville night exclusive items.'
+      },
+      'Star Wars':{
+        location:'A Galaxy Far Far Away',
+        label:'Item Type',
+        subcats:['Vintage Figures','Modern Figures','LEGO Star Wars','Props & Replicas','Signed Items','Posters & Art','Other'],
+        titlePlaceholder:'e.g. Vintage Kenner Boba Fett — 1979, rocket-firing, complete',
+        descPlaceholder:'e.g. Looking for a vintage 1979 Kenner Boba Fett. Ideally rocket-firing version but will consider standard. Must be complete with all accessories. Good paint, no major scratches. COO stamp a bonus.'
+      },
+      'Soccer':{
+        location:'London, England',
+        label:'Item Type',
+        subcats:['Shirts & Kits','Signed Items','Match Programs','Scarves & Flags','Boots','Other'],
+        titlePlaceholder:'e.g. Manchester United 1999 Champions League Final shirt — XL',
+        descPlaceholder:'e.g. Looking for the Manchester United 1999 Champions League Final home shirt in size XL. Umbro kit with Champions League badge. Player issue preferred but replica considered if in excellent condition.'
+      },
+      'Vinyl Records':{
+        location:'Nashville, TN',
+        label:'Genre',
+        subcats:['Rock','Jazz','Hip-Hop','Soul & R&B','Classical','Country','K-Pop','Other'],
+        titlePlaceholder:'e.g. Miles Davis Kind of Blue — original Columbia 6-eye pressing',
+        descPlaceholder:'e.g. Looking for an original 1959 Columbia 6-eye pressing of Kind of Blue. VG+ or better condition. No deep scratches or heavy surface noise. Cover should be VG at minimum — no splits or major tears.'
+      },
+      'Retro Tech':{
+        location:'Cupertino, CA',
+        label:'Category',
+        subcats:['Vintage Apple','Film Cameras','Synthesizers','Early Gaming','Hi-Fi Audio','Vintage Phones','Other'],
+        titlePlaceholder:'e.g. Apple Macintosh 128K — original 1984, working condition',
+        descPlaceholder:'e.g. Looking for an original 1984 Apple Macintosh 128K in working condition. Original keyboard and mouse preferred. Some yellowing acceptable. Must power on and boot. All ports functional.'
+      },
+      'Collectibles':{
+        location:'Ships anywhere',
+        label:'Type',
+        subcats:['Action Figures','Die-Cast','Coins','Stamps','Other'],
+        titlePlaceholder:'e.g. Hot Wheels Super Treasure Hunt — 2026 Ferrari F40',
+        descPlaceholder:'e.g. Looking for the 2026 Hot Wheels Super Treasure Hunt Ferrari F40 Competizione. Must be in original blister card, undamaged. Will pay above retail for a confirmed STH.'
+      },
+      'Electronics':{
+        location:'Carolina Beach, NC',
+        label:null,subcats:[],
+        titlePlaceholder:'e.g. Sony WH-1000XM5 headphones — black, like new',
+        descPlaceholder:'e.g. Looking for Sony WH-1000XM5 in black. Like new condition with original box and all accessories. No cracks or deep scratches. Prefer local pickup but will consider shipped with insurance.'
+      },
+      'Vehicles':{
+        location:'Carolina Beach, NC',
+        label:null,subcats:[],
+        titlePlaceholder:'e.g. 1967 Ford Mustang Fastback — any condition considered',
+        descPlaceholder:'e.g. Looking for a 1967 Ford Mustang Fastback. Any condition considered including project cars. Must have original VIN and title. Prefer Carolina/Southeast but will consider shipping for the right car.'
+      },
+      'Books':{
+        location:'Carolina Beach, NC',
+        label:null,subcats:[],
+        titlePlaceholder:'e.g. First edition Dune by Frank Herbert — 1965 Chilton',
+        descPlaceholder:'e.g. Looking for a first edition first printing of Dune (1965, Chilton Books). Good condition or better. Dust jacket preferred but not required. No writing or heavy damage to pages.'
+      },
     };
+
+    const DEFAULT_TITLE_PLACEHOLDER='e.g. BTS Magic Shop album — sealed, all versions welcome';
+    const DEFAULT_DESC_PLACEHOLDER='e.g. Looking for a sealed copy in perfect condition. Any version welcome.';
 
     _sb.auth.getSession().then(({data:{session}})=>{
       if(!session){window.location.href='login.html';return;}
@@ -297,30 +383,36 @@
       document.getElementById('nav-user').textContent=session.user.user_metadata?.full_name||session.user.email;
     });
 
-    // ── CATEGORY CHANGE ──
     function handleCategoryChange(){
       const cat=document.getElementById('category').value;
       const subcatGroup=document.getElementById('subcategory-group');
       const locationField=document.getElementById('location');
+      const titleInput=document.getElementById('title');
+      const descInput=document.getElementById('description');
       const config=NICHE_CONFIG[cat];
       if(config){
-        // Show subcategory dropdown
-        subcatGroup.style.display='block';
-        document.getElementById('subcategory-label').textContent=config.label;
-        const sel=document.getElementById('subcategory');
-        sel.innerHTML='<option value="">Select '+config.label.toLowerCase()+'... (optional)</option>'+config.subcats.map(s=>`<option>${s}</option>`).join('');
-        // Set location
         locationField.value=config.location;
+        titleInput.placeholder=config.titlePlaceholder||DEFAULT_TITLE_PLACEHOLDER;
+        descInput.placeholder=config.descPlaceholder||DEFAULT_DESC_PLACEHOLDER;
+        if(config.subcats&&config.subcats.length){
+          subcatGroup.style.display='block';
+          document.getElementById('subcategory-label').textContent=config.label;
+          const sel=document.getElementById('subcategory');
+          sel.innerHTML='<option value="">Select '+config.label.toLowerCase()+'... (optional)</option>'+config.subcats.map(s=>`<option>${s}</option>`).join('');
+        } else {
+          subcatGroup.style.display='none';
+          document.getElementById('subcategory').innerHTML='';
+        }
       } else {
+        const niches=Object.values(NICHE_CONFIG).map(c=>c.location);
+        if(niches.includes(locationField.value))locationField.value='Carolina Beach, NC';
+        titleInput.placeholder=DEFAULT_TITLE_PLACEHOLDER;
+        descInput.placeholder=DEFAULT_DESC_PLACEHOLDER;
         subcatGroup.style.display='none';
         document.getElementById('subcategory').innerHTML='';
-        // Reset to Carolina Beach if it was a niche location
-        const niches=Object.values(NICHE_CONFIG).map(c=>c.location);
-        if(niches.includes(locationField.value)) locationField.value='Carolina Beach, NC';
       }
     }
 
-    // Auto-select from URL param
     window.addEventListener('DOMContentLoaded',()=>{
       const params=new URLSearchParams(window.location.search);
       const presetCat=params.get('category');
@@ -362,7 +454,6 @@
 
     function showMessage(text,type){const el=document.getElementById('message');el.textContent=text;el.className='message '+type;el.scrollIntoView({behavior:'smooth',block:'nearest'});}
 
-    // ── AI PRICE CHECK ──
     function triggerPriceCheck(){
       const title=document.getElementById('title').value.trim();
       const min=document.getElementById('budget-min').value;
@@ -389,7 +480,6 @@
       }catch(e){hintEl.style.display='none';}
     }
 
-    // ── AI WRITER ──
     async function aiWriteXekie(){
       const title=document.getElementById('title').value.trim();
       if(!title){showMessage('Type a rough idea in the title field first — then let Claude expand it!','error');return;}
@@ -411,7 +501,6 @@
       finally{btn.disabled=false;btn.innerHTML='<span>✨</span> Write for me';thinking.classList.remove('show');}
     }
 
-    // ── SHARE MODAL ──
     function openShareModal(xekieId,title){postedXekieId=xekieId;postedXekieTitle=title;document.getElementById('share-link-box').textContent=`https://xekie.com/xekie.html?id=${xekieId}`;document.getElementById('share-modal').classList.add('open');}
     function closeShareModal(){document.getElementById('share-modal').classList.remove('open');if(postedXekieId)window.location.href=`xekie.html?id=${postedXekieId}`;}
     function shareToX(){const url=`https://xekie.com/xekie.html?id=${postedXekieId}`;window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I'm looking for: "${postedXekieTitle}" — respond with your best offer on XEKIE 🔶`)}&url=${encodeURIComponent(url)}`,'_blank');}
@@ -493,6 +582,8 @@
         document.getElementById('subcategory-group').style.display='none';
         document.getElementById('subcategory').innerHTML='';
         document.getElementById('price-hint').style.display='none';
+        document.getElementById('title').placeholder=DEFAULT_TITLE_PLACEHOLDER;
+        document.getElementById('description').placeholder=DEFAULT_DESC_PLACEHOLDER;
         selectedPhotos=[];renderPhotoPreviews();updatePreview();
       },500);
       setTimeout(()=>{if(newXekie)openShareModal(newXekie.id,title);},1200);
