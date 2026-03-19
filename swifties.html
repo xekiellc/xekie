@@ -140,7 +140,7 @@
   <div class="niche-stats">
     <div class="niche-stat"><div class="niche-stat-num" id="stat-total">—</div><div class="niche-stat-label">Swiftie XEKIEs posted</div></div>
     <div class="niche-stat"><div class="niche-stat-num" id="stat-active">—</div><div class="niche-stat-label">Active right now</div></div>
-    <div class="niche-stat"><div class="niche-stat-num">8</div><div class="niche-stat-label">Categories covered</div></div>
+    <div class="niche-stat"><div class="niche-stat-num">7</div><div class="niche-stat-label">Categories covered</div></div>
   </div>
   <div class="container" id="feed">
     <div class="filter-section">
@@ -153,7 +153,6 @@
         <button class="subcat-btn" onclick="setSubcat('Signed Items',this)">✍️ Signed Items</button>
         <button class="subcat-btn" onclick="setSubcat('Posters & Photos',this)">🖼️ Posters & Photos</button>
         <button class="subcat-btn" onclick="setSubcat('Clothing',this)">👕 Clothing</button>
-        <button class="subcat-btn" onclick="setSubcat('Tickets',this)">🎟️ Tickets</button>
         <button class="subcat-btn" onclick="setSubcat('Other',this)">Other</button>
       </div>
     </div>
@@ -199,7 +198,7 @@
     function shareX(id,title){const url=`${window.location.origin}/xekie.html?id=${id}`;if(navigator.share)navigator.share({title:'XEKIE — '+title,url}).catch(()=>{});else navigator.clipboard.writeText(url).then(()=>{const t=document.getElementById('share-toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);});}
     function openModal(xekieId,title){if(!currentUser){window.location.href='login.html';return;}activeXekieId=xekieId;document.getElementById('modal-xekie-title').textContent='Re: '+title;document.getElementById('modal-message').value='';document.getElementById('modal-price').value='';document.getElementById('modal-msg').className='modal-msg';document.getElementById('modal-msg').style.display='none';document.getElementById('modal-submit').disabled=false;document.getElementById('modal-submit').textContent='Send response';document.getElementById('modal-overlay').classList.add('open');}
     function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
-    async function submitResponse(){const message=document.getElementById('modal-message').value.trim();const price=document.getElementById('modal-price').value;const btn=document.getElementById('modal-submit');const msgEl=document.getElementById('modal-msg');if(!message){msgEl.className='modal-msg error';msgEl.style.display='block';msgEl.textContent='Please write a message to the buyer.';return;}btn.disabled=true;btn.textContent='Sending...';const{error}=await _sb.from('offers').insert({xekie_id:activeXekieId,seller_id:currentUser.id,message,price:price?parseInt(price):null});if(error){msgEl.className='modal-msg error';msgEl.style.display='block';msgEl.textContent='Error: '+error.message;btn.disabled=false;btn.textContent='Send response';}else{msgEl.className='modal-msg success';msgEl.style.display='block';msgEl.textContent='Response sent! ✓';btn.textContent='Sent ✓';setTimeout(closeModal,2000);}}
+    async function submitResponse(){const message=document.getElementById('modal-message').value.trim();const price=document.getElementById('modal-price').value;const btn=document.getElementById('modal-submit');const msgEl=document.getElementById('modal-msg');if(!message){msgEl.className='modal-msg error';msgEl.style.display='block';msgEl.textContent='Please write a message to the buyer.';return;}btn.disabled=true;btn.textContent='Sending...';const{error}=await _sb.from('offers').insert({xekie_id:activeXekieId,seller_id:currentUser.id,message,price:price?parseInt(price):null});if(error){msgEl.className='modal-msg error';msgEl.style.display='block';msgEl.textContent='Error: '+error.message;btn.disabled=false;btn.textContent='Send response';}else{trackEvent('offer_submitted',{xekie_id:activeXekieId,category:'Swifties'});msgEl.className='modal-msg success';msgEl.style.display='block';msgEl.textContent='Response sent! ✓';btn.textContent='Sent ✓';setTimeout(closeModal,2000);}}
     document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
   </script>
 </body>
