@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XEKIE — Page Not Found</title>
+  <meta name="description" content="Page not found — but you can XEKIE it.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff4d1c">
+  <link rel="apple-touch-icon" href="/icon-180x180.png">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
+    nav{padding:0 40px;height:64px;display:flex;align-items:center;border-bottom:1px solid var(--border);background:var(--cream);}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
+    .nav-logo .xe{color:var(--accent);}
+    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);text-transform:uppercase;}
+    main{flex:1;display:flex;align-items:center;justify-content:center;padding:60px 24px;text-align:center;}
+    .content{max-width:520px;}
+    .error-num{font-family:var(--font-display);font-size:120px;font-weight:800;color:var(--accent);letter-spacing:-0.05em;line-height:1;margin-bottom:8px;opacity:0.15;}
+    .title{font-family:var(--font-display);font-size:36px;font-weight:800;letter-spacing:-0.03em;margin-bottom:12px;}
+    .sub{font-size:17px;font-weight:300;color:var(--mid);line-height:1.6;margin-bottom:36px;}
+    .sub strong{color:var(--black);font-weight:500;}
+    .btn-accent{display:inline-block;padding:14px 32px;background:var(--accent);color:var(--white);border:none;border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.2s;margin-bottom:12px;}
+    .btn-accent:hover{background:#e03a0a;transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,77,28,0.3);}
+    .btn-secondary{display:inline-block;padding:14px 32px;background:transparent;color:var(--mid);border:1.5px solid var(--border);border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;text-decoration:none;transition:all 0.2s;margin-left:8px;}
+    .btn-secondary:hover{border-color:var(--black);color:var(--black);}
+    .links{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+    footer{background:var(--black);color:var(--white);padding:24px 40px;}
+    .footer-inner{max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+    .footer-links{display:flex;gap:20px;}
+    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
+    .footer-copy{font-size:12px;color:#444;}
+    @media(max-width:480px){nav{padding:0 20px;}.links{flex-direction:column;align-items:center;}.btn-secondary{margin-left:0;}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
+  </nav>
+  <main>
+    <div class="content">
+      <div class="error-num">404</div>
+      <h1 class="title">Can't find it?<br><span style="color:var(--accent);">Just XEKIE it.</span></h1>
+      <p class="sub">This page doesn't exist — but whatever you're looking for probably does.<br><strong>Post a XEKIE and let sellers find you.</strong></p>
+      <div class="links">
+        <a href="request.html" class="btn-accent">XEKIE it →</a>
+        <a href="index.html" class="btn-secondary">Go home</a>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="index.html">Home</a>
+      </div>
+      <div class="footer-copy">© 2025 XEKIE LLC</div>
+    </div>
+  </footer>
+</body>
+</html>
