@@ -5,6 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XEKIE K-Pop — Find Albums, Photocards & Merch</title>
   <meta name="description" content="The demand-side K-Pop marketplace. Post what you're hunting for — albums, photocards, merch, lightsticks — and let sellers come to you.">
+  <link rel="canonical" href="https://xekie.com/kpop.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://xekie.com/kpop.html">
+  <meta property="og:title" content="XEKIE K-Pop — Find Albums, Photocards & Merch">
+  <meta property="og:description" content="The demand-side K-Pop marketplace. Post what you're hunting for — albums, photocards, merch, lightsticks — and let sellers come to you.">
+  <meta property="og:image" content="https://xekie.com/.netlify/functions/og-image?title=K-Pop+Marketplace&category=K-Pop">
+  <meta property="og:site_name" content="XEKIE">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="XEKIE K-Pop — Find Your Grails">
+  <meta name="twitter:description" content="Post the K-Pop albums, photocards, or merch you want and let sellers come to you.">
+  <meta name="twitter:image" content="https://xekie.com/.netlify/functions/og-image?title=K-Pop+Marketplace&category=K-Pop">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"XEKIE K-Pop Marketplace","description":"The demand-side K-Pop marketplace.","url":"https://xekie.com/kpop.html","isPartOf":{"@type":"WebSite","name":"XEKIE","url":"https://xekie.com"}}</script>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
@@ -14,12 +26,7 @@
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{
-      --black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;
-      --mid:#6b6b6b;--border:rgba(10,10,10,0.12);
-      --kpop:#7c3aed;--kpop-dim:rgba(124,58,237,0.12);--kpop-dark:#5b21b6;--kpop-light:#a78bfa;
-      --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
-    }
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--kpop:#7c3aed;--kpop-dim:rgba(124,58,237,0.12);--kpop-dark:#5b21b6;--kpop-light:#a78bfa;--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
     body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
     nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
     .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
@@ -32,8 +39,6 @@
     .btn-nav.primary:hover{background:var(--accent);}
     .btn-nav.kpop{background:var(--kpop);color:var(--white);border-color:transparent;}
     .btn-nav.kpop:hover{background:var(--kpop-dark);}
-
-    /* HERO */
     .kpop-hero{background:linear-gradient(135deg,#0d0618 0%,#1e0a3c 50%,#0d0618 100%);padding:80px 40px;text-align:center;position:relative;overflow:hidden;}
     .kpop-hero-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.4;}
     .kpop-hero-orb-1{width:500px;height:500px;background:rgba(124,58,237,0.4);top:-100px;left:-100px;}
@@ -50,14 +55,10 @@
     .btn-kpop-post:hover{background:var(--kpop-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,0.5);}
     .btn-kpop-browse{padding:14px 28px;background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,0.3);border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
     .btn-kpop-browse:hover{border-color:var(--white);background:rgba(255,255,255,0.1);}
-
-    /* STATS BAR */
     .kpop-stats{background:rgba(124,58,237,0.06);border-top:1px solid rgba(124,58,237,0.2);border-bottom:1px solid rgba(124,58,237,0.2);padding:20px 40px;display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;}
     .kpop-stat{text-align:center;}
     .kpop-stat-num{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--kpop);}
     .kpop-stat-label{font-size:12px;color:var(--mid);margin-top:2px;}
-
-    /* SUBCATEGORY FILTERS */
     .container{max-width:960px;margin:0 auto;padding:48px 20px;flex:1;}
     .filter-section{margin-bottom:32px;}
     .filter-label{font-size:12px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);margin-bottom:12px;}
@@ -65,8 +66,6 @@
     .subcat-btn{font-size:13px;font-weight:500;padding:8px 18px;border-radius:100px;border:1.5px solid var(--border);background:var(--white);color:var(--mid);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
     .subcat-btn:hover{border-color:var(--kpop);color:var(--kpop);}
     .subcat-btn.active{background:var(--kpop);color:var(--white);border-color:var(--kpop);}
-
-    /* FEED */
     .feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;}
     .feed-title{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-0.02em;}
     .results-count{font-size:13px;color:var(--mid);}
@@ -93,8 +92,6 @@
     .empty-title{font-family:var(--font-display);font-size:24px;font-weight:700;margin-bottom:8px;}
     .empty-sub{font-size:15px;color:var(--mid);margin-bottom:24px;}
     .loading{text-align:center;padding:60px;color:var(--mid);}
-
-    /* MODAL */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;padding:20px;}
     .modal-overlay.open{display:flex;}
     .modal{background:var(--white);border-radius:20px;padding:36px;max-width:480px;width:100%;position:relative;max-height:90vh;overflow-y:auto;}
@@ -114,14 +111,16 @@
     .btn-modal-submit:hover{background:var(--kpop-dark);}
     .share-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
     .share-toast.show{opacity:1;}
-
-    /* CTA BAND */
+    .cross-links{margin-top:48px;padding:32px;background:var(--white);border-radius:20px;border:1px solid var(--border);}
+    .cross-links-label{font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--mid);margin-bottom:16px;}
+    .cross-links-row{display:flex;gap:8px;flex-wrap:wrap;}
+    .cross-link{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;border:1.5px solid var(--border);color:var(--mid);text-decoration:none;transition:all 0.2s;}
+    .cross-link:hover{border-color:var(--black);color:var(--black);}
     .cta-band{background:linear-gradient(135deg,var(--kpop),var(--kpop-dark));border-radius:20px;padding:48px;text-align:center;margin-top:48px;margin-bottom:48px;}
     .cta-band-title{font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--white);margin-bottom:8px;letter-spacing:-0.02em;}
     .cta-band-sub{font-size:16px;color:rgba(255,255,255,0.8);margin-bottom:24px;}
     .btn-cta-white{padding:14px 32px;background:var(--white);color:var(--kpop);border:none;border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
     .btn-cta-white:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2);}
-
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -135,20 +134,14 @@
   </style>
 </head>
 <body>
-
   <nav>
-    <a href="index.html" class="nav-logo">
-      <span><span class="xe">XE</span>KIE</span>
-      <span class="nav-tagline">Trade Different</span>
-    </a>
+    <a href="index.html" class="nav-logo"><span><span class="xe">XE</span>KIE</span><span class="nav-tagline">Trade Different</span></a>
     <div class="nav-right">
       <a href="categories.html" class="btn-nav">All Categories</a>
       <a href="radar.html" class="btn-nav">Browse All</a>
       <a href="request.html?category=K-Pop" class="btn-nav kpop">🎵 Post K-Pop XEKIE</a>
     </div>
   </nav>
-
-  <!-- HERO -->
   <div class="kpop-hero">
     <div class="kpop-hero-orb kpop-hero-orb-1"></div>
     <div class="kpop-hero-orb kpop-hero-orb-2"></div>
@@ -156,34 +149,18 @@
     <div class="kpop-hero-content">
       <div class="kpop-eyebrow">🎵 K-Pop Vertical — Beta</div>
       <h1 class="kpop-hero-title">Find Your <span class="highlight">K-Pop</span> Grails.</h1>
-      <p class="kpop-hero-sub">
-        Can't find that sealed album or rare photocard anywhere?<br>
-        <strong>Post your XEKIE. Let sellers come to you.</strong>
-      </p>
+      <p class="kpop-hero-sub">Can't find that sealed album or rare photocard anywhere?<br><strong>Post your XEKIE. Let sellers come to you.</strong></p>
       <div class="kpop-hero-cta">
         <a href="request.html?category=K-Pop" class="btn-kpop-post">🎵 Post what you're hunting</a>
         <a href="#feed" class="btn-kpop-browse">Browse K-Pop XEKIEs ↓</a>
       </div>
     </div>
   </div>
-
-  <!-- STATS -->
   <div class="kpop-stats" id="kpop-stats">
-    <div class="kpop-stat">
-      <div class="kpop-stat-num" id="stat-total">—</div>
-      <div class="kpop-stat-label">K-Pop XEKIEs posted</div>
-    </div>
-    <div class="kpop-stat">
-      <div class="kpop-stat-num" id="stat-active">—</div>
-      <div class="kpop-stat-label">Active right now</div>
-    </div>
-    <div class="kpop-stat">
-      <div class="kpop-stat-num" id="stat-subcats">7</div>
-      <div class="kpop-stat-label">Subcategories</div>
-    </div>
+    <div class="kpop-stat"><div class="kpop-stat-num" id="stat-total">—</div><div class="kpop-stat-label">K-Pop XEKIEs posted</div></div>
+    <div class="kpop-stat"><div class="kpop-stat-num" id="stat-active">—</div><div class="kpop-stat-label">Active right now</div></div>
+    <div class="kpop-stat"><div class="kpop-stat-num" id="stat-subcats">7</div><div class="kpop-stat-label">Subcategories</div></div>
   </div>
-
-  <!-- MAIN CONTENT -->
   <div class="container" id="feed">
     <div class="filter-section">
       <div class="filter-label">Browse by type</div>
@@ -198,22 +175,27 @@
         <button class="subcat-btn" onclick="setSubcat('Mystery Boxes', this)">📦 Mystery Boxes</button>
       </div>
     </div>
-
     <div class="feed-header">
       <div class="feed-title" id="feed-title">All K-Pop XEKIEs</div>
       <div class="results-count" id="results-count"></div>
     </div>
-
     <div id="kpop-feed"><div class="loading">Loading K-Pop XEKIEs...</div></div>
-
+    <div class="cross-links">
+      <div class="cross-links-label">Explore Other Verticals</div>
+      <div class="cross-links-row">
+        <a href="swifties.html" class="cross-link">✨ Swifties</a>
+        <a href="tradingcards.html" class="cross-link">🃏 Trading Cards</a>
+        <a href="vinyl.html" class="cross-link">🎵 Vinyl Records</a>
+        <a href="sportsmemorabilia.html" class="cross-link">🏅 Sports Memorabilia</a>
+        <a href="categories.html" class="cross-link">View all verticals →</a>
+      </div>
+    </div>
     <div class="cta-band">
       <div class="cta-band-title">Can't find what you're hunting?</div>
       <div class="cta-band-sub">Post your XEKIE and let every K-Pop seller know exactly what you need.</div>
       <a href="request.html?category=K-Pop" class="btn-cta-white">🎵 Post your K-Pop XEKIE →</a>
     </div>
   </div>
-
-  <!-- RESPOND MODAL -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <button class="modal-close" onclick="closeModal()">✕</button>
@@ -222,173 +204,31 @@
       <label>Your message to the buyer</label>
       <textarea id="modal-message" placeholder="Hi! I have exactly what you're looking for..."></textarea>
       <label>Your asking price</label>
-      <div class="modal-budget-row">
-        <div class="modal-prefix">$</div>
-        <input type="number" id="modal-price" class="modal-prefix-input" placeholder="e.g. 45" />
-      </div>
+      <div class="modal-budget-row"><div class="modal-prefix">$</div><input type="number" id="modal-price" class="modal-prefix-input" placeholder="e.g. 45" /></div>
       <div class="modal-msg" id="modal-msg"></div>
       <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send response</button>
     </div>
   </div>
-
   <div class="share-toast" id="share-toast">Link copied! 🔗</div>
-
-  <footer>
-    <div class="footer-inner">
-      <div>
-        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
-        <div class="footer-tagline">Trade Different</div>
-      </div>
-      <div class="footer-links">
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="prohibited-items.html">Prohibited Items</a>
-        <a href="guidelines.html">Community Guidelines</a>
-        <a href="terms.html">Terms of Service</a>
-      </div>
-      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
-    </div>
-  </footer>
-
+  <footer><div class="footer-inner"><div><div class="footer-logo"><span class="xe">XE</span>KIE</div><div class="footer-tagline">Trade Different</div></div><div class="footer-links"><a href="privacy.html">Privacy Policy</a><a href="prohibited-items.html">Prohibited Items</a><a href="guidelines.html">Community Guidelines</a><a href="terms.html">Terms of Service</a></div><div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div></div></footer>
   <script>
-    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
-    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let allXekies = [], activeSubcat = '', currentUser = null;
-    let activeXekieId = null, activeXekieOwner = null;
-    const BETA_CUTOFF = new Date('2026-06-01');
-
-    function trackEvent(name, params = {}) { if (typeof gtag !== 'undefined') gtag('event', name, params); }
-
-    _sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) currentUser = session.user;
-      loadXekies();
-    });
-
-    function timeAgo(ts) {
-      const s = Math.floor((new Date() - new Date(ts)) / 1000);
-      for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
-        const c = Math.floor(s/sec); if (c>=1) return c+" "+l+(c>1?"s":"")+" ago";
-      }
-      return "just now";
-    }
-
-    function formatBudget(x) {
-      if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
-      if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
-      if (x.budget_max) return 'Up to $'+Number(x.budget_max).toLocaleString();
-      if (x.budget) return '$'+Number(x.budget).toLocaleString();
-      return '$—';
-    }
-
-    async function loadXekies() {
-      const { data } = await _sb.from('xekies').select('*').eq('category', 'K-Pop').order('created_at', { ascending: false });
-      allXekies = data || [];
-      const active = allXekies.filter(x => !x.is_fulfilled && (!x.expires_at || new Date(x.expires_at) > new Date()));
-      document.getElementById('stat-total').textContent = allXekies.length;
-      document.getElementById('stat-active').textContent = active.length;
-      renderXekies(allXekies);
-    }
-
-    function setSubcat(subcat, btn) {
-      activeSubcat = subcat;
-      document.querySelectorAll('.subcat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const labels = { '': 'All K-Pop XEKIEs', 'Albums': '💿 Albums', 'Photocards': '📸 Photocards', 'Merch': '👕 Merch', 'Lightsticks': '🌟 Lightsticks', 'Concert Tickets': '🎟️ Concert Tickets', 'Signed Items': '✍️ Signed Items', 'POBs': '🎁 POBs', 'Mystery Boxes': '📦 Mystery Boxes' };
-      document.getElementById('feed-title').textContent = labels[subcat] || 'K-Pop XEKIEs';
-      const filtered = subcat ? allXekies.filter(x => x.subcategory === subcat) : allXekies;
-      renderXekies(filtered);
-      trackEvent('kpop_subcat_filter', { subcategory: subcat || 'all' });
-    }
-
-    function renderXekies(xekies) {
-      const feed = document.getElementById('kpop-feed');
-      document.getElementById('results-count').textContent = xekies.length ? xekies.length + ' XEKIE' + (xekies.length !== 1 ? 's' : '') + ' found' : '';
-      if (!xekies.length) {
-        feed.innerHTML = `<div class="empty-state">
-          <div class="empty-icon">🎵</div>
-          <div class="empty-title">No K-Pop XEKIEs yet${activeSubcat ? ' in ' + activeSubcat : ''}</div>
-          <p class="empty-sub">Be the first to post what you're hunting for!</p>
-          <a href="request.html?category=K-Pop" class="btn-kpop-post">Post your K-Pop XEKIE →</a>
-        </div>`;
-        return;
-      }
-      feed.innerHTML = xekies.map(x => {
-        const budget = formatBudget(x);
-        const expired = x.expires_at && new Date(x.expires_at) < new Date();
-        const fulfilled = x.is_fulfilled;
-        const canRespond = !fulfilled && !expired;
-        const isEarly = new Date(x.created_at) < BETA_CUTOFF;
-        const thumbnail = x.photos && x.photos.length ? `<img class="card-thumbnail" src="${x.photos[0]}" alt="Photo" loading="lazy" onerror="this.style.display='none'" />` : '';
-        return `<div class="xekie-card" id="card-${x.id}">
-          <div class="card-inner">
-            ${thumbnail}
-            <div class="card-body">
-              <div class="card-top">
-                <div>
-                  ${isEarly ? '<span class="early-badge">⚡ Early Adopter</span>' : ''}
-                  <div class="card-title">${x.title}</div>
-                </div>
-                <div class="card-budget">${budget}</div>
-              </div>
-              ${x.description ? `<div class="card-desc">${x.description}</div>` : ''}
-              <div class="card-footer">
-                <div class="card-meta">
-                  ${x.subcategory ? `<span class="subcat-pill">${x.subcategory}</span>` : ''}
-                  ${x.location ? `<span>📍 ${x.location}</span>` : ''}
-                  <span>⏱ ${timeAgo(x.created_at)}</span>
-                  <span>👁 ${x.view_count || 0}</span>
-                </div>
-                <div class="card-actions">
-                  <button class="btn-share" onclick="shareXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">Share</button>
-                  ${canRespond ? `<button class="btn-respond" onclick="openModal('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}', '${x.user_id}')">Respond</button>` : ''}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>`;
-      }).join('');
-    }
-
-    function shareXekie(id, title) {
-      const url = `${window.location.origin}/xekie.html?id=${id}`;
-      if (navigator.share) { navigator.share({ title: 'XEKIE — ' + title, url }).catch(() => {}); }
-      else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
-    }
-
-    function openModal(xekieId, title, ownerId) {
-      if (!currentUser) { window.location.href = 'login.html'; return; }
-      activeXekieId = xekieId; activeXekieOwner = ownerId;
-      document.getElementById('modal-xekie-title').textContent = 'Re: ' + title;
-      document.getElementById('modal-message').value = '';
-      document.getElementById('modal-price').value = '';
-      document.getElementById('modal-msg').className = 'modal-msg';
-      document.getElementById('modal-msg').style.display = 'none';
-      document.getElementById('modal-submit').disabled = false;
-      document.getElementById('modal-submit').textContent = 'Send response';
-      document.getElementById('modal-overlay').classList.add('open');
-      trackEvent('respond_clicked', { xekie_id: xekieId, category: 'K-Pop' });
-    }
-
-    function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-
-    async function submitResponse() {
-      const message = document.getElementById('modal-message').value.trim();
-      const price = document.getElementById('modal-price').value;
-      const btn = document.getElementById('modal-submit');
-      const msgEl = document.getElementById('modal-msg');
-      if (!message) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Please write a message to the buyer.'; return; }
-      btn.disabled = true; btn.textContent = 'Sending...';
-      const { error } = await _sb.from('offers').insert({ xekie_id: activeXekieId, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
-      if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send response'; }
-      else {
-        trackEvent('offer_submitted', { xekie_id: activeXekieId, category: 'K-Pop' });
-        msgEl.className='modal-msg success'; msgEl.style.display='block';
-        msgEl.textContent='Response sent! The buyer will be notified. ✓';
-        btn.textContent='Sent ✓'; setTimeout(closeModal, 2000);
-      }
-    }
-
-    document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
+    const SUPABASE_URL="https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    let allXekies=[],activeSubcat='',currentUser=null,activeXekieId=null;
+    const BETA_CUTOFF=new Date('2026-06-01');
+    function trackEvent(n,p={}){if(typeof gtag!=='undefined')gtag('event',n,p);}
+    _sb.auth.getSession().then(({data:{session}})=>{if(session)currentUser=session.user;loadXekies();});
+    function timeAgo(ts){const s=Math.floor((new Date()-new Date(ts))/1000);for(const[l,sec]of[["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]){const c=Math.floor(s/sec);if(c>=1)return c+" "+l+(c>1?"s":"")+" ago";}return"just now";}
+    function formatBudget(x){if(x.budget_min&&x.budget_max)return'$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();if(x.budget_min)return'$'+Number(x.budget_min).toLocaleString()+'+';if(x.budget_max)return'Up to $'+Number(x.budget_max).toLocaleString();if(x.budget)return'$'+Number(x.budget).toLocaleString();return'$—';}
+    async function loadXekies(){const{data}=await _sb.from('xekies').select('*').eq('category','K-Pop').order('created_at',{ascending:false});allXekies=data||[];const active=allXekies.filter(x=>!x.is_fulfilled&&(!x.expires_at||new Date(x.expires_at)>new Date()));document.getElementById('stat-total').textContent=allXekies.length;document.getElementById('stat-active').textContent=active.length;renderXekies(allXekies);}
+    function setSubcat(subcat,btn){activeSubcat=subcat;document.querySelectorAll('.subcat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const labels={'':'All K-Pop XEKIEs','Albums':'💿 Albums','Photocards':'📸 Photocards','Merch':'👕 Merch','Lightsticks':'🌟 Lightsticks','Signed Items':'✍️ Signed Items','POBs':'🎁 POBs','Mystery Boxes':'📦 Mystery Boxes'};document.getElementById('feed-title').textContent=labels[subcat]||'K-Pop XEKIEs';const filtered=subcat?allXekies.filter(x=>x.subcategory===subcat):allXekies;renderXekies(filtered);trackEvent('kpop_subcat_filter',{subcategory:subcat||'all'});}
+    function renderXekies(xekies){const feed=document.getElementById('kpop-feed');document.getElementById('results-count').textContent=xekies.length?xekies.length+' XEKIE'+(xekies.length!==1?'s':'')+' found':'';if(!xekies.length){feed.innerHTML=`<div class="empty-state"><div class="empty-icon">🎵</div><div class="empty-title">No K-Pop XEKIEs yet${activeSubcat?' in '+activeSubcat:''}</div><p class="empty-sub">Be the first to post what you're hunting for!</p><a href="request.html?category=K-Pop" class="btn-kpop-post">Post your K-Pop XEKIE →</a></div>`;return;}feed.innerHTML=xekies.map(x=>{const budget=formatBudget(x);const expired=x.expires_at&&new Date(x.expires_at)<new Date();const fulfilled=x.is_fulfilled;const canRespond=!fulfilled&&!expired;const isEarly=new Date(x.created_at)<BETA_CUTOFF;const thumbnail=x.photos&&x.photos.length?`<img class="card-thumbnail" src="${x.photos[0]}" alt="Photo" loading="lazy" onerror="this.style.display='none'" />`:'';return`<div class="xekie-card"><div class="card-inner">${thumbnail}<div class="card-body"><div class="card-top"><div>${isEarly?'<span class="early-badge">⚡ Early Adopter</span>':''}<div class="card-title">${x.title}</div></div><div class="card-budget">${budget}</div></div>${x.description?`<div class="card-desc">${x.description}</div>`:''}<div class="card-footer"><div class="card-meta">${x.subcategory?`<span class="subcat-pill">${x.subcategory}</span>`:''} ${x.location?`<span>📍 ${x.location}</span>`:''}<span>⏱ ${timeAgo(x.created_at)}</span></div><div class="card-actions"><button class="btn-share" onclick="shareX('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Share</button>${canRespond?`<button class="btn-respond" onclick="openModal('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Respond</button>`:''}</div></div></div></div></div>`;}).join('');}
+    function shareX(id,title){const url=`${window.location.origin}/xekie.html?id=${id}`;if(navigator.share)navigator.share({title:'XEKIE — '+title,url}).catch(()=>{});else navigator.clipboard.writeText(url).then(()=>{const t=document.getElementById('share-toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);});}
+    function openModal(xekieId,title){if(!currentUser){window.location.href='login.html';return;}activeXekieId=xekieId;document.getElementById('modal-xekie-title').textContent='Re: '+title;document.getElementById('modal-message').value='';document.getElementById('modal-price').value='';document.getElementById('modal-msg').className='modal-msg';document.getElementById('modal-msg').style.display='none';document.getElementById('modal-submit').disabled=false;document.getElementById('modal-submit').textContent='Send response';document.getElementById('modal-overlay').classList.add('open');}
+    function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+    async function submitResponse(){const message=document.getElementById('modal-message').value.trim();const price=document.getElementById('modal-price').value;const btn=document.getElementById('modal-submit');const msgEl=document.getElementById('modal-msg');if(!message){msgEl.className='modal-msg error';msgEl.style.display='block';msgEl.textContent='Please write a message to the buyer.';return;}btn.disabled=true;btn.textContent='Sending...';const{error}=await _sb.from('offers').insert({xekie_id:activeXekieId,seller_id:currentUser.id,message,price:price?parseInt(price):null});if(error){msgEl.className='modal-msg error';msgEl.style.display='block';msgEl.textContent='Error: '+error.message;btn.disabled=false;btn.textContent='Send response';}else{msgEl.className='modal-msg success';msgEl.style.display='block';msgEl.textContent='Response sent! ✓';btn.textContent='Sent ✓';setTimeout(closeModal,2000);}}
+    document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
   </script>
 </body>
 </html>
