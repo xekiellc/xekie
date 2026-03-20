@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XEKIE Soccer — Find Shirts, Signed Items & Memorabilia</title>
-  <meta name="description" content="The demand-side soccer marketplace. Post what you're hunting and let sellers come to you.">
+  <title>XEKIE Soccer — Find Shirts, Signed Items & Match Memorabilia</title>
+  <meta name="description" content="The demand-side soccer marketplace. Post the shirt, signed item, or match program you want and let sellers come to you. Premier League, Champions League & more.">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
@@ -14,7 +14,7 @@
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--niche:#15803d;--niche-dim:rgba(21,128,61,0.12);--niche-dark:#166534;--niche-light:#86efac;--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
+    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--niche:#047857;--niche-dim:rgba(4,120,87,0.12);--niche-dark:#065f46;--niche-light:#6ee7b7;--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
     body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
     nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
     .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
@@ -25,23 +25,23 @@
     .btn-nav:hover{border-color:var(--black);color:var(--black);}
     .btn-nav.niche{background:var(--niche);color:var(--white);border-color:transparent;}
     .btn-nav.niche:hover{background:var(--niche-dark);}
-    .niche-hero{background:linear-gradient(135deg,#020f06 0%,#041a0a 50%,#020f06 100%);padding:80px 40px;text-align:center;position:relative;overflow:hidden;}
+    .niche-hero{background:linear-gradient(135deg,#000a06 0%,#001a0d 50%,#000a06 100%);padding:80px 40px;text-align:center;position:relative;overflow:hidden;}
     .niche-hero-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.4;}
-    .niche-hero-orb-1{width:500px;height:500px;background:rgba(21,128,61,0.5);top:-100px;left:-100px;}
-    .niche-hero-orb-2{width:400px;height:400px;background:rgba(22,101,52,0.3);bottom:-80px;right:-80px;}
-    .niche-hero-orb-3{width:300px;height:300px;background:rgba(134,239,172,0.1);top:50%;left:50%;transform:translate(-50%,-50%);}
+    .niche-hero-orb-1{width:500px;height:500px;background:rgba(4,120,87,0.4);top:-100px;left:-100px;}
+    .niche-hero-orb-2{width:400px;height:400px;background:rgba(6,95,70,0.3);bottom:-80px;right:-80px;}
+    .niche-hero-orb-3{width:300px;height:300px;background:rgba(110,231,183,0.1);top:50%;left:50%;transform:translate(-50%,-50%);}
     .niche-hero-content{position:relative;z-index:1;max-width:700px;margin:0 auto;}
-    .niche-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--niche-light);background:rgba(21,128,61,0.2);padding:6px 16px;border-radius:100px;margin-bottom:24px;border:1px solid rgba(21,128,61,0.4);}
+    .niche-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--niche-light);background:rgba(4,120,87,0.2);padding:6px 16px;border-radius:100px;margin-bottom:24px;border:1px solid rgba(4,120,87,0.4);}
     .niche-hero-title{font-family:var(--font-display);font-size:clamp(40px,7vw,72px);font-weight:800;color:var(--white);letter-spacing:-0.03em;line-height:1.05;margin-bottom:16px;}
     .niche-hero-title .highlight{color:var(--niche-light);}
     .niche-hero-sub{font-size:18px;font-weight:300;color:rgba(255,255,255,0.6);margin-bottom:36px;line-height:1.6;}
     .niche-hero-sub strong{color:var(--white);font-weight:500;}
     .niche-hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
     .btn-niche-post{padding:14px 28px;background:var(--niche);color:var(--white);border:none;border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
-    .btn-niche-post:hover{background:var(--niche-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(21,128,61,0.5);}
+    .btn-niche-post:hover{background:var(--niche-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(4,120,87,0.5);}
     .btn-niche-browse{padding:14px 28px;background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,0.3);border-radius:100px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
     .btn-niche-browse:hover{border-color:var(--white);background:rgba(255,255,255,0.1);}
-    .niche-stats{background:rgba(21,128,61,0.06);border-top:1px solid rgba(21,128,61,0.2);border-bottom:1px solid rgba(21,128,61,0.2);padding:20px 40px;display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;}
+    .niche-stats{background:rgba(4,120,87,0.06);border-top:1px solid rgba(4,120,87,0.2);border-bottom:1px solid rgba(4,120,87,0.2);padding:20px 40px;display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;}
     .niche-stat{text-align:center;}
     .niche-stat-num{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--niche);}
     .niche-stat-label{font-size:12px;color:var(--mid);margin-top:2px;}
@@ -66,7 +66,7 @@
     .card-desc{font-size:14px;font-weight:300;color:var(--mid);line-height:1.5;margin-bottom:12px;}
     .card-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
     .card-meta{font-size:12px;color:var(--mid);display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-    .subcat-pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:var(--niche-dim);color:var(--niche);border:1px solid rgba(21,128,61,0.2);}
+    .subcat-pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:var(--niche-dim);color:var(--niche);border:1px solid rgba(4,120,87,0.2);}
     .early-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;}
     .card-actions{display:flex;gap:8px;}
     .btn-respond{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;background:var(--niche);color:var(--white);border:none;cursor:pointer;transition:all 0.2s;}
@@ -95,6 +95,11 @@
     .modal-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
     .btn-modal-submit{width:100%;padding:14px;background:var(--niche);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;}
     .btn-modal-submit:hover{background:var(--niche-dark);}
+    .cross-links{margin-top:48px;padding:32px;background:var(--white);border-radius:20px;border:1px solid var(--border);}
+    .cross-links-label{font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--mid);margin-bottom:16px;}
+    .cross-links-row{display:flex;gap:8px;flex-wrap:wrap;}
+    .cross-link{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;border:1.5px solid var(--border);color:var(--mid);text-decoration:none;transition:all 0.2s;}
+    .cross-link:hover{border-color:var(--black);color:var(--black);}
     .cta-band{background:linear-gradient(135deg,var(--niche),var(--niche-dark));border-radius:20px;padding:48px;text-align:center;margin-top:48px;margin-bottom:48px;}
     .cta-band-title{font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--white);margin-bottom:8px;letter-spacing:-0.02em;}
     .cta-band-sub{font-size:16px;color:rgba(255,255,255,0.8);margin-bottom:24px;}
@@ -129,8 +134,8 @@
     <div class="niche-hero-orb niche-hero-orb-3"></div>
     <div class="niche-hero-content">
       <div class="niche-eyebrow">⚽ Soccer Vertical — Beta</div>
-      <h1 class="niche-hero-title">Find Your <span class="highlight">Kit</span> Grail.</h1>
-      <p class="niche-hero-sub">Hunting a vintage shirt, signed item, or match program?<br><strong>Post your XEKIE. Let sellers come to you.</strong></p>
+      <h1 class="niche-hero-title">Find Your <span class="highlight">Match</span> Grail.</h1>
+      <p class="niche-hero-sub">Hunting a rare shirt, signed item, or match program?<br><strong>Post your XEKIE. Let sellers come to you.</strong></p>
       <div class="niche-hero-cta">
         <a href="request.html?category=Soccer" class="btn-niche-post">⚽ Post what you're hunting</a>
         <a href="#feed" class="btn-niche-browse">Browse Soccer XEKIEs ↓</a>
@@ -147,11 +152,11 @@
       <div class="filter-label">Browse by type</div>
       <div class="subcategory-filters">
         <button class="subcat-btn active" onclick="setSubcat('',this)">⚽ All Soccer</button>
-        <button class="subcat-btn" onclick="setSubcat('Shirts & Kits',this)">👕 Shirts & Kits</button>
-        <button class="subcat-btn" onclick="setSubcat('Signed Items',this)">✍️ Signed Items</button>
-        <button class="subcat-btn" onclick="setSubcat('Match Programs',this)">📄 Match Programs</button>
-        <button class="subcat-btn" onclick="setSubcat('Scarves & Flags',this)">🏴 Scarves & Flags</button>
-        <button class="subcat-btn" onclick="setSubcat('Boots',this)">👟 Boots</button>
+        <button class="subcat-btn" onclick="setSubcat('Shirts & Kits',this)">Shirts & Kits</button>
+        <button class="subcat-btn" onclick="setSubcat('Signed Items',this)">Signed Items</button>
+        <button class="subcat-btn" onclick="setSubcat('Match Programs',this)">Match Programs</button>
+        <button class="subcat-btn" onclick="setSubcat('Scarves & Flags',this)">Scarves & Flags</button>
+        <button class="subcat-btn" onclick="setSubcat('Boots',this)">Boots</button>
         <button class="subcat-btn" onclick="setSubcat('Other',this)">Other</button>
       </div>
     </div>
@@ -160,8 +165,18 @@
       <div class="results-count" id="results-count"></div>
     </div>
     <div id="niche-feed"><div class="loading">Loading Soccer XEKIEs...</div></div>
+    <div class="cross-links">
+      <div class="cross-links-label">Explore Other Verticals</div>
+      <div class="cross-links-row">
+        <a href="sportscards.html" class="cross-link">⚾ Sports Cards</a>
+        <a href="sportsmemorabilia.html" class="cross-link">🏅 Sports Memorabilia</a>
+        <a href="sneakers.html" class="cross-link">👟 Sneakers</a>
+        <a href="vintage.html" class="cross-link">🏺 Vintage & Antique</a>
+        <a href="categories.html" class="cross-link">View all verticals →</a>
+      </div>
+    </div>
     <div class="cta-band">
-      <div class="cta-band-title">Can't find that kit?</div>
+      <div class="cta-band-title">Can't find that shirt?</div>
       <div class="cta-band-sub">Post your XEKIE and let every soccer seller know exactly what you need.</div>
       <a href="request.html?category=Soccer" class="btn-cta-white">⚽ Post your Soccer XEKIE →</a>
     </div>
@@ -174,7 +189,7 @@
       <label>Your message to the buyer</label>
       <textarea id="modal-message" placeholder="Hi! I have exactly what you're looking for..."></textarea>
       <label>Your asking price</label>
-      <div class="modal-budget-row"><div class="modal-prefix">$</div><input type="number" id="modal-price" class="modal-prefix-input" placeholder="e.g. 120" /></div>
+      <div class="modal-budget-row"><div class="modal-prefix">$</div><input type="number" id="modal-price" class="modal-prefix-input" placeholder="e.g. 200" /></div>
       <div class="modal-msg" id="modal-msg"></div>
       <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send response</button>
     </div>
@@ -193,7 +208,7 @@
     function formatBudget(x){if(x.budget_min&&x.budget_max)return'$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();if(x.budget_min)return'$'+Number(x.budget_min).toLocaleString()+'+';if(x.budget_max)return'Up to $'+Number(x.budget_max).toLocaleString();if(x.budget)return'$'+Number(x.budget).toLocaleString();return'$—';}
     async function loadXekies(){const{data}=await _sb.from('xekies').select('*').eq('category','Soccer').order('created_at',{ascending:false});allXekies=data||[];const active=allXekies.filter(x=>!x.is_fulfilled&&(!x.expires_at||new Date(x.expires_at)>new Date()));document.getElementById('stat-total').textContent=allXekies.length;document.getElementById('stat-active').textContent=active.length;renderXekies(allXekies);}
     function setSubcat(s,btn){activeSubcat=s;document.querySelectorAll('.subcat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('feed-title').textContent=s?s+' XEKIEs':'All Soccer XEKIEs';renderXekies(s?allXekies.filter(x=>x.subcategory===s):allXekies);trackEvent('niche_subcat_filter',{niche:'Soccer',subcategory:s||'all'});}
-    function renderXekies(xekies){const feed=document.getElementById('niche-feed');document.getElementById('results-count').textContent=xekies.length?xekies.length+' XEKIE'+(xekies.length!==1?'s':'')+' found':'';if(!xekies.length){feed.innerHTML=`<div class="empty-state"><div class="empty-icon">⚽</div><div class="empty-title">No Soccer XEKIEs yet${activeSubcat?' in '+activeSubcat:''}</div><p class="empty-sub">Be the first to post what you're hunting!</p><a href="request.html?category=Soccer" class="btn-niche-post">Post your Soccer XEKIE →</a></div>`;return;}feed.innerHTML=xekies.map(x=>{const isEarly=new Date(x.created_at)<BETA_CUTOFF;const thumb=x.photos&&x.photos.length?`<img class="card-thumbnail" src="${x.photos[0]}" loading="lazy" onerror="this.style.display='none'" />`:'';const canRespond=!x.is_fulfilled&&(!x.expires_at||new Date(x.expires_at)>new Date());return`<div class="xekie-card"><div class="card-inner">${thumb}<div class="card-body"><div class="card-top"><div>${isEarly?'<span class="early-badge">⚡ Early Adopter</span>':''}<div class="card-title">${x.title}</div></div><div class="card-budget">${formatBudget(x)}</div></div>${x.description?`<div class="card-desc">${x.description}</div>`:''}<div class="card-footer"><div class="card-meta">${x.subcategory?`<span class="subcat-pill">${x.subcategory}</span>`:''} ${x.location?`<span>📍 ${x.location}</span>`:''}<span>⏱ ${timeAgo(x.created_at)}</span></div><div class="card-actions"><button class="btn-share" onclick="shareX('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Share</button>${canRespond?`<button class="btn-respond" onclick="openModal('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Respond</button>`:''}</div></div></div></div></div>`;}).join('');}
+    function renderXekies(xekies){const feed=document.getElementById('niche-feed');document.getElementById('results-count').textContent=xekies.length?xekies.length+' XEKIE'+(xekies.length!==1?'s':'')+' found':'';if(!xekies.length){feed.innerHTML=`<div class="empty-state"><div class="empty-icon">⚽</div><div class="empty-title">No Soccer XEKIEs yet${activeSubcat?' for '+activeSubcat:''}</div><p class="empty-sub">Be the first to post what you're hunting!</p><a href="request.html?category=Soccer" class="btn-niche-post">Post your Soccer XEKIE →</a></div>`;return;}feed.innerHTML=xekies.map(x=>{const isEarly=new Date(x.created_at)<BETA_CUTOFF;const thumb=x.photos&&x.photos.length?`<img class="card-thumbnail" src="${x.photos[0]}" loading="lazy" onerror="this.style.display='none'" />`:'';const canRespond=!x.is_fulfilled&&(!x.expires_at||new Date(x.expires_at)>new Date());return`<div class="xekie-card"><div class="card-inner">${thumb}<div class="card-body"><div class="card-top"><div>${isEarly?'<span class="early-badge">⚡ Early Adopter</span>':''}<div class="card-title">${x.title}</div></div><div class="card-budget">${formatBudget(x)}</div></div>${x.description?`<div class="card-desc">${x.description}</div>`:''}<div class="card-footer"><div class="card-meta">${x.subcategory?`<span class="subcat-pill">${x.subcategory}</span>`:''} ${x.location?`<span>📍 ${x.location}</span>`:''}<span>⏱ ${timeAgo(x.created_at)}</span></div><div class="card-actions"><button class="btn-share" onclick="shareX('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Share</button>${canRespond?`<button class="btn-respond" onclick="openModal('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Respond</button>`:''}</div></div></div></div></div>`;}).join('');}
     function shareX(id,title){const url=`${window.location.origin}/xekie.html?id=${id}`;if(navigator.share)navigator.share({title:'XEKIE — '+title,url}).catch(()=>{});else navigator.clipboard.writeText(url).then(()=>{const t=document.getElementById('share-toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);});}
     function openModal(xekieId,title){if(!currentUser){window.location.href='login.html';return;}activeXekieId=xekieId;document.getElementById('modal-xekie-title').textContent='Re: '+title;document.getElementById('modal-message').value='';document.getElementById('modal-price').value='';document.getElementById('modal-msg').className='modal-msg';document.getElementById('modal-msg').style.display='none';document.getElementById('modal-submit').disabled=false;document.getElementById('modal-submit').textContent='Send response';document.getElementById('modal-overlay').classList.add('open');}
     function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
