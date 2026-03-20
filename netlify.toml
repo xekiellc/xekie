@@ -1,7 +1,18 @@
-[functions]
-  directory = "netlify/functions"
+# netlify.toml — XEKIE
+# Auto-deploy from GitHub main branch
 
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# ─── Clean URL: /x/:slug → xekie.html?slug=:slug ───────────────────────────
 [[redirects]]
-  from = "/*"
-  to = "/404.html"
+  from = "/x/:slug"
+  to   = "/xekie.html?slug=:slug"
+  status = 200
+
+# ─── Custom 404 ─────────────────────────────────────────────────────────────
+[[redirects]]
+  from   = "/*"
+  to     = "/404.html"
   status = 404
