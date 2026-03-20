@@ -36,10 +36,6 @@
     .btn-submit{width:100%;padding:13px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;margin-top:4px;transition:background 0.2s;}
     .btn-submit:hover{background:var(--accent);}
     .btn-submit:disabled{background:#ccc;cursor:not-allowed;}
-    .divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--mid);font-size:13px;}
-    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
-    .btn-google{width:100%;padding:11px;background:var(--white);color:var(--black);border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color 0.2s;}
-    .btn-google:hover{border-color:var(--black);}
     .forgot{font-size:13px;color:var(--mid);text-align:right;cursor:pointer;margin-top:8px;}
     .forgot:hover{color:var(--accent);}
     .msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-top:12px;display:none;}
@@ -85,11 +81,6 @@
         <div class="form-group"><label>Password</label><input type="password" id="signin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')signIn()" /></div>
         <button class="btn-submit" id="btn-signin" onclick="signIn()">Sign in</button>
         <div class="forgot" onclick="forgotPassword()">Forgot password?</div>
-        <div class="divider">or</div>
-        <button class="btn-google" onclick="signInWithGoogle()">
-          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-          Continue with Google
-        </button>
         <div class="msg" id="signin-msg"></div>
       </div>
 
@@ -98,11 +89,6 @@
         <div class="form-group"><label>Email</label><input type="email" id="signup-email" placeholder="you@example.com" /></div>
         <div class="form-group"><label>Password</label><input type="password" id="signup-password" placeholder="At least 6 characters" onkeydown="if(event.key==='Enter')signUp()" /></div>
         <button class="btn-submit" id="btn-signup" onclick="signUp()">Create account</button>
-        <div class="divider">or</div>
-        <button class="btn-google" onclick="signInWithGoogle()">
-          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-          Continue with Google
-        </button>
         <div class="msg" id="signup-msg"></div>
       </div>
     </div>
@@ -143,7 +129,7 @@
       el.textContent = msg;
     }
 
-    // ── WINE GLASSES CLINK (fixed — crisp high ping, not balloon) ──
+    // ── WINE GLASSES CLINK (crisp high ping) ──
     function playWineGlassClink() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -205,15 +191,6 @@
       }
     }
 
-    async function signInWithGoogle() {
-      gtag('event','google_oauth_used');
-      const { error } = await _sb.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin + '/dashboard.html' }
-      });
-      if (error) showMessage('signin-msg', error.message, 'error');
-    }
-
     async function forgotPassword() {
       const email = document.getElementById('signin-email').value.trim();
       if (!email) return showMessage('signin-msg', 'Enter your email above first.', 'error');
@@ -224,5 +201,3 @@
   </script>
 </body>
 </html>
-
-
