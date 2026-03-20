@@ -3,12 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XEKIE — Trade Different</title>
-  <meta name="description" content="The demand-side marketplace. Post what you want to buy. Let sellers come to you.">
+  <title>XEKIE — The Demand-Side Marketplace. Trade Different.</title>
+  <meta name="description" content="The world's first demand-side marketplace. Post what you want to buy and let sellers come to you. K-Pop, sneakers, trading cards, luxury watches & more.">
+  <link rel="canonical" href="https://xekie.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://xekie.com/">
+  <meta property="og:title" content="XEKIE — The Demand-Side Marketplace">
+  <meta property="og:description" content="Stop searching. Post what you want and let sellers come to you. The world's first demand-side marketplace.">
+  <meta property="og:image" content="https://xekie.com/.netlify/functions/og-image?title=Trade+Different&category=XEKIE+Marketplace">
+  <meta property="og:site_name" content="XEKIE">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="XEKIE — Trade Different">
+  <meta name="twitter:description" content="Stop searching. Post what you want and let sellers come to you.">
+  <meta name="twitter:image" content="https://xekie.com/.netlify/functions/og-image?title=Trade+Different&category=XEKIE+Marketplace">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "XEKIE",
+    "url": "https://xekie.com",
+    "description": "The world's first demand-side marketplace. Post what you want to buy and let sellers come to you.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://xekie.com/radar.html?search={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
-  <!-- iOS PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="XEKIE">
@@ -110,7 +134,6 @@
     .footer-bottom { border-top: 1px solid #1a1a1a; padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .footer-legal { font-size: 12px; color: #333; line-height: 1.6; max-width: 560px; }
     .footer-copy { font-size: 12px; color: #333; }
-    /* PWA install banner */
     #pwa-banner { display:none; position:fixed; bottom:0; left:0; right:0; background:#0a0a0a; color:#fafaf8; padding:16px 20px; z-index:9999; align-items:center; justify-content:space-between; gap:12px; box-shadow:0 -4px 20px rgba(0,0,0,0.4); }
     @media (max-width: 768px) { nav { padding: 0 20px; } .steps { grid-template-columns: 1fr; gap: 2px; } .step:first-child { border-radius: 20px 20px 0 0; } .step:last-child { border-radius: 0 0 20px 20px; } .why-grid { grid-template-columns: 1fr; } footer { padding: 48px 24px 32px; } .footer-top { flex-direction: column; } }
     @media (max-width: 480px) { .hero-cta { flex-direction: column; align-items: center; } .nav-links .btn:not(.btn-primary) { display: none; } }
@@ -118,7 +141,6 @@
 </head>
 <body>
 
-  <!-- PWA Install Banner -->
   <div id="pwa-banner">
     <div style="display:flex;align-items:center;gap:12px;">
       <img src="/icon-60x60.png" style="width:44px;height:44px;border-radius:10px;flex-shrink:0;" />
@@ -359,10 +381,8 @@
 
     loadRecent();
 
-    // ── PWA Install prompt ──
     let deferredPrompt = null;
     const pwaBanner = document.getElementById('pwa-banner');
-
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault();
       deferredPrompt = e;
@@ -370,29 +390,17 @@
         setTimeout(() => { pwaBanner.style.display = 'flex'; }, 3000);
       }
     });
-
     function installPWA() {
       if (!deferredPrompt) return;
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then(choice => {
-        if (choice.outcome === 'accepted') {
-          pwaBanner.style.display = 'none';
-          gtag('event', 'pwa_installed');
-        }
+        if (choice.outcome === 'accepted') { pwaBanner.style.display = 'none'; gtag('event', 'pwa_installed'); }
         deferredPrompt = null;
       });
     }
-
-    function dismissPWA() {
-      pwaBanner.style.display = 'none';
-      localStorage.setItem('pwa-dismissed', '1');
-    }
-
-    // ── Service Worker registration ──
+    function dismissPWA() { pwaBanner.style.display = 'none'; localStorage.setItem('pwa-dismissed', '1'); }
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
-      });
+      window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(() => {}); });
     }
   </script>
 </body>
