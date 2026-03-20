@@ -1,615 +1,599 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XEKIE it — Just XEKIE It.</title>
-  <meta name="description" content="Can't find it? Just XEKIE it. Post what you want and let sellers come to you.">
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#ff4d1c">
-  <link rel="apple-touch-icon" href="/icon-180x180.png">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post a XEKIE — Trade Different</title>
+  <meta name="description" content="Tell the world what you want to buy. Sellers come to you with offers. The world's first demand-side marketplace." />
+  <link rel="canonical" href="https://xekie.com/request.html" />
+  <meta property="og:type"        content="website" />
+  <meta property="og:site_name"   content="XEKIE" />
+  <meta property="og:url"         content="https://xekie.com/request.html" />
+  <meta property="og:title"       content="Post a XEKIE — Trade Different" />
+  <meta property="og:description" content="Tell the world what you want to buy. Sellers come to you." />
+  <meta property="og:image"       content="https://xekie.com/og-default.png" />
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Post a XEKIE — Trade Different" />
+  <meta name="twitter:description" content="Tell the world what you want to buy. Sellers come to you." />
+  <meta name="twitter:image"       content="https://xekie.com/og-default.png" />
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPXVZVMJXX"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DPXVZVMJXX');</script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-DPXVZVMJXX');
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--black:#0a0a0a;--white:#fafaf8;--cream:#f4f2ec;--accent:#ff4d1c;--mid:#6b6b6b;--border:rgba(10,10,10,0.12);--font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;}
-    body{font-family:var(--font-body);background:var(--cream);color:var(--black);min-height:100vh;display:flex;flex-direction:column;}
-    nav{padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--cream);position:sticky;top:0;z-index:10;}
-    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.03em;color:var(--black);text-decoration:none;display:flex;flex-direction:column;line-height:1;}
-    .nav-logo .xe{color:var(--accent);}
-    .nav-tagline{font-size:8px;font-weight:400;letter-spacing:0.15em;color:var(--mid);font-family:var(--font-body);text-transform:uppercase;}
-    .nav-right{display:flex;align-items:center;gap:16px;}
-    .nav-user{font-size:14px;color:var(--mid);}
-    .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--mid);cursor:pointer;transition:all 0.2s;text-decoration:none;}
-    .btn-nav:hover{border-color:var(--black);color:var(--black);}
-    .container{max-width:640px;margin:0 auto;padding:48px 20px;flex:1;}
-    .page-title{font-family:var(--font-display);font-weight:800;font-size:36px;letter-spacing:-0.03em;margin-bottom:6px;}
-    .page-sub{font-size:15px;font-weight:300;color:var(--mid);margin-bottom:40px;line-height:1.5;}
-    .form-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:40px;}
-    .form-group{margin-bottom:24px;}
-    label{display:block;font-size:13px;font-weight:500;color:var(--black);margin-bottom:7px;}
-    .label-hint{font-size:12px;font-weight:400;color:var(--mid);margin-left:6px;}
-    input,textarea,select{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;color:var(--black);background:var(--white);outline:none;transition:border-color 0.2s;}
-    input:focus,textarea:focus,select:focus{border-color:var(--black);}
-    input::placeholder,textarea::placeholder{color:#bbb;}
-    textarea{resize:vertical;min-height:100px;line-height:1.5;}
-    .budget-section{background:var(--cream);border-radius:12px;padding:20px;margin-bottom:24px;}
-    .budget-section-title{font-size:13px;font-weight:500;margin-bottom:14px;}
-    .budget-row{display:flex;gap:10px;align-items:center;margin-bottom:12px;}
-    .budget-prefix{display:flex;align-items:center;justify-content:center;width:44px;height:46px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;font-size:16px;font-weight:500;color:var(--mid);flex-shrink:0;}
-    .budget-row input{flex:1;margin:0;}
-    .budget-separator{font-size:14px;color:var(--mid);font-weight:500;padding:0 4px;}
-    .flexible-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
-    .flexible-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--black);}
-    .flexible-row label{font-size:13px;color:var(--mid);margin:0;cursor:pointer;}
-    .char-count{font-size:12px;color:var(--mid);text-align:right;margin-top:5px;}
-    .expiry-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
-    .expiry-btn{padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;background:var(--white);font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--mid);cursor:pointer;text-align:center;transition:all 0.2s;line-height:1.3;}
-    .expiry-btn:hover{border-color:var(--black);color:var(--black);}
-    .expiry-btn.active{background:var(--black);color:var(--white);border-color:var(--black);}
-    .expiry-btn .expiry-sub{display:block;font-size:10px;font-weight:400;opacity:0.7;margin-top:2px;}
-    .photo-upload-section{background:var(--cream);border-radius:12px;padding:20px;margin-bottom:24px;}
-    .photo-upload-title{font-size:13px;font-weight:500;margin-bottom:12px;}
-    .photo-drop-zone{border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--white);}
-    .photo-drop-zone:hover,.photo-drop-zone.dragover{border-color:var(--accent);background:#fff8f6;}
-    .photo-drop-icon{font-size:32px;margin-bottom:8px;}
-    .photo-drop-text{font-size:14px;color:var(--mid);}
-    .photo-drop-sub{font-size:12px;color:#bbb;margin-top:4px;}
-    .photo-previews{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
-    .photo-preview-item{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--cream);}
-    .photo-preview-item img{width:100%;height:100%;object-fit:cover;}
-    .photo-remove{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:100px;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-    .btn-submit{width:100%;padding:15px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:16px;font-weight:500;cursor:pointer;margin-top:8px;transition:background 0.2s,transform 0.15s;}
-    .btn-submit:hover{background:var(--accent);transform:translateY(-1px);}
-    .btn-submit:disabled{background:#ccc;cursor:not-allowed;transform:none;}
-    .message{padding:14px 18px;border-radius:10px;font-size:14px;margin-bottom:20px;display:none;}
-    .message.error{background:#FCEBEB;color:#A32D2D;border:1px solid #F7C1C1;display:block;}
-    .message.success{background:#EAF3DE;color:#3B6D11;border:1px solid #C0DD97;display:block;}
-    .ai-bar{display:none;align-items:center;gap:8px;margin-top:8px;}
-    .ai-bar.visible{display:flex;}
-    .btn-ai{font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;transition:all 0.2s;white-space:nowrap;}
-    .btn-ai:hover{background:var(--accent);color:var(--white);}
-    .btn-ai:disabled{opacity:0.5;cursor:not-allowed;}
-    .ai-status{font-size:12px;color:var(--mid);}
-    .niche-banner{display:none;background:linear-gradient(135deg,#0a0a0a,#1a1a1a);border-radius:12px;padding:14px 18px;margin-bottom:20px;align-items:center;gap:12px;}
-    .niche-banner.visible{display:flex;}
-    .niche-banner-icon{font-size:24px;}
-    .niche-banner-text{flex:1;}
-    .niche-banner-title{font-size:14px;font-weight:700;color:var(--white);}
-    .niche-banner-sub{font-size:12px;color:#888;margin-top:2px;}
-    .subcategory-row{display:none;margin-bottom:24px;}
-    .subcategory-row.visible{display:block;}
-    .preview-box{background:var(--cream);border-radius:12px;padding:18px 20px;margin-top:16px;border:1px dashed var(--border);}
-    .preview-label{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);margin-bottom:10px;}
-    .preview-title{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--black);margin-bottom:4px;min-height:24px;}
-    .preview-desc{font-size:14px;color:var(--mid);font-weight:300;line-height:1.5;min-height:20px;}
-    .preview-budget{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);margin-top:10px;}
-    .preview-expiry{font-size:12px;color:var(--mid);margin-top:6px;}
-    #fireworks-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;display:none;}
-    .share-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:center;padding:20px;}
-    .share-modal.open{display:flex;}
-    .share-modal-box{background:var(--white);border-radius:20px;padding:36px;max-width:440px;width:100%;text-align:center;}
-    .share-modal-title{font-family:var(--font-display);font-size:24px;font-weight:800;margin-bottom:8px;}
-    .share-modal-sub{font-size:15px;color:var(--mid);margin-bottom:24px;}
-    .share-url{background:var(--cream);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--mid);word-break:break-all;margin-bottom:16px;}
-    .btn-copy{width:100%;padding:13px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;margin-bottom:10px;}
-    .btn-copy:hover{background:var(--accent);}
-    .btn-close-share{width:100%;padding:11px;background:transparent;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:14px;cursor:pointer;color:var(--mid);}
-    footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
-    .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
-    .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
-    .footer-logo .xe{color:var(--accent);}
-    .footer-tagline{font-size:11px;letter-spacing:0.2em;color:#555;text-transform:uppercase;}
-    .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
-    .footer-links a{font-size:13px;color:#666;text-decoration:none;}
-    .footer-links a:hover{color:var(--white);}
-    .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
-    @media(max-width:480px){.form-card{padding:28px 20px;}nav{padding:0 20px;}.expiry-grid{grid-template-columns:repeat(2,1fr);}}
+    :root {
+      --brand: #00c896;
+      --brand-dark: #009e78;
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface2: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #f0f0f0;
+      --muted: #888;
+      --danger: #e05252;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg);
+    }
+    .nav-logo {
+      font-size: 1.5rem; font-weight: 900;
+      color: var(--brand); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 16px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+    .nav-links a:hover { color: var(--text); }
+
+    .container { max-width: 680px; margin: 0 auto; padding: 40px 20px 80px; }
+    .page-header { margin-bottom: 32px; }
+    .page-header h1 { font-size: 1.9rem; font-weight: 900; margin-bottom: 6px; }
+    .page-header p { color: var(--muted); }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .cat-btn {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px; padding: 14px 8px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .cat-btn:hover { border-color: var(--brand); }
+    .cat-btn.selected { border-color: var(--brand); background: rgba(0,200,150,0.08); }
+    .cat-btn .emoji { font-size: 1.5rem; }
+    .cat-btn .label { font-size: 0.78rem; font-weight: 600; color: var(--text); }
+
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .form-card h2 { font-size: 0.8rem; font-weight: 700; margin-bottom: 20px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.85rem; color: var(--muted); margin-bottom: 7px; font-weight: 500;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      resize: vertical;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus { outline: none; border-color: var(--brand); }
+    .form-group select option { background: var(--surface2); }
+
+    .ai-bar { display: flex; gap: 8px; margin-top: 8px; }
+    .ai-bar input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    .ai-bar input:focus { outline: none; border-color: var(--brand); }
+    .ai-btn {
+      padding: 10px 16px;
+      background: var(--brand);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .ai-btn:hover { background: var(--brand-dark); }
+    .ai-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .photo-drop {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .photo-drop:hover { border-color: var(--brand); }
+    .photo-drop input { display: none; }
+    .photo-previews { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .photo-previews img {
+      width: 80px; height: 80px;
+      object-fit: cover; border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--brand);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: -0.2px;
+    }
+    .submit-btn:hover { background: var(--brand-dark); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    #fireworks {
+      display: none;
+      position: fixed; inset: 0; z-index: 999;
+      pointer-events: none;
+    }
+    .fw-particle {
+      position: absolute;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      animation: fwBurst 1s ease-out forwards;
+    }
+    @keyframes fwBurst {
+      0%   { transform: translate(0,0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+    }
+
+    .success-box { display: none; text-align: center; padding: 40px 20px; }
+    .success-box h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 10px; }
+    .success-box p { color: var(--muted); margin-bottom: 24px; }
+    .success-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 20px; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; border: none; text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--brand); color: #000; }
+    .btn-primary:hover { background: var(--brand-dark); }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { border-color: var(--brand); color: var(--brand); }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--brand); color: #000;
+      padding: 10px 22px; border-radius: 30px;
+      font-weight: 700; font-size: 0.9rem;
+      opacity: 0; transition: all 0.3s;
+      pointer-events: none; z-index: 9998;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 600px) {
+      nav { padding: 12px 16px; }
+      .container { padding: 24px 16px 60px; }
+      .page-header h1 { font-size: 1.4rem; }
+      .category-grid { grid-template-columns: repeat(3, 1fr); }
+    }
   </style>
 </head>
 <body>
-  <canvas id="fireworks-canvas"></canvas>
 
-  <div class="share-modal" id="share-modal">
-    <div class="share-modal-box">
-      <div class="share-modal-title">Your XEKIE is live! 🎆</div>
-      <div class="share-modal-sub">Share it to get responses faster.</div>
-      <div class="share-url" id="share-url"></div>
-      <button class="btn-copy" onclick="copyShareLink()">Copy link</button>
-      <button class="btn-close-share" onclick="closeShareModal()">Go to my dashboard</button>
-    </div>
+<nav>
+  <a class="nav-logo" href="/">XEKIE</a>
+  <div class="nav-links">
+    <a href="/radar.html">Browse</a>
   </div>
+</nav>
 
-  <nav>
-    <a href="index.html" class="nav-logo">
-      <span><span class="xe">XE</span>KIE</span>
-      <span class="nav-tagline">Trade Different</span>
-    </a>
-    <div class="nav-right">
-      <span class="nav-user" id="nav-user"></span>
-      <a href="dashboard.html" class="btn-nav">My XEKIEs</a>
+<div id="fireworks"></div>
+<div class="toast" id="toast"></div>
+
+<div class="container">
+
+  <div id="formState">
+    <div class="page-header">
+      <h1>Post a XEKIE</h1>
+      <p>Tell sellers exactly what you want — they come to you.</p>
     </div>
-  </nav>
 
-  <div class="container">
-    <h1 class="page-title">XEKIE it.</h1>
-    <p class="page-sub">Can't find it? Just XEKIE it. Tell sellers exactly what you want — better details get better responses.</p>
     <div class="form-card">
-      <div id="message" class="message"></div>
+      <h2>1 — Choose a Category</h2>
+      <div class="category-grid" id="categoryGrid"></div>
+      <input type="hidden" id="selectedCategory" />
+    </div>
 
-      <!-- CATEGORY FIRST -->
+    <div class="form-card">
+      <h2>2 — Describe What You Want</h2>
+
       <div class="form-group">
-        <label>Category <span class="label-hint">Pick first — it sharpens your listing</span></label>
-        <select id="category" onchange="onCategoryChange()">
-          <option value="">Select a category...</option>
-          <optgroup label="— Niche Verticals —">
-            <option value="K-Pop">K-Pop</option>
-            <option value="Sneakers">Sneakers</option>
-            <option value="Trading Cards">Trading Cards</option>
-            <option value="Sports Cards">Sports Cards</option>
-            <option value="Swifties">Swifties</option>
-            <option value="Star Wars">Star Wars</option>
-            <option value="Soccer">Soccer</option>
-            <option value="Vinyl Records">Vinyl Records</option>
-            <option value="Retro Games">Retro Games</option>
-            <option value="Vintage & Antique">Vintage &amp; Antique</option>
-            <option value="Comics">Comics</option>
-            <option value="Sports Memorabilia">Sports Memorabilia</option>
-            <option value="Luxury Watches">Luxury Watches</option>
-            <option value="Retro Tech">Retro Tech</option>
-          </optgroup>
-          <optgroup label="— All Categories —">
-            <option value="Electronics">Electronics</option>
-            <option value="Vehicles">Vehicles</option>
-            <option value="Tools">Tools</option>
-            <option value="Services">Services</option>
-            <option value="Household Items">Household Items</option>
-            <option value="Clothes & Apparel">Clothes &amp; Apparel</option>
-            <option value="Books">Books</option>
-            <option value="Toys">Toys</option>
-            <option value="Music & Movies">Music &amp; Movies</option>
-            <option value="Collectibles">Collectibles</option>
-            <option value="Other">Other</option>
-          </optgroup>
+        <label>
+          Title <span id="aiStatus" style="color:var(--brand);font-size:0.78rem"></span>
+        </label>
+        <input type="text" id="xTitle" placeholder="e.g. Jordan 1 Retro High OG Chicago, Size 10" maxlength="120" />
+        <div class="ai-bar" style="margin-top:8px">
+          <input type="text" id="aiKeywords" placeholder="AI title writer — type keywords, hit Generate" />
+          <button class="ai-btn" id="aiBtn" onclick="generateTitle()">✨ Generate</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="xDescription" rows="5" placeholder="Condition, size, color, era, grading, what you'll pay shipping on — be specific so sellers know exactly what you want."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Budget (optional)</label>
+        <input type="number" id="xBudget" placeholder="e.g. 250" min="0" step="1" />
+      </div>
+
+      <div class="form-group">
+        <label>Location (optional)</label>
+        <input type="text" id="xLocation" placeholder="e.g. Charlotte, NC or USA only" />
+      </div>
+
+      <div class="form-group">
+        <label>Expires</label>
+        <select id="xExpiry">
+          <option value="7">7 days</option>
+          <option value="14" selected>14 days</option>
+          <option value="30">30 days</option>
+          <option value="60">60 days</option>
         </select>
       </div>
+    </div>
 
-      <!-- NICHE BANNER -->
-      <div class="niche-banner" id="niche-banner">
-        <div class="niche-banner-icon" id="niche-banner-icon"></div>
-        <div class="niche-banner-text">
-          <div class="niche-banner-title" id="niche-banner-title"></div>
-          <div class="niche-banner-sub" id="niche-banner-sub"></div>
+    <div class="form-card">
+      <h2>3 — Add Photos (optional)</h2>
+      <div class="photo-drop" id="photoDrop" onclick="document.getElementById('photoInput').click()">
+        <input type="file" id="photoInput" accept="image/*" multiple onchange="handlePhotos(this.files)" />
+        📷 Tap to add reference photos (up to 5)
+      </div>
+      <div class="photo-previews" id="photoPreviews"></div>
+    </div>
+
+    <div class="form-card" id="authCard">
+      <h2>4 — Your Account</h2>
+      <div id="authLoggedIn" style="display:none">
+        <p style="color:var(--brand);font-weight:600">✅ Logged in as <span id="authEmail"></span></p>
+      </div>
+      <div id="authNotLoggedIn">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="userEmail" placeholder="you@email.com" />
         </div>
+        <p style="color:var(--muted);font-size:0.82rem;margin-top:-10px">We'll email you when sellers respond. No password needed.</p>
       </div>
+    </div>
 
-      <!-- SUBCATEGORY -->
-      <div class="subcategory-row" id="subcategory-row">
-        <div class="form-group" style="margin-bottom:0;">
-          <label>Subcategory <span class="label-hint">Optional but helps sellers find you</span></label>
-          <select id="subcategory"></select>
-        </div>
-      </div>
+    <button class="submit-btn" id="submitBtn" onclick="postXekie()">
+      Post My XEKIE →
+    </button>
+  </div>
 
-      <!-- TITLE -->
-      <div class="form-group">
-        <label>What do you want to find? <span class="label-hint">Be specific</span></label>
-        <input type="text" id="title" placeholder="e.g. First edition Hell's Angels by Hunter S. Thompson" maxlength="100" oninput="updatePreview(); showAiBar();" />
-        <div class="char-count"><span id="title-count">0</span>/100</div>
-        <div class="ai-bar" id="ai-bar">
-          <button class="btn-ai" id="btn-ai" onclick="runAiWriter()">✨ Let AI Write it for Me</button>
-          <span class="ai-status" id="ai-status"></span>
-        </div>
+  <div class="success-box" id="successState">
+    <div style="font-size:3rem;margin-bottom:16px">🎉</div>
+    <h2>Your XEKIE is Live!</h2>
+    <p>Sellers can now find it and make you offers.</p>
+    <div class="success-actions">
+      <a id="viewXekieBtn" href="#" class="btn btn-primary">View My XEKIE →</a>
+      <a href="/request.html" class="btn btn-outline">Post Another</a>
+      <a href="/radar.html" class="btn btn-outline">Browse XEKIEs</a>
+    </div>
+    <div style="margin-top:24px">
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:10px">Share your XEKIE:</p>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="sharePostedXekie()">🔗 Copy Link</button>
+        <button class="btn btn-outline" onclick="tweetPostedXekie()">𝕏 Tweet It</button>
       </div>
-
-      <!-- DESCRIPTION -->
-      <div class="form-group">
-        <label>Describe exactly what you're looking for <span class="label-hint">Condition, specs, preferences</span></label>
-        <textarea id="description" placeholder="e.g. Looking for a first print in good condition. No major damage to spine or cover." maxlength="500" oninput="updatePreview()"></textarea>
-        <div class="char-count"><span id="desc-count">0</span>/500</div>
-      </div>
-
-      <!-- BUDGET -->
-      <div class="budget-section">
-        <div class="budget-section-title">Your budget</div>
-        <div class="budget-row">
-          <div class="budget-prefix">$</div>
-          <input type="number" id="budget-min" placeholder="Min (e.g. 400)" min="1" oninput="updatePreview()" />
-          <span class="budget-separator">—</span>
-          <div class="budget-prefix">$</div>
-          <input type="number" id="budget-max" placeholder="Max (e.g. 700)" min="1" oninput="updatePreview()" />
-        </div>
-        <div class="flexible-row">
-          <input type="checkbox" id="is-flexible" onchange="updatePreview()" />
-          <label for="is-flexible">I'm flexible on price if the right item comes along</label>
-        </div>
-      </div>
-
-      <!-- LOCATION -->
-      <div class="form-group">
-        <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
-        <input type="text" id="location" placeholder="e.g. Akron, OH or Ships anywhere" />
-      </div>
-
-      <!-- EXPIRY -->
-      <div class="form-group">
-        <label>How long should your XEKIE stay active?</label>
-        <div class="expiry-grid">
-          <button class="expiry-btn" data-hours="24" onclick="setExpiry(this)">24 Hours<span class="expiry-sub">Quick find</span></button>
-          <button class="expiry-btn" data-hours="48" onclick="setExpiry(this)">48 Hours<span class="expiry-sub">Short window</span></button>
-          <button class="expiry-btn" data-hours="72" onclick="setExpiry(this)">72 Hours<span class="expiry-sub">3 days</span></button>
-          <button class="expiry-btn active" data-hours="168" onclick="setExpiry(this)">1 Week<span class="expiry-sub">Recommended</span></button>
-          <button class="expiry-btn" data-hours="720" onclick="setExpiry(this)">1 Month<span class="expiry-sub">30 days</span></button>
-          <button class="expiry-btn" data-hours="0" onclick="setExpiry(this)">Until Fulfilled<span class="expiry-sub">No expiry</span></button>
-          <button class="expiry-btn" data-hours="-1" onclick="setExpiry(this)">Buy Now<span class="expiry-sub">Urgent</span></button>
-        </div>
-      </div>
-
-      <!-- PHOTOS -->
-      <div class="photo-upload-section">
-        <div class="photo-upload-title">Photos <span style="font-size:12px;font-weight:400;color:var(--mid);">Optional — up to 4 photos help sellers know exactly what you want</span></div>
-        <div class="photo-drop-zone" id="photo-drop-zone" onclick="document.getElementById('photo-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-          <div class="photo-drop-icon">📷</div>
-          <div class="photo-drop-text">Tap to add photos</div>
-          <div class="photo-drop-sub">JPG, PNG, WEBP · Max 5MB each · Up to 4 photos</div>
-        </div>
-        <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect(event)" />
-        <div class="photo-previews" id="photo-previews"></div>
-      </div>
-
-      <!-- PREVIEW -->
-      <div class="preview-box">
-        <div class="preview-label">Live preview</div>
-        <div class="preview-title" id="preview-title">Your XEKIE title will appear here</div>
-        <div class="preview-desc" id="preview-desc">Your description will appear here...</div>
-        <div class="preview-budget" id="preview-budget">$—</div>
-        <div class="preview-expiry" id="preview-expiry">⏱ Active for 1 week</div>
-      </div>
-      <br>
-      <button class="btn-submit" id="btn-submit" onclick="postXekie()">Just XEKIE it →</button>
     </div>
   </div>
 
-  <footer>
-    <div class="footer-inner">
-      <div>
-        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
-        <div class="footer-tagline">Trade Different</div>
-      </div>
-      <div class="footer-links">
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="prohibited-items.html">Prohibited Items</a>
-        <a href="guidelines.html">Community Guidelines</a>
-        <a href="terms.html">Terms of Service</a>
-      </div>
-      <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
-    </div>
-  </footer>
+</div>
 
-  <script>
-    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
-    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let currentUser = null, selectedExpiryHours = 168, selectedPhotos = [], lastPostedId = null;
+<script>
+  const SUPABASE_URL  = 'https://jlcrarqiyejgjbdesxik.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA';
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    const NICHE_CONFIG = {
-      'K-Pop':             { icon:'🎵', title:'K-Pop Vertical', sub:'Photocards, albums, merch & more', location:'Busan, South Korea', subcats:['Albums','Photocards','Merch','Lightsticks','Signed Items','POBs','Mystery Boxes','Other'], titlePlaceholder:'e.g. BTS Magic Shop 5th Muster Photocard', descPlaceholder:'e.g. Looking for Jimin version, mint condition, unplayed.' },
-      'Sneakers':          { icon:'👟', title:'Sneakers Vertical', sub:'Jordans, Yeezys, NB & more', location:'New York, NY', subcats:['Jordan','Nike','Yeezy','New Balance','Adidas','Other'], titlePlaceholder:'e.g. Air Jordan 1 Retro High OG Chicago', descPlaceholder:'e.g. Looking for DS pair in size 10.5, original box and receipt preferred.' },
-      'Trading Cards':     { icon:'🃏', title:'Trading Cards Vertical', sub:'Pokemon, MTG, Yu-Gi-Oh & more', location:'Ships anywhere', subcats:['Pokemon','Magic: The Gathering','Yu-Gi-Oh','One Piece','Flesh & Blood','Digimon','Other'], titlePlaceholder:'e.g. Charizard Base Set Holo PSA 10', descPlaceholder:'e.g. Looking for graded copy only, PSA 9 or 10. English version.' },
-      'Sports Cards':      { icon:'⚾', title:'Sports Cards Vertical', sub:'Baseball, basketball, football & more', location:'Ships anywhere', subcats:['Baseball','Basketball','Football','Hockey','Soccer','Golf','Other'], titlePlaceholder:'e.g. 1952 Topps Mickey Mantle Rookie Card', descPlaceholder:'e.g. Looking for raw or graded, any grade considered. Must have sharp corners.' },
-      'Swifties':          { icon:'✨', title:'Swifties Vertical', sub:'Taylor Swift merch, vinyl & tour items', location:'Nashville, TN', subcats:['Vinyl','Tour Merch','Friendship Bracelets','Signed Items','Posters & Photos','Clothing','Other'], titlePlaceholder:'e.g. Eras Tour Merch Hoodie Nashville Night 1', descPlaceholder:'e.g. Looking for size M, navy version. Must be official merch from the tour.' },
-      'Star Wars':         { icon:'⭐', title:'Star Wars Vertical', sub:'Vintage figures, props & collectibles', location:'Ships anywhere', subcats:['Vintage Figures','Modern Figures','Props & Replicas','Comics','Posters','Clothing','Other'], titlePlaceholder:'e.g. Vintage Kenner Boba Fett 1979 MOC', descPlaceholder:'e.g. Looking for original backing card in good condition. No reproduction cards.' },
-      'Soccer':            { icon:'⚽', title:'Soccer Vertical', sub:'Shirts, signed items & memorabilia', location:'London, England', subcats:['Shirts & Kits','Signed Items','Match Programs','Scarves & Flags','Boots','Other'], titlePlaceholder:'e.g. Arsenal 1989 Title-Winning Home Shirt', descPlaceholder:'e.g. Looking for large or XL, match worn or player issue preferred.' },
-      'Vinyl Records':     { icon:'🎵', title:'Vinyl Vertical', sub:'Rare pressings, first editions & more', location:'Nashville, TN', subcats:['Rock','Jazz','Hip-Hop','Soul & R&B','Country','Classical','Other'], titlePlaceholder:'e.g. Led Zeppelin IV UK First Press Plum Labels', descPlaceholder:'e.g. Looking for VG+ or better, original inner sleeve. Atlantic pressing preferred.' },
-      'Retro Games':       { icon:'🕹️', title:'Retro Games Vertical', sub:'CIB copies, rare cartridges & consoles', location:'Ships anywhere', subcats:['NES','SNES','N64','Sega','PlayStation','Game Boy','Other'], titlePlaceholder:'e.g. EarthBound CIB SNES Complete in Box', descPlaceholder:'e.g. Looking for complete with map and scratch-and-sniff cards. Good box condition.' },
-      'Vintage & Antique': { icon:'🏺', title:'Vintage & Antique Vertical', sub:'Furniture, jewelry, art & decor', location:'Carolina Beach, NC', subcats:['Furniture','Jewelry','Clothing','Art','Decor','Other'], titlePlaceholder:'e.g. Mid-Century Modern Eames Lounge Chair Original', descPlaceholder:'e.g. Looking for rosewood version with original cushions. Some wear acceptable.' },
-      'Comics':            { icon:'💥', title:'Comics Vertical', sub:'Key issues, variants & graded slabs', location:'Ships anywhere', subcats:['Marvel','DC','Image','Indie','Manga','Other'], titlePlaceholder:'e.g. Amazing Fantasy #15 CGC 4.0 First Spider-Man', descPlaceholder:'e.g. Looking for CGC graded copy only, any grade. Blue label preferred.' },
-      'Sports Memorabilia':{ icon:'🏅', title:'Sports Memorabilia Vertical', sub:'Signed items, game-used gear & photos', location:'Ships anywhere', subcats:['Signed Items','Game-Used','Cards','Photos','Apparel','Other'], titlePlaceholder:'e.g. Michael Jordan Signed Upper Deck Authenticated Jersey', descPlaceholder:'e.g. Looking for UDA or PSA/DNA authenticated. Bulls red jersey preferred.' },
-      'Luxury Watches':    { icon:'⌚', title:'Luxury Watches Vertical', sub:'Rolex, Omega, Patek & more', location:'Ships anywhere', subcats:['Rolex','Omega','Patek Philippe','Audemars Piguet','Tudor','Other'], titlePlaceholder:'e.g. Rolex Submariner 116610LN Black Dial', descPlaceholder:'e.g. Looking for full set with box and papers. Random serial preferred. 2018-2022.' },
-      'Retro Tech':        { icon:'📟', title:'Retro Tech Vertical', sub:'Vintage electronics, cameras & gadgets', location:'Ships anywhere', subcats:['Apple & Mac','Game Consoles','Cameras','Hi-Fi Audio','Phones','Calculators','Other'], titlePlaceholder:'e.g. Apple Macintosh 128K Original 1984', descPlaceholder:'e.g. Looking for working unit with original keyboard and mouse. Some cosmetic wear OK.' },
-    };
+  const NICHE_CONFIG = {
+    'Trading Cards':       { emoji: '🃏', context: 'trading card game cards — MTG, Pokémon, Yu-Gi-Oh — mention set, rarity, grade' },
+    'Sports Cards':        { emoji: '⚾', context: 'sports cards — specify player, year, brand, card number, PSA/BGS grade' },
+    'K-Pop':               { emoji: '🎤', context: 'K-Pop merch — albums, photocards, lightsticks, fan merch; mention artist, era, version' },
+    'Swifties':            { emoji: '🌟', context: 'Taylor Swift merch — albums, vinyls, tour merch, Eras Tour items; mention era/tour' },
+    'Star Wars':           { emoji: '⚔️', context: 'Star Wars collectibles — vintage Kenner, LEGO, figures, props; mention era/line' },
+    'Soccer':              { emoji: '⚽', context: 'soccer jerseys, kits, scarves — mention club, player, season, size' },
+    'Vinyl Records':       { emoji: '🎵', context: 'vinyl records — artist, album, pressing, label, condition (VG+, NM)' },
+    'Retro Games':         { emoji: '🎮', context: 'retro video games — console, game title, variant (CIB, loose, sealed)' },
+    'Vintage & Antique':   { emoji: '🏺', context: 'vintage/antique items — mention era, material, origin, any markings' },
+    'Comics':              { emoji: '💥', context: 'comic books — publisher, title, issue number, grade (CGC/CBCS), key issues' },
+    'Sports Memorabilia':  { emoji: '🏆', context: 'sports memorabilia — autographed items, game-used, displays; mention sport, player, authentication' },
+    'Luxury Watches':      { emoji: '⌚', context: 'luxury watches — brand, model, reference number, condition, box/papers' },
+    'Retro Tech':          { emoji: '📻', context: 'retro technology — brand, model, era, working condition, include cables/accessories?' },
+    'Sneakers':            { emoji: '👟', context: 'sneakers — brand, model, colorway, size (men\'s/women\'s), condition, box?' },
+  };
 
-    _sb.auth.getSession().then(({ data: { session } }) => {
-      if (!session) { window.location.href = 'login.html'; return; }
-      currentUser = session.user;
-      document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
-      const params = new URLSearchParams(window.location.search);
-      const cat = params.get('category');
-      if (cat) {
-        const sel = document.getElementById('category');
-        for (let opt of sel.options) { if (opt.value === cat) { opt.selected = true; break; } }
-        onCategoryChange();
-      } else {
-        document.getElementById('location').value = 'Carolina Beach, NC';
-      }
-    });
+  const COLORS = ['#00c896','#6c63ff','#ff6b6b','#ffd93d','#4ecdc4','#a8e6cf','#ff8b94','#c3b1e1'];
 
-    function onCategoryChange() {
-      const cat = document.getElementById('category').value;
-      const cfg = NICHE_CONFIG[cat];
-      const banner = document.getElementById('niche-banner');
-      const subcatRow = document.getElementById('subcategory-row');
-      const titleInput = document.getElementById('title');
-      const descInput = document.getElementById('description');
-      const locationInput = document.getElementById('location');
-      if (cfg) {
-        banner.classList.add('visible');
-        document.getElementById('niche-banner-icon').textContent = cfg.icon;
-        document.getElementById('niche-banner-title').textContent = cfg.title;
-        document.getElementById('niche-banner-sub').textContent = cfg.sub;
-        subcatRow.classList.add('visible');
-        const subcatSel = document.getElementById('subcategory');
-        subcatSel.innerHTML = '<option value="">Select subcategory (optional)...</option>' + cfg.subcats.map(s => `<option value="${s}">${s}</option>`).join('');
-        titleInput.placeholder = cfg.titlePlaceholder;
-        descInput.placeholder = cfg.descPlaceholder;
-        if (!locationInput.value || Object.values(NICHE_CONFIG).some(c => c.location === locationInput.value) || locationInput.value === 'Carolina Beach, NC') {
-          locationInput.value = cfg.location;
-        }
-      } else {
-        banner.classList.remove('visible');
-        subcatRow.classList.remove('visible');
-        titleInput.placeholder = "e.g. First edition Hell's Angels by Hunter S. Thompson";
-        descInput.placeholder = 'e.g. Looking for a first print in good condition. No major damage to spine or cover.';
-        locationInput.value = 'Carolina Beach, NC';
-      }
+  let selectedPhotos = [];
+  let postedXekie    = null;
+
+  const grid = document.getElementById('categoryGrid');
+  Object.keys(NICHE_CONFIG).forEach(cat => {
+    const cfg = NICHE_CONFIG[cat];
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn';
+    btn.type = 'button';
+    btn.innerHTML = `<span class="emoji">${cfg.emoji}</span><span class="label">${cat}</span>`;
+    btn.onclick = () => {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      document.getElementById('selectedCategory').value = cat;
       gtag('event', 'category_selected', { category: cat });
+    };
+    grid.appendChild(btn);
+  });
+
+  (async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      document.getElementById('authLoggedIn').style.display  = 'block';
+      document.getElementById('authNotLoggedIn').style.display = 'none';
+      document.getElementById('authEmail').textContent = session.user.email;
     }
+  })();
 
-    function showAiBar() {
-      const title = document.getElementById('title').value.trim();
-      const bar = document.getElementById('ai-bar');
-      if (title.length > 3) bar.classList.add('visible');
-      else bar.classList.remove('visible');
-    }
+  async function generateTitle() {
+    const keywords  = document.getElementById('aiKeywords').value.trim();
+    const category  = document.getElementById('selectedCategory').value;
+    const aiBtn     = document.getElementById('aiBtn');
+    const aiStatus  = document.getElementById('aiStatus');
+    if (!keywords) { showToast('Enter some keywords first.'); return; }
 
-    async function runAiWriter() {
-      const title = document.getElementById('title').value.trim();
-      const category = document.getElementById('category').value;
-      if (!title) return;
-      const btn = document.getElementById('btn-ai');
-      const status = document.getElementById('ai-status');
-      btn.disabled = true; btn.textContent = '✨ Writing...'; status.textContent = '';
-      try {
-        const res = await fetch('/.netlify/functions/ai-writer', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, category })
-        });
-        const data = await res.json();
-        if (data.title) document.getElementById('title').value = data.title;
-        if (data.description) document.getElementById('description').value = data.description;
-        if (data.budget_hint) {
-          const parts = data.budget_hint.split('-');
-          if (parts.length === 2) {
-            document.getElementById('budget-min').value = parts[0].trim();
-            document.getElementById('budget-max').value = parts[1].trim();
-          }
-        }
-        updatePreview();
-        status.textContent = '✓ Done!';
-        gtag('event', 'ai_writer_used', { category });
-      } catch(e) {
-        status.textContent = 'Error — try again';
-      }
-      btn.disabled = false; btn.textContent = '✨ Let AI Write it for Me';
-    }
+    aiBtn.disabled = true;
+    aiBtn.textContent = '…';
+    aiStatus.textContent = 'Generating…';
 
-    function setExpiry(btn) {
-      document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active'); selectedExpiryHours = parseInt(btn.dataset.hours); updatePreview();
-    }
-
-    function getExpiryLabel(hours) {
-      if (hours === -1) return '🔥 Buy Now — urgent!';
-      if (hours === 0) return '♾️ Until fulfilled — no expiry';
-      if (hours === 24) return '⏱ Active for 24 hours';
-      if (hours === 48) return '⏱ Active for 48 hours';
-      if (hours === 72) return '⏱ Active for 72 hours';
-      if (hours === 168) return '⏱ Active for 1 week';
-      if (hours === 720) return '⏱ Active for 1 month';
-      return '⏱ Active for ' + hours + ' hours';
-    }
-
-    function updatePreview() {
-      const title = document.getElementById('title').value;
-      const desc = document.getElementById('description').value;
-      const min = document.getElementById('budget-min').value;
-      const max = document.getElementById('budget-max').value;
-      const flexible = document.getElementById('is-flexible').checked;
-      document.getElementById('title-count').textContent = title.length;
-      document.getElementById('desc-count').textContent = desc.length;
-      document.getElementById('preview-title').textContent = title || 'Your XEKIE title will appear here';
-      document.getElementById('preview-desc').textContent = desc || 'Your description will appear here...';
-      let budgetStr = '$—';
-      if (min && max) budgetStr = '$' + Number(min).toLocaleString() + ' – $' + Number(max).toLocaleString();
-      else if (min) budgetStr = '$' + Number(min).toLocaleString() + '+';
-      else if (max) budgetStr = 'Up to $' + Number(max).toLocaleString();
-      if (flexible && (min || max)) budgetStr += ' (flexible)';
-      document.getElementById('preview-budget').textContent = budgetStr;
-      document.getElementById('preview-expiry').textContent = getExpiryLabel(selectedExpiryHours);
-    }
-
-    function showMessage(text, type) {
-      const el = document.getElementById('message');
-      el.textContent = text; el.className = 'message ' + type;
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function playFireworksSound() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const now = ctx.currentTime;
-        const whistle = ctx.createOscillator();
-        const whistleGain = ctx.createGain();
-        whistle.connect(whistleGain); whistleGain.connect(ctx.destination);
-        whistle.type = 'sine';
-        whistle.frequency.setValueAtTime(400, now);
-        whistle.frequency.exponentialRampToValueAtTime(1200, now + 0.4);
-        whistleGain.gain.setValueAtTime(0.15, now);
-        whistleGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-        whistle.start(now); whistle.stop(now + 0.4);
-        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.3, ctx.sampleRate);
-        const data = buf.getChannelData(0);
-        for (let i = 0; i < data.length; i++) data[i] = (Math.random()*2-1) * Math.pow(1 - i/data.length, 1.5);
-        const burst = ctx.createBufferSource();
-        const filt = ctx.createBiquadFilter();
-        filt.type = 'bandpass'; filt.frequency.value = 600; filt.Q.value = 0.8;
-        const burstGain = ctx.createGain();
-        burstGain.gain.setValueAtTime(0.5, now + 0.4);
-        burstGain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
-        burst.buffer = buf; burst.connect(filt); filt.connect(burstGain); burstGain.connect(ctx.destination);
-        burst.start(now + 0.4);
-        [[1568,0.5],[1319,0.65],[1047,0.8],[1319,0.9],[1568,1.0],[2093,1.15]].forEach(([freq, t]) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now + t);
-          gain.gain.setValueAtTime(0.2, now + t);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + t + 0.35);
-          osc.start(now + t); osc.stop(now + t + 0.35);
-        });
-      } catch(e) {}
-    }
-
-    function launchFireworks() {
-      playFireworksSound();
-      const canvas = document.getElementById('fireworks-canvas');
-      canvas.style.display = 'block';
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-      const particles = [];
-      for (let i = 0; i < 8; i++) {
-        const x = Math.random() * canvas.width, y = Math.random() * canvas.height * 0.6;
-        const colors = ['#ff4d1c','#ffd700','#ff69b4','#00cfff','#7fff00','#ff4500'];
-        const color = colors[Math.floor(Math.random()*colors.length)];
-        for (let j = 0; j < 40; j++) {
-          const angle = (j/40)*Math.PI*2, speed = 2+Math.random()*4;
-          particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, color, alpha: 1, size: 2+Math.random()*3 });
-        }
-      }
-      let frame = 0;
-      function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.08; p.alpha-=0.012; ctx.globalAlpha=Math.max(0,p.alpha); ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill(); });
-        frame++;
-        if (frame < 120) requestAnimationFrame(animate);
-        else { canvas.style.display='none'; ctx.clearRect(0,0,canvas.width,canvas.height); }
-      }
-      animate();
-    }
-
-    function handleDragOver(e) { e.preventDefault(); document.getElementById('photo-drop-zone').classList.add('dragover'); }
-    function handleDragLeave(e) { document.getElementById('photo-drop-zone').classList.remove('dragover'); }
-    function handleDrop(e) { e.preventDefault(); document.getElementById('photo-drop-zone').classList.remove('dragover'); addPhotos(Array.from(e.dataTransfer.files)); }
-    function handlePhotoSelect(e) { addPhotos(Array.from(e.target.files)); e.target.value = ''; }
-
-    function addPhotos(files) {
-      const imageFiles = files.filter(f => f.type.startsWith('image/'));
-      const remaining = 4 - selectedPhotos.length;
-      imageFiles.slice(0, remaining).forEach(file => {
-        if (file.size > 5 * 1024 * 1024) { alert(file.name + ' is too large. Max 5MB per photo.'); return; }
-        const reader = new FileReader();
-        reader.onload = (e) => { selectedPhotos.push({ file, previewUrl: e.target.result }); renderPhotoPreviews(); };
-        reader.readAsDataURL(file);
+    try {
+      const res  = await fetch('/.netlify/functions/ai-writer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keywords, category })
       });
+      const json = await res.json();
+      if (json.title) {
+        document.getElementById('xTitle').value = json.title;
+        aiStatus.textContent = '✨ Done';
+        gtag('event', 'ai_title_generated', { category });
+      } else {
+        showToast('AI writer error. Try again.');
+      }
+    } catch (e) {
+      showToast('AI writer unavailable.');
     }
 
-    function renderPhotoPreviews() {
-      const container = document.getElementById('photo-previews');
-      const dropZone = document.getElementById('photo-drop-zone');
-      dropZone.style.display = selectedPhotos.length >= 4 ? 'none' : 'block';
-      container.innerHTML = selectedPhotos.map((p, i) => `
-        <div class="photo-preview-item">
-          <img src="${p.previewUrl}" alt="Photo ${i+1}" />
-          <button class="photo-remove" onclick="removePhoto(${i})">✕</button>
-        </div>`).join('');
+    aiBtn.disabled = false;
+    aiBtn.textContent = '✨ Generate';
+    setTimeout(() => { aiStatus.textContent = ''; }, 3000);
+  }
+
+  function handlePhotos(files) {
+    const previews = document.getElementById('photoPreviews');
+    Array.from(files).slice(0, 5 - selectedPhotos.length).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      selectedPhotos.push(file);
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      previews.appendChild(img);
+    });
+  }
+
+  async function uploadPhotos(xekieId) {
+    const urls = [];
+    for (const file of selectedPhotos) {
+      const ext  = file.name.split('.').pop();
+      const path = `${xekieId}/${Date.now()}.${ext}`;
+      const { error } = await sb.storage.from('xekie-photos').upload(path, file, { upsert: true });
+      if (!error) {
+        const { data } = sb.storage.from('xekie-photos').getPublicUrl(path);
+        urls.push(data.publicUrl);
+      }
     }
+    return urls;
+  }
 
-    function removePhoto(i) { selectedPhotos.splice(i, 1); renderPhotoPreviews(); }
+  function generateSlug(title, category) {
+    const catSlug = (category || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const titleSlug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .slice(0, 50)
+      .replace(/-$/g, '');
+    const suffix = Math.random().toString(36).slice(2, 6);
+    return [catSlug, titleSlug, suffix].filter(Boolean).join('-');
+  }
 
-    async function uploadPhotos(xekieId) {
-      const urls = [];
-      for (const p of selectedPhotos) {
-        const ext = p.file.name.split('.').pop() || 'jpg';
-        const path = `${currentUser.id}/${xekieId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const { error } = await _sb.storage.from('xekie-photos').upload(path, p.file, { contentType: p.file.type, upsert: true });
-        if (!error) {
-          const { data: urlData } = _sb.storage.from('xekie-photos').getPublicUrl(path);
-          urls.push(urlData.publicUrl);
+  async function postXekie() {
+    const title       = document.getElementById('xTitle').value.trim();
+    const description = document.getElementById('xDescription').value.trim();
+    const budget      = document.getElementById('xBudget').value.trim();
+    const location    = document.getElementById('xLocation').value.trim();
+    const expDays     = parseInt(document.getElementById('xExpiry').value, 10);
+    const category    = document.getElementById('selectedCategory').value;
+    const emailInput  = document.getElementById('userEmail');
+
+    if (!title)       { showToast('Please add a title.'); return; }
+    if (!description) { showToast('Please describe what you want.'); return; }
+    if (!category)    { showToast('Please choose a category.'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Posting…';
+
+    try {
+      let userId = null;
+      const { data: { session } } = await sb.auth.getSession();
+      if (session?.user) {
+        userId = session.user.id;
+      } else {
+        const email = emailInput?.value?.trim();
+        if (!email) { showToast('Please enter your email.'); btn.disabled = false; btn.textContent = 'Post My XEKIE →'; return; }
+        const { error: authErr } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+        if (authErr) { showToast('Auth error: ' + authErr.message); btn.disabled = false; btn.textContent = 'Post My XEKIE →'; return; }
+        showToast('✅ Check your email to verify — XEKIE is posting…');
+      }
+
+      const slug = generateSlug(title, category);
+      const expiresAt = new Date(Date.now() + expDays * 86400000).toISOString();
+
+      const insertPayload = {
+        title, description, category, slug,
+        expires_at: expiresAt,
+        view_count: 0,
+        is_fulfilled: false,
+      };
+      if (budget)   insertPayload.budget   = parseFloat(budget);
+      if (location) insertPayload.location = location;
+      if (userId)   insertPayload.user_id  = userId;
+
+      const { data: xekie, error } = await sb.from('xekies').insert(insertPayload).select().single();
+      if (error) throw error;
+
+      if (selectedPhotos.length) {
+        const photoUrls = await uploadPhotos(xekie.id);
+        if (photoUrls.length) {
+          await sb.from('xekies').update({ photos: photoUrls }).eq('id', xekie.id);
         }
       }
-      return urls;
-    }
 
-    function openShareModal(xekieId) {
-      const url = `${window.location.origin}/xekie.html?id=${xekieId}`;
-      document.getElementById('share-url').textContent = url;
-      document.getElementById('share-modal').classList.add('open');
-    }
+      postedXekie = { ...xekie, slug };
 
-    function copyShareLink() {
-      const url = document.getElementById('share-url').textContent;
-      navigator.clipboard.writeText(url).then(() => {
-        const btn = document.querySelector('.btn-copy');
-        btn.textContent = 'Copied! ✓'; btn.style.background = '#3B6D11';
-        setTimeout(() => { btn.textContent = 'Copy link'; btn.style.background = ''; }, 2000);
-      });
-    }
+      gtag('event', 'xekie_posted', { category, has_budget: !!budget, has_photos: selectedPhotos.length > 0 });
 
-    function closeShareModal() {
-      document.getElementById('share-modal').classList.remove('open');
-      window.location.href = 'dashboard.html';
-    }
+      showFireworks();
+      showSuccess(xekie);
 
-    async function postXekie() {
-      const title = document.getElementById('title').value.trim();
-      const description = document.getElementById('description').value.trim();
-      const budget_min = document.getElementById('budget-min').value;
-      const budget_max = document.getElementById('budget-max').value;
-      const is_flexible = document.getElementById('is-flexible').checked;
-      const location = document.getElementById('location').value.trim();
-      const category = document.getElementById('category').value;
-      const subcategory = document.getElementById('subcategory').value || null;
-      const btn = document.getElementById('btn-submit');
-      if (!category) return showMessage('Please select a category first.', 'error');
-      if (!title) return showMessage('Please add a title — what do you want to find?', 'error');
-      if (!budget_min && !budget_max) return showMessage('Please enter at least a minimum or maximum budget.', 'error');
-      if (!location) return showMessage('Please add a location or write "Ships anywhere".', 'error');
-      btn.disabled = true; btn.textContent = "XEKIE'ing...";
-      let expires_at = null;
-      if (selectedExpiryHours > 0) expires_at = new Date(Date.now() + selectedExpiryHours * 60 * 60 * 1000).toISOString();
-      const insertData = { title, description, budget: budget_max ? parseInt(budget_max) : parseInt(budget_min), budget_min: budget_min ? parseInt(budget_min) : null, budget_max: budget_max ? parseInt(budget_max) : null, is_flexible, location, category, subcategory, user_id: currentUser.id, view_count: 0, is_fulfilled: false };
-      if (expires_at) insertData.expires_at = expires_at;
-      const { data: newXekie, error } = await _sb.from('xekies').insert(insertData).select().single();
-      if (error) {
-        if (error.message && error.message.includes('expires_at')) {
-          delete insertData.expires_at;
-          const { data: nX2, error: e2 } = await _sb.from('xekies').insert(insertData).select().single();
-          if (e2) { showMessage('Something went wrong: ' + e2.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
-          lastPostedId = nX2?.id;
-        } else { showMessage('Something went wrong: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Just XEKIE it →'; return; }
-      } else {
-        lastPostedId = newXekie?.id;
-      }
-      if (selectedPhotos.length && lastPostedId) {
-        btn.textContent = 'Uploading photos...';
-        const photoUrls = await uploadPhotos(lastPostedId);
-        if (photoUrls.length) await _sb.from('xekies').update({ photos: photoUrls }).eq('id', lastPostedId);
-      }
-      gtag('event', 'xekie_posted', { category });
-      showMessage('🎆 Your XEKIE is live! Sellers will find you.', 'success');
-      launchFireworks();
-      btn.textContent = "XEKIE'd! ✓";
-      if (lastPostedId) {
-        fetch('/.netlify/functions/notify-sellers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...insertData, id: lastPostedId }) }).catch(() => {});
-        setTimeout(() => openShareModal(lastPostedId), 2000);
-      } else {
-        setTimeout(() => window.location.href = 'dashboard.html', 2500);
-      }
+    } catch (err) {
+      console.error(err);
+      showToast('Error posting: ' + (err.message || 'Unknown error'));
+      btn.disabled = false;
+      btn.textContent = 'Post My XEKIE →';
     }
-  </script>
+  }
+
+  function xekieURL(x) {
+    if (x.slug) return `https://xekie.com/x/${x.slug}`;
+    return `https://xekie.com/xekie.html?id=${x.id}`;
+  }
+
+  function showSuccess(xekie) {
+    document.getElementById('formState').style.display    = 'none';
+    document.getElementById('successState').style.display = 'block';
+    document.getElementById('viewXekieBtn').href = xekieURL(xekie);
+  }
+
+  function sharePostedXekie() {
+    if (!postedXekie) return;
+    navigator.clipboard.writeText(xekieURL(postedXekie)).then(() => showToast('🔗 Link copied!'));
+  }
+
+  function tweetPostedXekie() {
+    if (!postedXekie) return;
+    const text = encodeURIComponent(`I'm looking for: ${postedXekie.title} — make me an offer! 👀`);
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(xekieURL(postedXekie))}`, '_blank');
+  }
+
+  function showFireworks() {
+    const fw = document.getElementById('fireworks');
+    fw.style.display = 'block';
+    fw.innerHTML = '';
+    for (let i = 0; i < 60; i++) {
+      const p = document.createElement('div');
+      p.className = 'fw-particle';
+      const angle = (Math.random() * 360) * (Math.PI / 180);
+      const dist  = 60 + Math.random() * 180;
+      p.style.cssText = `
+        left: ${40 + Math.random() * 20}vw;
+        top:  ${30 + Math.random() * 30}vh;
+        background: ${COLORS[Math.floor(Math.random() * COLORS.length)]};
+        --dx: ${Math.cos(angle) * dist}px;
+        --dy: ${Math.sin(angle) * dist}px;
+        animation-delay: ${Math.random() * 0.4}s;
+        animation-duration: ${0.8 + Math.random() * 0.5}s;
+      `;
+      fw.appendChild(p);
+    }
+    setTimeout(() => { fw.style.display = 'none'; fw.innerHTML = ''; }, 2000);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
 </body>
 </html>
