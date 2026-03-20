@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XEKIE Sports Memorabilia — Find Signed Items, Game-Used Gear & More</title>
-  <meta name="description" content="The demand-side sports memorabilia marketplace. Post what you're hunting and let sellers come to you.">
+  <meta name="description" content="The demand-side sports memorabilia marketplace. Post the signed jersey, game-used gear, or authenticated photo you want and let sellers come to you.">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
@@ -95,6 +95,11 @@
     .modal-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
     .btn-modal-submit{width:100%;padding:14px;background:var(--niche);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;}
     .btn-modal-submit:hover{background:var(--niche-dark);}
+    .cross-links{margin-top:48px;padding:32px;background:var(--white);border-radius:20px;border:1px solid var(--border);}
+    .cross-links-label{font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--mid);margin-bottom:16px;}
+    .cross-links-row{display:flex;gap:8px;flex-wrap:wrap;}
+    .cross-link{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;border:1.5px solid var(--border);color:var(--mid);text-decoration:none;transition:all 0.2s;}
+    .cross-link:hover{border-color:var(--black);color:var(--black);}
     .cta-band{background:linear-gradient(135deg,var(--niche),var(--niche-dark));border-radius:20px;padding:48px;text-align:center;margin-top:48px;margin-bottom:48px;}
     .cta-band-title{font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--white);margin-bottom:8px;letter-spacing:-0.02em;}
     .cta-band-sub{font-size:16px;color:rgba(255,255,255,0.8);margin-bottom:24px;}
@@ -147,11 +152,11 @@
       <div class="filter-label">Browse by type</div>
       <div class="subcategory-filters">
         <button class="subcat-btn active" onclick="setSubcat('',this)">🏅 All Memorabilia</button>
-        <button class="subcat-btn" onclick="setSubcat('Signed Items',this)">✍️ Signed Items</button>
-        <button class="subcat-btn" onclick="setSubcat('Game-Used',this)">🎽 Game-Used</button>
-        <button class="subcat-btn" onclick="setSubcat('Cards',this)">🃏 Cards</button>
-        <button class="subcat-btn" onclick="setSubcat('Photos',this)">📸 Photos</button>
-        <button class="subcat-btn" onclick="setSubcat('Apparel',this)">👕 Apparel</button>
+        <button class="subcat-btn" onclick="setSubcat('Signed Items',this)">Signed Items</button>
+        <button class="subcat-btn" onclick="setSubcat('Game-Used',this)">Game-Used</button>
+        <button class="subcat-btn" onclick="setSubcat('Photos',this)">Photos</button>
+        <button class="subcat-btn" onclick="setSubcat('Apparel',this)">Apparel</button>
+        <button class="subcat-btn" onclick="setSubcat('Cards',this)">Cards</button>
         <button class="subcat-btn" onclick="setSubcat('Other',this)">Other</button>
       </div>
     </div>
@@ -160,6 +165,16 @@
       <div class="results-count" id="results-count"></div>
     </div>
     <div id="niche-feed"><div class="loading">Loading Memorabilia XEKIEs...</div></div>
+    <div class="cross-links">
+      <div class="cross-links-label">Explore Other Verticals</div>
+      <div class="cross-links-row">
+        <a href="sportscards.html" class="cross-link">⚾ Sports Cards</a>
+        <a href="soccer.html" class="cross-link">⚽ Soccer</a>
+        <a href="sneakers.html" class="cross-link">👟 Sneakers</a>
+        <a href="comics.html" class="cross-link">💥 Comics</a>
+        <a href="categories.html" class="cross-link">View all verticals →</a>
+      </div>
+    </div>
     <div class="cta-band">
       <div class="cta-band-title">Can't find that piece?</div>
       <div class="cta-band-sub">Post your XEKIE and let every memorabilia seller know exactly what you need.</div>
@@ -174,7 +189,7 @@
       <label>Your message to the buyer</label>
       <textarea id="modal-message" placeholder="Hi! I have exactly what you're looking for..."></textarea>
       <label>Your asking price</label>
-      <div class="modal-budget-row"><div class="modal-prefix">$</div><input type="number" id="modal-price" class="modal-prefix-input" placeholder="e.g. 400" /></div>
+      <div class="modal-budget-row"><div class="modal-prefix">$</div><input type="number" id="modal-price" class="modal-prefix-input" placeholder="e.g. 500" /></div>
       <div class="modal-msg" id="modal-msg"></div>
       <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send response</button>
     </div>
@@ -193,7 +208,7 @@
     function formatBudget(x){if(x.budget_min&&x.budget_max)return'$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();if(x.budget_min)return'$'+Number(x.budget_min).toLocaleString()+'+';if(x.budget_max)return'Up to $'+Number(x.budget_max).toLocaleString();if(x.budget)return'$'+Number(x.budget).toLocaleString();return'$—';}
     async function loadXekies(){const{data}=await _sb.from('xekies').select('*').eq('category','Sports Memorabilia').order('created_at',{ascending:false});allXekies=data||[];const active=allXekies.filter(x=>!x.is_fulfilled&&(!x.expires_at||new Date(x.expires_at)>new Date()));document.getElementById('stat-total').textContent=allXekies.length;document.getElementById('stat-active').textContent=active.length;renderXekies(allXekies);}
     function setSubcat(s,btn){activeSubcat=s;document.querySelectorAll('.subcat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('feed-title').textContent=s?s+' XEKIEs':'All Memorabilia XEKIEs';renderXekies(s?allXekies.filter(x=>x.subcategory===s):allXekies);trackEvent('niche_subcat_filter',{niche:'Sports Memorabilia',subcategory:s||'all'});}
-    function renderXekies(xekies){const feed=document.getElementById('niche-feed');document.getElementById('results-count').textContent=xekies.length?xekies.length+' XEKIE'+(xekies.length!==1?'s':'')+' found':'';if(!xekies.length){feed.innerHTML=`<div class="empty-state"><div class="empty-icon">🏅</div><div class="empty-title">No Memorabilia XEKIEs yet${activeSubcat?' in '+activeSubcat:''}</div><p class="empty-sub">Be the first to post what you're hunting!</p><a href="request.html?category=Sports Memorabilia" class="btn-niche-post">Post your Memorabilia XEKIE →</a></div>`;return;}feed.innerHTML=xekies.map(x=>{const isEarly=new Date(x.created_at)<BETA_CUTOFF;const thumb=x.photos&&x.photos.length?`<img class="card-thumbnail" src="${x.photos[0]}" loading="lazy" onerror="this.style.display='none'" />`:'';const canRespond=!x.is_fulfilled&&(!x.expires_at||new Date(x.expires_at)>new Date());return`<div class="xekie-card"><div class="card-inner">${thumb}<div class="card-body"><div class="card-top"><div>${isEarly?'<span class="early-badge">⚡ Early Adopter</span>':''}<div class="card-title">${x.title}</div></div><div class="card-budget">${formatBudget(x)}</div></div>${x.description?`<div class="card-desc">${x.description}</div>`:''}<div class="card-footer"><div class="card-meta">${x.subcategory?`<span class="subcat-pill">${x.subcategory}</span>`:''} ${x.location?`<span>📍 ${x.location}</span>`:''}<span>⏱ ${timeAgo(x.created_at)}</span></div><div class="card-actions"><button class="btn-share" onclick="shareX('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Share</button>${canRespond?`<button class="btn-respond" onclick="openModal('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Respond</button>`:''}</div></div></div></div></div>`;}).join('');}
+    function renderXekies(xekies){const feed=document.getElementById('niche-feed');document.getElementById('results-count').textContent=xekies.length?xekies.length+' XEKIE'+(xekies.length!==1?'s':'')+' found':'';if(!xekies.length){feed.innerHTML=`<div class="empty-state"><div class="empty-icon">🏅</div><div class="empty-title">No Memorabilia XEKIEs yet${activeSubcat?' for '+activeSubcat:''}</div><p class="empty-sub">Be the first to post what you're hunting!</p><a href="request.html?category=Sports Memorabilia" class="btn-niche-post">Post your Memorabilia XEKIE →</a></div>`;return;}feed.innerHTML=xekies.map(x=>{const isEarly=new Date(x.created_at)<BETA_CUTOFF;const thumb=x.photos&&x.photos.length?`<img class="card-thumbnail" src="${x.photos[0]}" loading="lazy" onerror="this.style.display='none'" />`:'';const canRespond=!x.is_fulfilled&&(!x.expires_at||new Date(x.expires_at)>new Date());return`<div class="xekie-card"><div class="card-inner">${thumb}<div class="card-body"><div class="card-top"><div>${isEarly?'<span class="early-badge">⚡ Early Adopter</span>':''}<div class="card-title">${x.title}</div></div><div class="card-budget">${formatBudget(x)}</div></div>${x.description?`<div class="card-desc">${x.description}</div>`:''}<div class="card-footer"><div class="card-meta">${x.subcategory?`<span class="subcat-pill">${x.subcategory}</span>`:''} ${x.location?`<span>📍 ${x.location}</span>`:''}<span>⏱ ${timeAgo(x.created_at)}</span></div><div class="card-actions"><button class="btn-share" onclick="shareX('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Share</button>${canRespond?`<button class="btn-respond" onclick="openModal('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">Respond</button>`:''}</div></div></div></div></div>`;}).join('');}
     function shareX(id,title){const url=`${window.location.origin}/xekie.html?id=${id}`;if(navigator.share)navigator.share({title:'XEKIE — '+title,url}).catch(()=>{});else navigator.clipboard.writeText(url).then(()=>{const t=document.getElementById('share-toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);});}
     function openModal(xekieId,title){if(!currentUser){window.location.href='login.html';return;}activeXekieId=xekieId;document.getElementById('modal-xekie-title').textContent='Re: '+title;document.getElementById('modal-message').value='';document.getElementById('modal-price').value='';document.getElementById('modal-msg').className='modal-msg';document.getElementById('modal-msg').style.display='none';document.getElementById('modal-submit').disabled=false;document.getElementById('modal-submit').textContent='Send response';document.getElementById('modal-overlay').classList.add('open');}
     function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
