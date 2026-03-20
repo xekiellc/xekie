@@ -199,7 +199,7 @@
         <input type="text" id="title" placeholder="e.g. First edition Hell's Angels by Hunter S. Thompson" maxlength="100" oninput="updatePreview(); showAiBar();" />
         <div class="char-count"><span id="title-count">0</span>/100</div>
         <div class="ai-bar" id="ai-bar">
-          <button class="btn-ai" id="btn-ai" onclick="runAiWriter()">✨ Let AI Write my Description</button>
+          <button class="btn-ai" id="btn-ai" onclick="runAiWriter()">✨ Let AI Write it for Me</button>
           <span class="ai-status" id="ai-status"></span>
         </div>
       </div>
@@ -294,7 +294,6 @@
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null, selectedExpiryHours = 168, selectedPhotos = [], lastPostedId = null;
 
-    // ── NICHE CONFIG ──
     const NICHE_CONFIG = {
       'K-Pop':             { icon:'🎵', title:'K-Pop Vertical', sub:'Photocards, albums, merch & more', location:'Busan, South Korea', subcats:['Albums','Photocards','Merch','Lightsticks','Signed Items','POBs','Mystery Boxes','Other'], titlePlaceholder:'e.g. BTS Magic Shop 5th Muster Photocard', descPlaceholder:'e.g. Looking for Jimin version, mint condition, unplayed.' },
       'Sneakers':          { icon:'👟', title:'Sneakers Vertical', sub:'Jordans, Yeezys, NB & more', location:'New York, NY', subcats:['Jordan','Nike','Yeezy','New Balance','Adidas','Other'], titlePlaceholder:'e.g. Air Jordan 1 Retro High OG Chicago', descPlaceholder:'e.g. Looking for DS pair in size 10.5, original box and receipt preferred.' },
@@ -316,7 +315,6 @@
       if (!session) { window.location.href = 'login.html'; return; }
       currentUser = session.user;
       document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
-      // Pre-select category from URL param
       const params = new URLSearchParams(window.location.search);
       const cat = params.get('category');
       if (cat) {
@@ -341,14 +339,11 @@
         document.getElementById('niche-banner-icon').textContent = cfg.icon;
         document.getElementById('niche-banner-title').textContent = cfg.title;
         document.getElementById('niche-banner-sub').textContent = cfg.sub;
-        // Subcategory dropdown
         subcatRow.classList.add('visible');
         const subcatSel = document.getElementById('subcategory');
         subcatSel.innerHTML = '<option value="">Select subcategory (optional)...</option>' + cfg.subcats.map(s => `<option value="${s}">${s}</option>`).join('');
-        // Dynamic placeholders
         titleInput.placeholder = cfg.titlePlaceholder;
         descInput.placeholder = cfg.descPlaceholder;
-        // Default location for niche
         if (!locationInput.value || Object.values(NICHE_CONFIG).some(c => c.location === locationInput.value) || locationInput.value === 'Carolina Beach, NC') {
           locationInput.value = cfg.location;
         }
@@ -371,6 +366,7 @@
 
     async function runAiWriter() {
       const title = document.getElementById('title').value.trim();
+      const category = document.getElementById('category').value;
       if (!title) return;
       const btn = document.getElementById('btn-ai');
       const status = document.getElementById('ai-status');
@@ -379,7 +375,7 @@
         const res = await fetch('/.netlify/functions/ai-writer', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title })
+          body: JSON.stringify({ title, category })
         });
         const data = await res.json();
         if (data.title) document.getElementById('title').value = data.title;
@@ -393,11 +389,11 @@
         }
         updatePreview();
         status.textContent = '✓ Done!';
-        gtag('event', 'ai_writer_used', { category: document.getElementById('category').value });
+        gtag('event', 'ai_writer_used', { category });
       } catch(e) {
         status.textContent = 'Error — try again';
       }
-      btn.disabled = false; btn.textContent = '✨ Write for me';
+      btn.disabled = false; btn.textContent = '✨ Let AI Write it for Me';
     }
 
     function setExpiry(btn) {
@@ -441,7 +437,6 @@
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // ── FIREWORKS SOUND (Web Audio API) ──
     function playFireworksSound() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
