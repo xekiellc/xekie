@@ -144,12 +144,10 @@
       <a href="request.html" class="btn-nav primary">XEKIE it →</a>
     </div>
   </nav>
-
   <div class="container">
     <a href="radar.html" class="back-link">← Back to Browse</a>
     <div id="content"><div class="loading">Loading XEKIE...</div></div>
   </div>
-
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <button class="modal-close" onclick="closeModal()">✕</button>
@@ -166,14 +164,12 @@
       <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send & open chat →</button>
     </div>
   </div>
-
   <div class="photo-lightbox" id="photo-lightbox">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
     <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)">‹</button>
     <img id="lightbox-img" src="" alt="Photo" />
     <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)">›</button>
   </div>
-
   <div class="qr-modal" id="qr-modal" onclick="if(event.target===this)closeQR()">
     <div class="qr-box">
       <div class="qr-title">Scan to view XEKIE</div>
@@ -182,9 +178,7 @@
       <button class="btn-qr-close" onclick="closeQR()">Close</button>
     </div>
   </div>
-
   <div class="share-toast" id="share-toast">Link copied! 🔗</div>
-
   <div class="report-modal" id="report-modal">
     <div class="report-box">
       <button style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);" onclick="closeReport()">✕</button>
@@ -202,7 +196,6 @@
       <button class="btn-report-submit" id="btn-report-submit" onclick="submitReport()">Submit report</button>
     </div>
   </div>
-
   <footer>
     <div class="footer-inner">
       <div>
@@ -218,7 +211,6 @@
       <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
     </div>
   </footer>
-
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
@@ -226,12 +218,10 @@
     const BETA_CUTOFF = new Date('2026-06-01');
     let currentXekie = null, currentUser = null;
     let lightboxPhotos = [], lightboxIndex = 0;
-
-    // ── SLUG OR ID (only change) ─────────────────────────────────────────────
     const params = new URLSearchParams(window.location.search);
-    const xekieId = params.get('id');
     const xekieSlug = params.get('slug');
-
+    const xekieId = params.get('id');
+    function trackEvent(name, params = {}) { if (typeof gtag !== 'undefined') gtag('event', name, params); }
     function formatBudget(x) {
       if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
       if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
@@ -239,7 +229,6 @@
       if (x.budget) return '$'+Number(x.budget).toLocaleString();
       return '$—';
     }
-
     function timeAgo(ts) {
       const s = Math.floor((new Date() - new Date(ts)) / 1000);
       for (const [l, sec] of [["year",31536000],["month",2592000],["day",86400],["hour",3600],["minute",60]]) {
@@ -247,25 +236,17 @@
       }
       return "just now";
     }
-
     async function loadXekie() {
-      // ── fetch by slug or id ──────────────────────────────────────────────
       let query = _sb.from('xekies').select('*');
       if (xekieSlug) query = query.eq('slug', xekieSlug);
       else if (xekieId) query = query.eq('id', xekieId);
       else { document.getElementById('content').innerHTML = '<div class="loading">No XEKIE specified.</div>'; return; }
-
       const { data: x, error } = await query.single();
       if (error || !x) { document.getElementById('content').innerHTML = '<div class="loading">XEKIE not found.</div>'; return; }
       currentXekie = x;
-
-      // ── rewrite URL to clean /x/slug if we got here via ?id= ────────────
-      if (x.slug && !xekieSlug) {
-        history.replaceState(null, '', `/x/${x.slug}`);
-      }
-
+      if (x.slug && !xekieSlug) history.replaceState(null, '', `/x/${x.slug}`);
       const canonicalUrl = x.slug ? `https://xekie.com/x/${x.slug}` : window.location.href;
-
+      trackEvent('xekie_viewed', { xekie_id: x.id, category: x.category || 'uncategorized' });
       document.title = `XEKIE — ${x.title}`;
       document.querySelector('meta[property="og:title"]').setAttribute('content', `${x.title} — XEKIE`);
       document.querySelector('meta[property="og:description"]').setAttribute('content', x.description || `Budget: ${formatBudget(x)}. Respond with your best offer on XEKIE.`);
@@ -276,29 +257,25 @@
       const ogImg = `https://xekie.com/.netlify/functions/og-image?${ogParams}`;
       document.querySelector('meta[property="og:image"]').setAttribute('content', ogImg);
       document.querySelector('meta[name="twitter:image"]').setAttribute('content', ogImg);
-
       const isExpired = x.expires_at && new Date(x.expires_at) < new Date();
       const isFulfilled = x.is_fulfilled;
       const isEarly = new Date(x.created_at) < BETA_CUTOFF;
       const canRespond = !isFulfilled && !isExpired;
-
       let statusBadge = '';
       if (isFulfilled) statusBadge = '<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
       else if (isExpired) statusBadge = '<span class="status-badge status-expired">⏰ Expired</span>';
-
       let expiryDisplay = '';
       if (x.expires_at && !isExpired && !isFulfilled) {
         const hoursLeft = Math.floor((new Date(x.expires_at) - new Date()) / 3600000);
         if (hoursLeft < 24) expiryDisplay = `<span>⚠️ Expires in ${hoursLeft}h</span>`;
         else expiryDisplay = `<span>⏱ ${Math.floor(hoursLeft/24)} days left</span>`;
       }
-
       let photoGallery = '';
       if (x.photos && x.photos.length) {
         const cls = x.photos.length === 1 ? 'single' : x.photos.length === 3 ? 'three' : '';
         photoGallery = `<div class="photo-gallery ${cls}">${x.photos.map((url, i) => `<div class="photo-item" onclick="openLightbox(${i})"><img src="${url}" alt="Photo ${i+1}" loading="lazy" /></div>`).join('')}</div>`;
       }
-
+      const shareUrl = x.slug ? `https://xekie.com/x/${x.slug}` : window.location.href;
       document.getElementById('content').innerHTML = `
         <div class="xekie-card">
           <div class="card-badge-row">
@@ -342,18 +319,16 @@
           <p>Can't find what you're looking for? XEKIE it — tell sellers what you want and let offers roll in.</p>
           <a href="request.html" class="btn-nav primary" style="display:inline-block;font-size:15px;padding:12px 28px;">XEKIE it →</a>
         </div>`;
-
       _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {});
       checkSaved();
     }
-
     function openLightbox(i) { lightboxPhotos = currentXekie?.photos || []; lightboxIndex = i; document.getElementById('lightbox-img').src = lightboxPhotos[i]; document.getElementById('photo-lightbox').classList.add('open'); }
     function closeLightbox() { document.getElementById('photo-lightbox').classList.remove('open'); }
     function lightboxNav(dir) { lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length; document.getElementById('lightbox-img').src = lightboxPhotos[lightboxIndex]; }
     document.getElementById('photo-lightbox').addEventListener('click', e => { if (e.target === document.getElementById('photo-lightbox')) closeLightbox(); });
-
     function openModal() {
       if (!currentUser) { window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href); return; }
+      trackEvent('respond_clicked', { xekie_id: currentXekie?.id, category: currentXekie?.category || 'uncategorized' });
       document.getElementById('modal-message').value = '';
       document.getElementById('modal-price').value = '';
       document.getElementById('modal-msg').className = 'modal-msg';
@@ -363,7 +338,6 @@
       document.getElementById('modal-overlay').classList.add('open');
     }
     function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-
     async function submitResponse() {
       const message = document.getElementById('modal-message').value.trim();
       const price = document.getElementById('modal-price').value;
@@ -373,6 +347,7 @@
       btn.disabled = true; btn.textContent = 'Sending...';
       const { error } = await _sb.from('offers').insert({ xekie_id: currentXekie.id, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
       if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send & open chat →'; return; }
+      trackEvent('offer_submitted', { xekie_id: currentXekie.id, has_price: !!price });
       const buyerId = currentXekie?.user_id;
       if (buyerId && buyerId !== currentUser.id) {
         const firstMsg = price ? `${message}\n\n💰 Asking price: $${Number(price).toLocaleString()}` : message;
@@ -384,16 +359,16 @@
       if (buyerId) setTimeout(() => { window.location.href = `messages.html?xekie=${currentXekie.id}&other=${buyerId}`; }, 1200);
       else setTimeout(closeModal, 2000);
     }
-
+    function getShareUrl() { return currentXekie?.slug ? `https://xekie.com/x/${currentXekie.slug}` : window.location.href; }
     function shareThis() {
-      const url = currentXekie?.slug ? `https://xekie.com/x/${currentXekie.slug}` : window.location.href;
+      const url = getShareUrl();
+      trackEvent('xekie_shared', { method: 'link', xekie_id: currentXekie?.id });
       if (navigator.share) { navigator.share({ title: `XEKIE — ${currentXekie?.title}`, url }).catch(() => {}); }
       else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
     }
-    function shareToSMS() { const url = currentXekie?.slug ? `https://xekie.com/x/${currentXekie.slug}` : window.location.href; window.open(`sms:&body=${encodeURIComponent((currentXekie?.title || 'Check this XEKIE') + ' — ' + url)}`); }
-    function shareToFacebook() { const url = currentXekie?.slug ? `https://xekie.com/x/${currentXekie.slug}` : window.location.href; window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank'); }
-    function shareToX() { const url = currentXekie?.slug ? `https://xekie.com/x/${currentXekie.slug}` : window.location.href; window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent((currentXekie?.title || 'Check this XEKIE') + ' — respond with your best offer on XEKIE') + '&url=' + encodeURIComponent(url), '_blank'); }
-
+    function shareToSMS() { trackEvent('xekie_shared', { method: 'sms', xekie_id: currentXekie?.id }); window.open(`sms:&body=${encodeURIComponent((currentXekie?.title || 'Check this XEKIE') + ' — ' + getShareUrl())}`); }
+    function shareToFacebook() { trackEvent('xekie_shared', { method: 'facebook', xekie_id: currentXekie?.id }); window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(getShareUrl()), '_blank'); }
+    function shareToX() { trackEvent('xekie_shared', { method: 'x', xekie_id: currentXekie?.id }); window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent((currentXekie?.title || 'Check this XEKIE') + ' — respond with your best offer on XEKIE') + '&url=' + encodeURIComponent(getShareUrl()), '_blank'); }
     function checkSaved() {
       const saved = JSON.parse(localStorage.getItem('savedXekies') || '[]');
       if (currentXekie?.id && saved.includes(currentXekie.id)) { const btn = document.getElementById('btn-save'); if (btn) { btn.textContent = '✓ Saved'; btn.classList.add('saved'); } }
@@ -403,17 +378,16 @@
       let saved = JSON.parse(localStorage.getItem('savedXekies') || '[]');
       const btn = document.getElementById('btn-save');
       if (saved.includes(currentXekie.id)) { saved = saved.filter(id => id !== currentXekie.id); btn.textContent = '🔖 Save XEKIE'; btn.classList.remove('saved'); }
-      else { saved.push(currentXekie.id); btn.textContent = '✓ Saved'; btn.classList.add('saved'); }
+      else { saved.push(currentXekie.id); btn.textContent = '✓ Saved'; btn.classList.add('saved'); trackEvent('xekie_saved', { xekie_id: currentXekie.id }); }
       localStorage.setItem('savedXekies', JSON.stringify(saved));
     }
     function showQR() {
-      const url = currentXekie?.slug ? `https://xekie.com/x/${currentXekie.slug}` : window.location.href;
+      const url = getShareUrl();
       document.getElementById('qr-code').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}" style="width:200px;height:200px;border-radius:12px;" />`;
       document.getElementById('qr-modal').classList.add('open');
     }
     function closeQR() { document.getElementById('qr-modal').classList.remove('open'); }
     document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
-
     let selectedReason = '';
     function openReport() {
       if (!currentUser) { window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href); return; }
@@ -426,11 +400,7 @@
       document.getElementById('report-modal').classList.add('open');
     }
     function closeReport() { document.getElementById('report-modal').classList.remove('open'); }
-    function selectReason(el, reason) {
-      selectedReason = reason;
-      document.querySelectorAll('.report-reason').forEach(r => r.classList.remove('selected'));
-      el.classList.add('selected');
-    }
+    function selectReason(el, reason) { selectedReason = reason; document.querySelectorAll('.report-reason').forEach(r => r.classList.remove('selected')); el.classList.add('selected'); }
     async function submitReport() {
       if (!selectedReason) { const m = document.getElementById('report-msg'); m.className='report-msg error'; m.textContent='Please select a reason.'; return; }
       const details = document.getElementById('report-details').value.trim();
@@ -438,16 +408,12 @@
       btn.disabled = true; btn.textContent = 'Submitting...';
       const { error } = await _sb.from('reports').insert({ reporter_id: currentUser.id, xekie_id: currentXekie.id, reason: selectedReason, details: details || null, status: 'pending' });
       if (error) { const m = document.getElementById('report-msg'); m.className='report-msg error'; m.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Submit report'; return; }
-      try {
-        await fetch('/.netlify/functions/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'report', to: 'zach@xekie.com', data: { xekieId: currentXekie.id, xekieTitle: currentXekie?.title, reason: selectedReason, details, reporterEmail: currentUser.email } }) });
-      } catch(e) {}
+      try { await fetch('/.netlify/functions/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'report', to: 'zach@xekie.com', data: { xekieId: currentXekie.id, xekieTitle: currentXekie?.title, reason: selectedReason, details, reporterEmail: currentUser.email } }) }); } catch(e) {}
       const m = document.getElementById('report-msg'); m.className='report-msg success'; m.textContent='Report submitted. Thank you for keeping XEKIE safe. ✓';
       btn.textContent='Submitted ✓';
       setTimeout(closeReport, 2000);
     }
     document.getElementById('report-modal').addEventListener('click', e => { if (e.target === document.getElementById('report-modal')) closeReport(); });
-
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (session) currentUser = session.user;
       loadXekie();
