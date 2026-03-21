@@ -83,7 +83,24 @@
     .footer-links a{font-size:13px;color:#666;text-decoration:none;}
     .footer-links a:hover{color:var(--white);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
-    @media(max-width:480px){.form-card{padding:28px 20px;}nav{padding:0 20px;}.expiry-grid{grid-template-columns:repeat(2,1fr);}}
+
+    /* ── 14 CATEGORY GRID ── */
+    .category-section{background:var(--cream);border-radius:12px;padding:20px;margin-bottom:24px;}
+    .category-section-title{font-size:13px;font-weight:500;margin-bottom:14px;}
+    .category-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+    .cat-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:12px 6px;background:var(--white);border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center;font-family:var(--font-body);}
+    .cat-btn:hover{border-color:var(--black);}
+    .cat-btn.active{background:var(--black);border-color:var(--black);}
+    .cat-btn.active .cat-label{color:var(--white);}
+    .cat-emoji{font-size:22px;line-height:1;}
+    .cat-label{font-size:11px;font-weight:500;color:var(--black);line-height:1.2;}
+
+    @media(max-width:480px){
+      .form-card{padding:28px 20px;}
+      nav{padding:0 20px;}
+      .expiry-grid{grid-template-columns:repeat(2,1fr);}
+      .category-grid{grid-template-columns:repeat(3,1fr);}
+    }
   </style>
 </head>
 <body>
@@ -104,16 +121,19 @@
     <p class="page-sub">Can't find it? Just XEKIE it. Tell sellers exactly what you want — better details get better responses.</p>
     <div class="form-card">
       <div id="message" class="message"></div>
+
       <div class="form-group">
         <label>What do you want to find? <span class="label-hint">Be specific</span></label>
         <input type="text" id="title" placeholder="e.g. First edition Hell's Angels by Hunter S. Thompson" maxlength="100" oninput="updatePreview()" />
         <div class="char-count"><span id="title-count">0</span>/100</div>
       </div>
+
       <div class="form-group">
         <label>Describe exactly what you're looking for <span class="label-hint">Condition, specs, preferences</span></label>
         <textarea id="description" placeholder="e.g. Looking for a first print in good condition. No major damage to spine or cover." maxlength="500" oninput="updatePreview()"></textarea>
         <div class="char-count"><span id="desc-count">0</span>/500</div>
       </div>
+
       <div class="budget-section">
         <div class="budget-section-title">Your budget</div>
         <div class="budget-row">
@@ -128,28 +148,19 @@
           <label for="is-flexible">I'm flexible on price if the right item comes along</label>
         </div>
       </div>
+
       <div class="form-group">
         <label>Location <span class="label-hint">City, state or "Ships anywhere"</span></label>
         <input type="text" id="location" placeholder="e.g. Akron, OH or Ships anywhere" />
       </div>
-      <div class="form-group">
-        <label>Category</label>
-        <select id="category">
-          <option value="">Select a category...</option>
-          <option>Electronics</option>
-          <option>Trading Cards</option>
-          <option>Vehicles</option>
-          <option>Tools</option>
-          <option>Services</option>
-          <option>Household Items</option>
-          <option>Clothes &amp; Apparel</option>
-          <option>Books</option>
-          <option>Toys</option>
-          <option>Music &amp; Movies</option>
-          <option>Collectibles</option>
-          <option>Other</option>
-        </select>
+
+      <!-- 14 NICHE CATEGORY GRID -->
+      <div class="category-section">
+        <div class="category-section-title">Category</div>
+        <div class="category-grid" id="category-grid"></div>
+        <input type="hidden" id="category" />
       </div>
+
       <div class="form-group">
         <label>How long should your XEKIE stay active?</label>
         <div class="expiry-grid">
@@ -162,6 +173,7 @@
           <button class="expiry-btn" data-hours="-1" onclick="setExpiry(this)">Buy Now<span class="expiry-sub">Urgent</span></button>
         </div>
       </div>
+
       <div class="photo-upload-section">
         <div class="photo-upload-title">Photos <span style="font-size:12px;font-weight:400;color:var(--mid);">Optional — up to 4 photos help sellers know exactly what you want</span></div>
         <div class="photo-drop-zone" id="photo-drop-zone" onclick="document.getElementById('photo-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
@@ -172,6 +184,7 @@
         <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect(event)" />
         <div class="photo-previews" id="photo-previews"></div>
       </div>
+
       <div class="preview-box">
         <div class="preview-label">Live preview</div>
         <div class="preview-title" id="preview-title">Your XEKIE title will appear here</div>
@@ -210,6 +223,39 @@
       if (!session) { window.location.href = 'login.html'; return; }
       currentUser = session.user;
       document.getElementById('nav-user').textContent = session.user.user_metadata?.full_name || session.user.email;
+    });
+
+    // ── 14 NICHE CATEGORIES ──────────────────────────────────────────────────
+    const NICHES = [
+      { label: 'Trading Cards',      emoji: '🃏' },
+      { label: 'Sports Cards',       emoji: '⚾' },
+      { label: 'K-Pop',              emoji: '🎤' },
+      { label: 'Swifties',           emoji: '🌟' },
+      { label: 'Star Wars',          emoji: '⚔️' },
+      { label: 'Soccer',             emoji: '⚽' },
+      { label: 'Vinyl Records',      emoji: '🎵' },
+      { label: 'Retro Games',        emoji: '🎮' },
+      { label: 'Vintage & Antique',  emoji: '🏺' },
+      { label: 'Comics',             emoji: '💥' },
+      { label: 'Sports Memorabilia', emoji: '🏆' },
+      { label: 'Luxury Watches',     emoji: '⌚' },
+      { label: 'Retro Tech',         emoji: '📻' },
+      { label: 'Sneakers',           emoji: '👟' },
+    ];
+
+    const grid = document.getElementById('category-grid');
+    NICHES.forEach(n => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cat-btn';
+      btn.innerHTML = `<span class="cat-emoji">${n.emoji}</span><span class="cat-label">${n.label}</span>`;
+      btn.onclick = () => {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('category').value = n.label;
+        gtag('event', 'category_selected', { category: n.label });
+      };
+      grid.appendChild(btn);
     });
 
     function setExpiry(btn) {
@@ -322,7 +368,6 @@
       return urls;
     }
 
-    // ── SLUG GENERATOR (only addition) ──────────────────────────────────────
     function generateSlug(title, category) {
       const catSlug = (category || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       const titleSlug = title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 50).replace(/-$/g, '');
@@ -342,12 +387,12 @@
       if (!title) return showMessage('Please add a title — what do you want to find?', 'error');
       if (!budget_min && !budget_max) return showMessage('Please enter at least a minimum or maximum budget.', 'error');
       if (!location) return showMessage('Please add a location or write "Ships anywhere".', 'error');
-      if (!category) return showMessage('Please select a category.', 'error');
+      if (!category) return showMessage('Please choose a category.', 'error');
       btn.disabled = true; btn.textContent = 'XEKIE\'ing...';
       let expires_at = null;
       if (selectedExpiryHours > 0) expires_at = new Date(Date.now() + selectedExpiryHours * 60 * 60 * 1000).toISOString();
-      const slug = generateSlug(title, category); // ← new
-      const insertData = { title, description, budget: budget_max ? parseInt(budget_max) : parseInt(budget_min), budget_min: budget_min ? parseInt(budget_min) : null, budget_max: budget_max ? parseInt(budget_max) : null, is_flexible, location, category, user_id: currentUser.id, view_count: 0, is_fulfilled: false, slug }; // ← slug added
+      const slug = generateSlug(title, category);
+      const insertData = { title, description, budget: budget_max ? parseInt(budget_max) : parseInt(budget_min), budget_min: budget_min ? parseInt(budget_min) : null, budget_max: budget_max ? parseInt(budget_max) : null, is_flexible, location, category, user_id: currentUser.id, view_count: 0, is_fulfilled: false, slug };
       if (expires_at) insertData.expires_at = expires_at;
       const { data: newXekie, error } = await _sb.from('xekies').insert(insertData).select().single();
       if (error) {
