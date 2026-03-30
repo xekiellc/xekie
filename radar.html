@@ -77,6 +77,8 @@
     .response-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:#EAF3DE;color:#3B6D11;}
     .hot-badge{background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;}
     .early-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;letter-spacing:0.03em;}
+    .photo-strip{display:flex;gap:6px;margin-bottom:12px;overflow:hidden;}
+    .photo-strip img{width:80px;height:80px;object-fit:cover;border-radius:8px;flex-shrink:0;}
     .empty-state{text-align:center;padding:80px 20px;}
     .empty-icon{font-size:48px;margin-bottom:16px;}
     .empty-title{font-family:var(--font-display);font-size:24px;font-weight:700;margin-bottom:8px;}
@@ -314,7 +316,9 @@
         const promotedLabel = isPromoted ? '<div class="promoted-label">⚡ Promoted</div>' : '';
         const canRespond = !fulfilled && !expired;
         const cnt = offerCounts[x.id] || 0;
-        const photoStrip = x.photos && x.photos.length ? `<div style="display:flex;gap:4px;margin-bottom:10px;border-radius:8px;overflow:hidden;max-height:80px;">${x.photos.slice(0,3).map(url => `<img src="${url}" style="flex:1;height:80px;object-fit:cover;" loading="lazy" />`).join('')}</div>` : '';
+        const photoStrip = x.photos && x.photos.length
+          ? `<div class="photo-strip">${x.photos.slice(0,3).map(url => `<img src="${url}" loading="lazy" />`).join('')}</div>`
+          : '';
         return `
         <div class="xekie-card ${cardClass}" id="card-${x.id}" data-id="${x.id}">
           <div class="swipe-hint-right">SAVE ✓</div>
