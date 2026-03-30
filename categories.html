@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XEKIE — Browse by Category</title>
-  <meta name="description" content="Browse XEKIEs by category. Find buyers looking for Electronics, K-Pop, Sneakers, Star Wars and more.">
+  <meta name="description" content="Browse XEKIEs by category. Find buyers looking for K-Pop, Sneakers, Electronics, Vehicles, Trading Cards and more.">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff4d1c">
   <link rel="apple-touch-icon" href="/icon-180x180.png">
@@ -29,62 +29,18 @@
     .hero-title span{color:var(--accent);}
     .hero-sub{font-size:18px;font-weight:300;color:#888;max-width:500px;margin:0 auto;}
     .container{max-width:960px;margin:0 auto;padding:56px 20px;flex:1;}
-    .section-label{font-size:11px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
-    .section-title{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+    .section-title{font-family:var(--font-display);font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;}
     .section-sub{font-size:14px;color:var(--mid);margin-bottom:24px;}
-
-    /* FEATURED VERTICALS GRID */
-    .featured-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:56px;}
-    .featured-card{border-radius:20px;padding:28px;text-decoration:none;color:var(--white);transition:transform 0.15s,box-shadow 0.15s;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;}
-    .featured-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.25);}
-    .featured-card-orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:0.4;width:180px;height:180px;top:-40px;right:-40px;}
-    .featured-card-content{position:relative;z-index:1;}
-    .featured-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:rgba(255,255,255,0.15);margin-bottom:8px;width:fit-content;}
-    .featured-icon{font-size:36px;margin-bottom:4px;}
-    .featured-name{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-0.02em;margin-bottom:4px;}
-    .featured-desc{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.5;margin-bottom:12px;}
-    .featured-subcats{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
-    .featured-subcat{font-size:11px;font-weight:500;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);}
-    .featured-cta{font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);display:flex;align-items:center;gap:4px;}
-
-    /* CARD THEMES */
-    .fc-kpop{background:linear-gradient(135deg,#1e0a3c,#0d0618);}
-    .fc-kpop .featured-card-orb{background:rgba(124,58,237,0.6);}
-    .fc-sneakers{background:linear-gradient(135deg,#1a0e00,#0d0800);}
-    .fc-sneakers .featured-card-orb{background:rgba(232,93,4,0.6);}
-    .fc-tradingcards{background:linear-gradient(135deg,#0c1445,#060818);}
-    .fc-tradingcards .featured-card-orb{background:rgba(29,78,216,0.6);}
-    .fc-sportscards{background:linear-gradient(135deg,#1f0404,#0f0000);}
-    .fc-sportscards .featured-card-orb{background:rgba(185,28,28,0.6);}
-    .fc-swifties{background:linear-gradient(135deg,#160a2e,#0a0514);}
-    .fc-swifties .featured-card-orb{background:rgba(109,40,217,0.6);}
-    .fc-starwars{background:linear-gradient(135deg,#111,#000);}
-    .fc-starwars .featured-card-orb{background:rgba(202,138,4,0.5);}
-    .fc-soccer{background:linear-gradient(135deg,#041a0a,#020f06);}
-    .fc-soccer .featured-card-orb{background:rgba(21,128,61,0.6);}
-    .fc-vinyl{background:linear-gradient(135deg,#1c0e00,#0a0500);}
-    .fc-vinyl .featured-card-orb{background:rgba(180,83,9,0.6);}
-    .fc-retrogames{background:linear-gradient(135deg,#0f1a0a,#060f08);}
-    .fc-retrogames .featured-card-orb{background:rgba(22,163,74,0.6);}
-    .fc-vintage{background:linear-gradient(135deg,#1a0e00,#0a0600);}
-    .fc-vintage .featured-card-orb{background:rgba(120,53,15,0.6);}
-    .fc-comics{background:linear-gradient(135deg,#1a0606,#0f0404);}
-    .fc-comics .featured-card-orb{background:rgba(220,38,38,0.6);}
-    .fc-sportsmem{background:linear-gradient(135deg,#08101a,#04080f);}
-    .fc-sportsmem .featured-card-orb{background:rgba(30,58,95,0.7);}
-    .fc-watches{background:linear-gradient(135deg,#1a1400,#0a0800);}
-    .fc-watches .featured-card-orb{background:rgba(202,138,4,0.5);}
-    .fc-retrotech{background:linear-gradient(135deg,#001a0f,#000a06);}
-    .fc-retrotech .featured-card-orb{background:rgba(5,150,105,0.6);}
-
-    /* STANDARD CATEGORIES */
-    .categories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px;}
-    .cat-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:24px;text-decoration:none;color:var(--black);transition:transform 0.15s,box-shadow 0.15s;display:flex;flex-direction:column;gap:10px;}
+    .categories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:56px;}
+    .cat-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:28px 24px;text-decoration:none;color:var(--black);transition:transform 0.15s,box-shadow 0.15s;display:flex;flex-direction:column;gap:12px;}
     .cat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:var(--accent);}
-    .cat-icon{font-size:32px;}
-    .cat-name{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.02em;}
-    .cat-count{font-size:12px;color:var(--mid);}
-    .cat-arrow{font-size:16px;color:var(--accent);margin-top:auto;}
+    .cat-card.niche{border-left:3px solid var(--accent);}
+    .cat-icon{font-size:36px;}
+    .cat-name{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-0.02em;}
+    .cat-desc{font-size:12px;color:var(--mid);line-height:1.4;}
+    .cat-count{font-size:13px;color:var(--mid);}
+    .cat-arrow{font-size:18px;color:var(--accent);margin-top:auto;}
+    .niche-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(255,77,28,0.1);color:var(--accent);width:fit-content;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -99,7 +55,10 @@
 </head>
 <body>
   <nav>
-    <a href="index.html" class="nav-logo"><span><span class="xe">XE</span>KIE</span><span class="nav-tagline">Trade Different</span></a>
+    <a href="index.html" class="nav-logo">
+      <span><span class="xe">XE</span>KIE</span>
+      <span class="nav-tagline">Trade Different</span>
+    </a>
     <div style="display:flex;gap:12px;">
       <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
       <a href="request.html" class="btn-nav primary">XEKIE it →</a>
@@ -113,297 +72,220 @@
 
   <div class="container">
 
-    <!-- FEATURED VERTICALS -->
-    <div class="section-label">Curated</div>
-    <div class="section-title">🔥 Featured Verticals</div>
-    <p class="section-sub">Specialized marketplaces built for passionate communities.</p>
-    <div class="featured-grid">
-
-      <a href="kpop.html" class="featured-card fc-kpop">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">🎵</div>
-          <div class="featured-name">K-Pop</div>
-          <div class="featured-desc">Albums, photocards, merch & grails.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Albums</span><span class="featured-subcat">Photocards</span><span class="featured-subcat">Merch</span><span class="featured-subcat">POBs</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+    <!-- NICHE VERTICALS -->
+    <div class="section-title">⚡ Niche Verticals</div>
+    <div class="section-sub">AI-powered, community-specific demand marketplaces</div>
+    <div class="categories-grid">
+      <a href="kpop.html" class="cat-card niche">
+        <div class="cat-icon">🎵</div>
+        <div class="cat-name">K-Pop</div>
+        <div class="cat-desc">Albums, photocards, merch, lightsticks, POBs</div>
+        <div class="cat-count" id="count-K-Pop">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="sneakers.html" class="featured-card fc-sneakers">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">👟</div>
-          <div class="featured-name">Sneakers</div>
-          <div class="featured-desc">Deadstock, grails, collabs & limited drops.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Nike</span><span class="featured-subcat">Jordan</span><span class="featured-subcat">Adidas</span><span class="featured-subcat">Yeezy</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="sneakers.html" class="cat-card niche">
+        <div class="cat-icon">👟</div>
+        <div class="cat-name">Sneakers</div>
+        <div class="cat-desc">Jordan, Nike, Yeezy, New Balance, collab drops</div>
+        <div class="cat-count" id="count-Sneakers">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="tradingcards.html" class="featured-card fc-tradingcards">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">🃏</div>
-          <div class="featured-name">Trading Cards</div>
-          <div class="featured-desc">Pokémon, MTG, Yu-Gi-Oh & more.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Pokémon</span><span class="featured-subcat">MTG</span><span class="featured-subcat">One Piece</span><span class="featured-subcat">Yu-Gi-Oh</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="tradingcards.html" class="cat-card niche">
+        <div class="cat-icon">🃏</div>
+        <div class="cat-name">Trading Cards</div>
+        <div class="cat-desc">Pokémon, MTG, Yu-Gi-Oh, One Piece</div>
+        <div class="cat-count" id="count-Trading Cards">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="sportscards.html" class="featured-card fc-sportscards">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">🏆</div>
-          <div class="featured-name">Sports Cards</div>
-          <div class="featured-desc">Rookies, slabs, vintage gems & key cards.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Baseball</span><span class="featured-subcat">Basketball</span><span class="featured-subcat">Football</span><span class="featured-subcat">UFC</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="sportscards.html" class="cat-card niche">
+        <div class="cat-icon">⚾</div>
+        <div class="cat-name">Sports Cards</div>
+        <div class="cat-desc">Baseball, basketball, football, hockey</div>
+        <div class="cat-count" id="count-Sports Cards">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="swifties.html" class="featured-card fc-swifties">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">✨</div>
-          <div class="featured-name">Swifties</div>
-          <div class="featured-desc">Taylor Swift vinyl, tour merch & era grails.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Vinyl</span><span class="featured-subcat">Tour Merch</span><span class="featured-subcat">Signed</span><span class="featured-subcat">Bracelets</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="swifties.html" class="cat-card niche">
+        <div class="cat-icon">✨</div>
+        <div class="cat-name">Swifties</div>
+        <div class="cat-desc">Eras Tour, vinyl, merch, signed items</div>
+        <div class="cat-count" id="count-Swifties">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="starwars.html" class="featured-card fc-starwars">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">⭐</div>
-          <div class="featured-name">Star Wars</div>
-          <div class="featured-desc">Vintage Kenner, LEGO, props & signed items.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Vintage Figures</span><span class="featured-subcat">LEGO</span><span class="featured-subcat">Props</span><span class="featured-subcat">Signed</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="starwars.html" class="cat-card niche">
+        <div class="cat-icon">⭐</div>
+        <div class="cat-name">Star Wars</div>
+        <div class="cat-desc">Vintage Kenner, figures, props, comics</div>
+        <div class="cat-count" id="count-Star Wars">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="soccer.html" class="featured-card fc-soccer">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">⚽</div>
-          <div class="featured-name">Soccer</div>
-          <div class="featured-desc">Shirts, signed items, programs & boots.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Shirts</span><span class="featured-subcat">Signed</span><span class="featured-subcat">Programs</span><span class="featured-subcat">Boots</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="soccer.html" class="cat-card niche">
+        <div class="cat-icon">⚽</div>
+        <div class="cat-name">Soccer</div>
+        <div class="cat-desc">Kits, shirts, signed items, programs</div>
+        <div class="cat-count" id="count-Soccer">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="vinyl.html" class="featured-card fc-vinyl">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">🎵</div>
-          <div class="featured-name">Vinyl Records</div>
-          <div class="featured-desc">Rare pressings, original labels & audiophile finds.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Rock</span><span class="featured-subcat">Jazz</span><span class="featured-subcat">Hip-Hop</span><span class="featured-subcat">Soul</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="vinyl.html" class="cat-card niche">
+        <div class="cat-icon">🎵</div>
+        <div class="cat-name">Vinyl Records</div>
+        <div class="cat-desc">First pressings, original labels, audiophile</div>
+        <div class="cat-count" id="count-Vinyl Records">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="retrogames.html" class="featured-card fc-retrogames">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">🕹️</div>
-          <div class="featured-name">Retro Games</div>
-          <div class="featured-desc">CIB copies, rare cartridges & vintage consoles.</div>
-          <div class="featured-subcats"><span class="featured-subcat">NES</span><span class="featured-subcat">SNES</span><span class="featured-subcat">N64</span><span class="featured-subcat">Sega</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="retrogames.html" class="cat-card niche">
+        <div class="cat-icon">🕹️</div>
+        <div class="cat-name">Retro Games</div>
+        <div class="cat-desc">CIB, graded, all consoles, WATA, VGA</div>
+        <div class="cat-count" id="count-Retro Games">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="vintage.html" class="featured-card fc-vintage">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">🏺</div>
-          <div class="featured-name">Vintage & Antique</div>
-          <div class="featured-desc">Furniture, jewelry, art & hidden treasures.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Furniture</span><span class="featured-subcat">Jewelry</span><span class="featured-subcat">Art</span><span class="featured-subcat">Decor</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="vintage.html" class="cat-card niche">
+        <div class="cat-icon">🏺</div>
+        <div class="cat-name">Vintage & Antique</div>
+        <div class="cat-desc">Furniture, art, jewelry, ceramics, collectibles</div>
+        <div class="cat-count" id="count-Vintage & Antique">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="comics.html" class="featured-card fc-comics">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">💥</div>
-          <div class="featured-name">Comics</div>
-          <div class="featured-desc">Key issues, variants, graded slabs & manga.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Marvel</span><span class="featured-subcat">DC</span><span class="featured-subcat">Image</span><span class="featured-subcat">Manga</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="comics.html" class="cat-card niche">
+        <div class="cat-icon">💥</div>
+        <div class="cat-name">Comics</div>
+        <div class="cat-desc">CGC, CBCS, key issues, pedigree collections</div>
+        <div class="cat-count" id="count-Comics">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="sportsmemorabilia.html" class="featured-card fc-sportsmem">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">🏅</div>
-          <div class="featured-name">Sports Memorabilia</div>
-          <div class="featured-desc">Signed items, game-used gear & rare photos.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Signed</span><span class="featured-subcat">Game-Used</span><span class="featured-subcat">Photos</span><span class="featured-subcat">Apparel</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="sportsmemorabilia.html" class="cat-card niche">
+        <div class="cat-icon">🏅</div>
+        <div class="cat-name">Sports Memorabilia</div>
+        <div class="cat-desc">Signed, game-used, authenticated items</div>
+        <div class="cat-count" id="count-Sports Memorabilia">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="luxurywatches.html" class="featured-card fc-watches">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">⌚</div>
-          <div class="featured-name">Luxury Watches</div>
-          <div class="featured-desc">Rolex, Omega, Patek & rare references.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Rolex</span><span class="featured-subcat">Omega</span><span class="featured-subcat">Patek</span><span class="featured-subcat">Tudor</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="luxurywatches.html" class="cat-card niche">
+        <div class="cat-icon">⌚</div>
+        <div class="cat-name">Luxury Watches</div>
+        <div class="cat-desc">Rolex, Patek, AP, Omega, IWC</div>
+        <div class="cat-count" id="count-Luxury Watches">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
-      <a href="retrotech.html" class="featured-card fc-retrotech">
-        <div class="featured-card-orb"></div>
-        <div class="featured-card-content">
-          <div class="featured-badge">⚡ Live</div>
-          <div class="featured-icon">💾</div>
-          <div class="featured-name">Retro Tech</div>
-          <div class="featured-desc">Vintage Apple, film cameras, synths & hi-fi.</div>
-          <div class="featured-subcats"><span class="featured-subcat">Vintage Apple</span><span class="featured-subcat">Cameras</span><span class="featured-subcat">Synths</span><span class="featured-subcat">Hi-Fi</span></div>
-          <div class="featured-cta">Explore →</div>
-        </div>
+      <a href="retrotech.html" class="cat-card niche">
+        <div class="cat-icon">📟</div>
+        <div class="cat-name">Retro Tech</div>
+        <div class="cat-desc">Vintage cameras, audio, computers, gadgets</div>
+        <div class="cat-count" id="count-Retro Tech">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-
     </div>
 
     <!-- ALL CATEGORIES -->
-    <div class="section-label">Browse</div>
-    <div class="section-title">All Categories</div>
-    <p class="section-sub">Browse all active XEKIEs by category.</p>
+    <div class="section-title">🛒 All Categories</div>
+    <div class="section-sub">Every category fully built out with subcategories and AI-powered listings</div>
     <div class="categories-grid">
-      <a href="radar.html?category=Electronics" class="cat-card">
-        <div class="cat-icon">📱</div><div class="cat-name">Electronics</div>
-        <div class="cat-count" id="count-Electronics">Loading...</div><div class="cat-arrow">→</div>
+      <a href="electronics.html" class="cat-card">
+        <div class="cat-icon">📱</div>
+        <div class="cat-name">Electronics</div>
+        <div class="cat-count" id="count-Electronics">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-      <a href="tradingcards.html" class="cat-card">
-        <div class="cat-icon">🃏</div><div class="cat-name">Trading Cards</div>
-        <div class="cat-count" id="count-Trading Cards">Loading...</div><div class="cat-arrow">→</div>
+      <a href="vehicles.html" class="cat-card">
+        <div class="cat-icon">🚗</div>
+        <div class="cat-name">Vehicles</div>
+        <div class="cat-count" id="count-Vehicles">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-      <a href="sportscards.html" class="cat-card">
-        <div class="cat-icon">🏆</div><div class="cat-name">Sports Cards</div>
-        <div class="cat-count" id="count-Sports Cards">Loading...</div><div class="cat-arrow">→</div>
+      <a href="tools.html" class="cat-card">
+        <div class="cat-icon">🔧</div>
+        <div class="cat-name">Tools</div>
+        <div class="cat-count" id="count-Tools">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-      <a href="radar.html?category=Vehicles" class="cat-card">
-        <div class="cat-icon">🚗</div><div class="cat-name">Vehicles</div>
-        <div class="cat-count" id="count-Vehicles">Loading...</div><div class="cat-arrow">→</div>
+      <a href="household.html" class="cat-card">
+        <div class="cat-icon">🏠</div>
+        <div class="cat-name">Household Items</div>
+        <div class="cat-count" id="count-Household Items">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-      <a href="radar.html?category=Tools" class="cat-card">
-        <div class="cat-icon">🔧</div><div class="cat-name">Tools</div>
-        <div class="cat-count" id="count-Tools">Loading...</div><div class="cat-arrow">→</div>
+      <a href="books.html" class="cat-card">
+        <div class="cat-icon">📚</div>
+        <div class="cat-name">Books</div>
+        <div class="cat-count" id="count-Books">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-      <a href="radar.html?category=Services" class="cat-card">
-        <div class="cat-icon">🤝</div><div class="cat-name">Services</div>
-        <div class="cat-count" id="count-Services">Loading...</div><div class="cat-arrow">→</div>
+      <a href="toys.html" class="cat-card">
+        <div class="cat-icon">🧸</div>
+        <div class="cat-name">Toys</div>
+        <div class="cat-count" id="count-Toys">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
-      <a href="radar.html?category=Household Items" class="cat-card">
-        <div class="cat-icon">🏠</div><div class="cat-name">Household Items</div>
-        <div class="cat-count" id="count-Household Items">Loading...</div><div class="cat-arrow">→</div>
+      <a href="music.html" class="cat-card">
+        <div class="cat-icon">🎵</div>
+        <div class="cat-name">Music</div>
+        <div class="cat-count" id="count-Music">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="movies.html" class="cat-card">
+        <div class="cat-icon">🎬</div>
+        <div class="cat-name">Movies</div>
+        <div class="cat-count" id="count-Movies">Loading...</div>
+        <div class="cat-arrow">→</div>
+      </a>
+      <a href="services.html" class="cat-card">
+        <div class="cat-icon">🛠️</div>
+        <div class="cat-name">Services</div>
+        <div class="cat-count" id="count-Services">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
       <a href="radar.html?category=Clothes & Apparel" class="cat-card">
-        <div class="cat-icon">👗</div><div class="cat-name">Clothes &amp; Apparel</div>
-        <div class="cat-count" id="count-Clothes & Apparel">Loading...</div><div class="cat-arrow">→</div>
-      </a>
-      <a href="radar.html?category=Books" class="cat-card">
-        <div class="cat-icon">📚</div><div class="cat-name">Books</div>
-        <div class="cat-count" id="count-Books">Loading...</div><div class="cat-arrow">→</div>
-      </a>
-      <a href="radar.html?category=Toys" class="cat-card">
-        <div class="cat-icon">🧸</div><div class="cat-name">Toys</div>
-        <div class="cat-count" id="count-Toys">Loading...</div><div class="cat-arrow">→</div>
-      </a>
-      <a href="radar.html?category=Music & Movies" class="cat-card">
-        <div class="cat-icon">🎬</div><div class="cat-name">Music &amp; Movies</div>
-        <div class="cat-count" id="count-Music & Movies">Loading...</div><div class="cat-arrow">→</div>
-      </a>
-      <a href="kpop.html" class="cat-card" style="border-color:rgba(124,58,237,0.3);background:linear-gradient(135deg,#faf5ff,#fff);">
-        <div class="cat-icon">🎵</div><div class="cat-name" style="color:#7c3aed;">K-Pop</div>
-        <div class="cat-count" id="count-K-Pop">Loading...</div><div class="cat-arrow" style="color:#7c3aed;">→</div>
-      </a>
-      <a href="sneakers.html" class="cat-card" style="border-color:rgba(232,93,4,0.3);background:linear-gradient(135deg,#fff8f3,#fff);">
-        <div class="cat-icon">👟</div><div class="cat-name" style="color:#e85d04;">Sneakers</div>
-        <div class="cat-count" id="count-Sneakers">Loading...</div><div class="cat-arrow" style="color:#e85d04;">→</div>
-      </a>
-      <a href="swifties.html" class="cat-card" style="border-color:rgba(109,40,217,0.3);background:linear-gradient(135deg,#f5f0ff,#fff);">
-        <div class="cat-icon">✨</div><div class="cat-name" style="color:#6d28d9;">Swifties</div>
-        <div class="cat-count" id="count-Swifties">Loading...</div><div class="cat-arrow" style="color:#6d28d9;">→</div>
-      </a>
-      <a href="starwars.html" class="cat-card" style="border-color:rgba(202,138,4,0.3);background:linear-gradient(135deg,#fffbeb,#fff);">
-        <div class="cat-icon">⭐</div><div class="cat-name" style="color:#ca8a04;">Star Wars</div>
-        <div class="cat-count" id="count-Star Wars">Loading...</div><div class="cat-arrow" style="color:#ca8a04;">→</div>
-      </a>
-      <a href="soccer.html" class="cat-card" style="border-color:rgba(21,128,61,0.3);background:linear-gradient(135deg,#f0fdf4,#fff);">
-        <div class="cat-icon">⚽</div><div class="cat-name" style="color:#15803d;">Soccer</div>
-        <div class="cat-count" id="count-Soccer">Loading...</div><div class="cat-arrow" style="color:#15803d;">→</div>
-      </a>
-      <a href="vinyl.html" class="cat-card" style="border-color:rgba(180,83,9,0.3);background:linear-gradient(135deg,#fffbf0,#fff);">
-        <div class="cat-icon">🎵</div><div class="cat-name" style="color:#b45309;">Vinyl Records</div>
-        <div class="cat-count" id="count-Vinyl Records">Loading...</div><div class="cat-arrow" style="color:#b45309;">→</div>
-      </a>
-      <a href="retrotech.html" class="cat-card" style="border-color:rgba(5,150,105,0.3);background:linear-gradient(135deg,#f0fdf9,#fff);">
-        <div class="cat-icon">💾</div><div class="cat-name" style="color:#059669;">Retro Tech</div>
-        <div class="cat-count" id="count-Retro Tech">Loading...</div><div class="cat-arrow" style="color:#059669;">→</div>
-      </a>
-      <a href="radar.html?category=Collectibles" class="cat-card">
-        <div class="cat-icon">🏆</div><div class="cat-name">Collectibles</div>
-        <div class="cat-count" id="count-Collectibles">Loading...</div><div class="cat-arrow">→</div>
-      </a>
-      <a href="radar.html?category=Other" class="cat-card">
-        <div class="cat-icon">📦</div><div class="cat-name">Other</div>
-        <div class="cat-count" id="count-Other">Loading...</div><div class="cat-arrow">→</div>
+        <div class="cat-icon">👗</div>
+        <div class="cat-name">Clothes &amp; Apparel</div>
+        <div class="cat-count" id="count-Clothes & Apparel">Loading...</div>
+        <div class="cat-arrow">→</div>
       </a>
       <a href="radar.html" class="cat-card" style="border:2px dashed var(--border);background:transparent;">
-        <div class="cat-icon">🔍</div><div class="cat-name">All XEKIEs</div>
-        <div class="cat-count">Browse everything</div><div class="cat-arrow">→</div>
+        <div class="cat-icon">🔍</div>
+        <div class="cat-name">All XEKIEs</div>
+        <div class="cat-count">Browse everything</div>
+        <div class="cat-arrow">→</div>
       </a>
     </div>
+
   </div>
 
   <footer>
     <div class="footer-inner">
-      <div><div class="footer-logo"><span class="xe">XE</span>KIE</div><div class="footer-tagline">Trade Different</div></div>
+      <div>
+        <div class="footer-logo"><span class="xe">XE</span>KIE</div>
+        <div class="footer-tagline">Trade Different</div>
+      </div>
       <div class="footer-links">
-        <a href="privacy.html">Privacy Policy</a><a href="prohibited-items.html">Prohibited Items</a>
-        <a href="guidelines.html">Community Guidelines</a><a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="prohibited-items.html">Prohibited Items</a>
+        <a href="guidelines.html">Community Guidelines</a>
+        <a href="terms.html">Terms of Service</a>
       </div>
       <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
     </div>
   </footer>
 
   <script>
-    const SUPABASE_URL="https://jlcrarqiyejgjbdesxik.supabase.co";
-    const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
-    const _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    const cats=['Electronics','Trading Cards','Sports Cards','Vehicles','Tools','Services','Household Items','Clothes & Apparel','Books','Toys','Music & Movies','K-Pop','Sneakers','Swifties','Star Wars','Soccer','Vinyl Records','Retro Tech','Collectibles','Other'];
-    async function loadCounts(){
-      const{data}=await _sb.from('xekies').select('category').eq('is_fulfilled',false);
-      const counts={};
-      (data||[]).forEach(x=>{if(x.category)counts[x.category]=(counts[x.category]||0)+1;});
-      cats.forEach(cat=>{
-        const el=document.getElementById('count-'+cat);
-        if(el){const n=counts[cat]||0;el.textContent=n+' active XEKIE'+(n!==1?'s':'');}
+    const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
+    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const cats = [
+      'K-Pop','Sneakers','Trading Cards','Sports Cards','Swifties','Star Wars',
+      'Soccer','Vinyl Records','Retro Games','Vintage & Antique','Comics',
+      'Sports Memorabilia','Luxury Watches','Retro Tech',
+      'Electronics','Vehicles','Tools','Household Items','Books','Toys',
+      'Music','Movies','Services','Clothes & Apparel'
+    ];
+
+    async function loadCounts() {
+      const { data } = await _sb.from('xekies').select('category').eq('is_fulfilled', false);
+      const counts = {};
+      (data || []).forEach(x => { if (x.category) counts[x.category] = (counts[x.category] || 0) + 1; });
+      cats.forEach(cat => {
+        const el = document.getElementById('count-' + cat);
+        if (el) { const n = counts[cat] || 0; el.textContent = n + ' active XEKIE' + (n !== 1 ? 's' : ''); }
       });
     }
     loadCounts();
