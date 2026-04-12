@@ -119,6 +119,28 @@
     .report-msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;}
     .report-msg.error{background:#FCEBEB;color:#A32D2D;display:block;}
     .report-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
+
+    /* ── PAYMENT MODAL ── */
+    .payment-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:400;align-items:center;justify-content:center;padding:20px;}
+    .payment-modal.open{display:flex;}
+    .payment-box{background:var(--white);border-radius:20px;padding:36px;max-width:460px;width:100%;position:relative;}
+    .payment-title{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+    .payment-sub{font-size:14px;color:var(--mid);margin-bottom:24px;}
+    .payment-summary{background:var(--cream);border-radius:12px;padding:16px 18px;margin-bottom:24px;}
+    .payment-summary-row{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin-bottom:6px;}
+    .payment-summary-row:last-child{margin-bottom:0;font-weight:600;font-size:15px;border-top:1px solid var(--border);padding-top:8px;margin-top:8px;}
+    .payment-options{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
+    .payment-option{display:flex;align-items:center;gap:16px;padding:16px 18px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.15s;background:var(--white);}
+    .payment-option:hover{border-color:var(--black);}
+    .payment-option.selected{border-color:var(--black);background:var(--cream);}
+    .payment-option-icon{font-size:24px;flex-shrink:0;}
+    .payment-option-label{font-size:15px;font-weight:600;}
+    .payment-option-sub{font-size:12px;color:var(--mid);}
+    .btn-payment-go{width:100%;padding:15px;background:var(--black);color:var(--white);border:none;border-radius:12px;font-family:var(--font-body);font-size:16px;font-weight:600;cursor:pointer;transition:background 0.2s;}
+    .btn-payment-go:hover{background:var(--accent);}
+    .btn-payment-go:disabled{background:#ccc;cursor:not-allowed;}
+    .payment-note{font-size:12px;color:var(--mid);text-align:center;margin-top:12px;}
+
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -148,6 +170,8 @@
     <a href="radar.html" class="back-link">← Back to Browse</a>
     <div id="content"><div class="loading">Loading XEKIE...</div></div>
   </div>
+
+  <!-- Offer Modal -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <button class="modal-close" onclick="closeModal()">✕</button>
@@ -164,12 +188,16 @@
       <button class="btn-modal-submit" id="modal-submit" onclick="submitResponse()">Send & open chat →</button>
     </div>
   </div>
+
+  <!-- Photo Lightbox -->
   <div class="photo-lightbox" id="photo-lightbox">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
     <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)">‹</button>
     <img id="lightbox-img" src="" alt="Photo" />
     <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)">›</button>
   </div>
+
+  <!-- QR Modal -->
   <div class="qr-modal" id="qr-modal" onclick="if(event.target===this)closeQR()">
     <div class="qr-box">
       <div class="qr-title">Scan to view XEKIE</div>
@@ -178,7 +206,11 @@
       <button class="btn-qr-close" onclick="closeQR()">Close</button>
     </div>
   </div>
+
+  <!-- Share Toast -->
   <div class="share-toast" id="share-toast">Link copied! 🔗</div>
+
+  <!-- Report Modal -->
   <div class="report-modal" id="report-modal">
     <div class="report-box">
       <button style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);" onclick="closeReport()">✕</button>
@@ -196,6 +228,35 @@
       <button class="btn-report-submit" id="btn-report-submit" onclick="submitReport()">Submit report</button>
     </div>
   </div>
+
+  <!-- Payment Modal -->
+  <div class="payment-modal" id="payment-modal">
+    <div class="payment-box">
+      <button style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);" onclick="closePayment()">✕</button>
+      <div class="payment-title">💳 Complete your purchase</div>
+      <div class="payment-sub">Accept this offer and pay the XEKIE platform fee to connect.</div>
+      <div class="payment-summary" id="payment-summary"></div>
+      <div class="payment-options">
+        <div class="payment-option selected" id="opt-card" onclick="selectPayment('card')">
+          <div class="payment-option-icon">💳</div>
+          <div>
+            <div class="payment-option-label">Pay by Card</div>
+            <div class="payment-option-sub">Visa, Mastercard, Amex — powered by Stripe</div>
+          </div>
+        </div>
+        <div class="payment-option" id="opt-crypto" onclick="selectPayment('crypto')">
+          <div class="payment-option-icon">₿</div>
+          <div>
+            <div class="payment-option-label">Pay with Crypto</div>
+            <div class="payment-option-sub">BTC, ETH, SOL, XRP, DOGE, USDC + more</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-payment-go" id="btn-payment-go" onclick="processPayment()">Pay now →</button>
+      <div class="payment-note">5% platform fee · Secure checkout · Seller receives the rest</div>
+    </div>
+  </div>
+
   <footer>
     <div class="footer-inner">
       <div>
@@ -211,6 +272,7 @@
       <div class="footer-bottom">© 2025 XEKIE LLC. All rights reserved.</div>
     </div>
   </footer>
+
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
@@ -218,10 +280,23 @@
     const BETA_CUTOFF = new Date('2026-06-01');
     let currentXekie = null, currentUser = null;
     let lightboxPhotos = [], lightboxIndex = 0;
+    let activeOffer = null; // { id, price, sellerId }
+    let selectedPaymentMethod = 'card';
     const params = new URLSearchParams(window.location.search);
     const xekieSlug = params.get('slug');
     const xekieId = params.get('id');
-    function trackEvent(name, params = {}) { if (typeof gtag !== 'undefined') gtag('event', name, params); }
+
+    // Check for payment return
+    if (params.get('payment') === 'success') {
+      setTimeout(() => {
+        const t = document.getElementById('share-toast');
+        t.textContent = '✅ Payment complete! XEKIE fulfilled.';
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 4000);
+      }, 800);
+    }
+
+    function trackEvent(name, p = {}) { if (typeof gtag !== 'undefined') gtag('event', name, p); }
     function formatBudget(x) {
       if (x.budget_min && x.budget_max) return '$'+Number(x.budget_min).toLocaleString()+' – $'+Number(x.budget_max).toLocaleString();
       if (x.budget_min) return '$'+Number(x.budget_min).toLocaleString()+'+';
@@ -236,6 +311,7 @@
       }
       return "just now";
     }
+
     async function loadXekie() {
       let query = _sb.from('xekies').select('*');
       if (xekieSlug) query = query.eq('slug', xekieSlug);
@@ -261,6 +337,7 @@
       const isFulfilled = x.is_fulfilled;
       const isEarly = new Date(x.created_at) < BETA_CUTOFF;
       const canRespond = !isFulfilled && !isExpired;
+      const isBuyer = currentUser && currentUser.id === x.user_id;
       let statusBadge = '';
       if (isFulfilled) statusBadge = '<span class="status-badge status-fulfilled">✓ Fulfilled</span>';
       else if (isExpired) statusBadge = '<span class="status-badge status-expired">⏰ Expired</span>';
@@ -276,6 +353,31 @@
         photoGallery = `<div class="photo-gallery ${cls}">${x.photos.map((url, i) => `<div class="photo-item" onclick="openLightbox(${i})"><img src="${url}" alt="Photo ${i+1}" loading="lazy" /></div>`).join('')}</div>`;
       }
       const shareUrl = x.slug ? `https://xekie.com/x/${x.slug}` : window.location.href;
+
+      // Buyer offer section — only shown to the buyer
+      let offerSection = '';
+      if (isBuyer && canRespond) {
+        const { data: offers } = await _sb.from('offers').select('*').eq('xekie_id', x.id).order('created_at', { ascending: false });
+        if (offers && offers.length > 0) {
+          const offerItems = offers.map(o => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:14px;font-weight:500;">${o.message ? o.message.slice(0,60)+'...' : 'No message'}</div>
+                <div style="font-size:12px;color:var(--mid);">${timeAgo(o.created_at)}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                ${o.price ? `<span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);">$${Number(o.price).toLocaleString()}</span>` : ''}
+                <button onclick="openPayment('${o.id}','${o.price||0}','${o.seller_id}')" style="padding:7px 14px;background:var(--black);color:var(--white);border:none;border-radius:100px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;">Accept & Pay</button>
+              </div>
+            </div>`).join('');
+          offerSection = `
+            <div style="background:var(--cream);border-radius:16px;padding:20px 24px;margin-bottom:20px;">
+              <div style="font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:12px;">📬 Offers received (${offers.length})</div>
+              ${offerItems}
+            </div>`;
+        }
+      }
+
       document.getElementById('content').innerHTML = `
         <div class="xekie-card">
           <div class="card-badge-row">
@@ -296,7 +398,9 @@
               <div class="detail-value">${x.location || 'Not specified'}</div>
             </div>
           </div>
-          ${canRespond ? `<button class="btn-respond-big" onclick="openModal()">Respond with an offer →</button>` : `<div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">${isFulfilled ? '✓ This XEKIE has been fulfilled.' : '⏰ This XEKIE has expired.'}</div>`}
+          ${offerSection}
+          ${canRespond && !isBuyer ? `<button class="btn-respond-big" onclick="openModal()">Respond with an offer →</button>` : ''}
+          ${!canRespond ? `<div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">${isFulfilled ? '✓ This XEKIE has been fulfilled.' : '⏰ This XEKIE has expired.'}</div>` : ''}
           <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareThis()">🔗 Copy link</button>
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareToSMS()">💬 iMessage</button>
@@ -322,6 +426,64 @@
       _sb.from('xekies').update({ view_count: (x.view_count||0) + 1 }).eq('id', x.id).then(() => {});
       checkSaved();
     }
+
+    // ── PAYMENT MODAL ──
+    function openPayment(offerId, offerPrice, sellerId) {
+      activeOffer = { id: offerId, price: parseFloat(offerPrice) || 0, sellerId };
+      selectedPaymentMethod = 'card';
+      document.getElementById('opt-card').classList.add('selected');
+      document.getElementById('opt-crypto').classList.remove('selected');
+      const fee = Math.max(Math.round(activeOffer.price * 0.05 * 100) / 100, 0.50);
+      document.getElementById('payment-summary').innerHTML = `
+        <div class="payment-summary-row"><span>Offer amount</span><span>$${activeOffer.price.toLocaleString()}</span></div>
+        <div class="payment-summary-row"><span>XEKIE platform fee (5%)</span><span>$${fee.toFixed(2)}</span></div>
+        <div class="payment-summary-row"><span>You pay today</span><span>$${fee.toFixed(2)}</span></div>`;
+      document.getElementById('payment-modal').classList.add('open');
+    }
+    function closePayment() { document.getElementById('payment-modal').classList.remove('open'); }
+    function selectPayment(method) {
+      selectedPaymentMethod = method;
+      document.getElementById('opt-card').classList.toggle('selected', method === 'card');
+      document.getElementById('opt-crypto').classList.toggle('selected', method === 'crypto');
+    }
+    async function processPayment() {
+      if (!activeOffer || !currentXekie || !currentUser) return;
+      const btn = document.getElementById('btn-payment-go');
+      btn.disabled = true;
+      btn.textContent = 'Redirecting...';
+      try {
+        if (selectedPaymentMethod === 'card') {
+          const res = await fetch('/.netlify/functions/create-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'transaction',
+              xekieId: currentXekie.id,
+              xekieTitle: currentXekie.title,
+              userId: currentUser.id,
+              offerId: activeOffer.id,
+              offerPrice: activeOffer.price,
+              sellerId: activeOffer.sellerId,
+            }),
+          });
+          const data = await res.json();
+          if (data.url) { window.location.href = data.url; }
+          else { alert('Payment error: ' + (data.error || 'Unknown error')); btn.disabled = false; btn.textContent = 'Pay now →'; }
+        } else {
+          // Crypto — NowPayments (coming soon)
+          alert('Crypto payments coming soon! Please use card for now.');
+          btn.disabled = false;
+          btn.textContent = 'Pay now →';
+        }
+      } catch (err) {
+        alert('Payment error: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = 'Pay now →';
+      }
+    }
+    document.getElementById('payment-modal').addEventListener('click', e => { if (e.target === document.getElementById('payment-modal')) closePayment(); });
+
+    // ── EXISTING FUNCTIONS ──
     function openLightbox(i) { lightboxPhotos = currentXekie?.photos || []; lightboxIndex = i; document.getElementById('lightbox-img').src = lightboxPhotos[i]; document.getElementById('photo-lightbox').classList.add('open'); }
     function closeLightbox() { document.getElementById('photo-lightbox').classList.remove('open'); }
     function lightboxNav(dir) { lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length; document.getElementById('lightbox-img').src = lightboxPhotos[lightboxIndex]; }
@@ -414,6 +576,7 @@
       setTimeout(closeReport, 2000);
     }
     document.getElementById('report-modal').addEventListener('click', e => { if (e.target === document.getElementById('report-modal')) closeReport(); });
+
     _sb.auth.getSession().then(({ data: { session } }) => {
       if (session) currentUser = session.user;
       loadXekie();
