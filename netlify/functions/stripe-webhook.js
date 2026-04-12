@@ -1,23 +1,61 @@
 // stripe-webhook.js — handles Stripe payment confirmation
-// Marks xekie as promoted in Supabase when payment succeeds
+// Handles both 'promoted' ($5 listing boost) and 'transaction' (5% platform fee)
 
 const { createClient } = require('@supabase/supabase-js');
+
+const SUPABASE_URL = 'https://jlcrarqiyejgjbdesxik.supabase.co';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 exports.handler = async (event) => {
   let stripeEvent;
   try { stripeEvent = JSON.parse(event.body); } catch { return { statusCode: 400, body: 'Invalid JSON' }; }
 
-  if (stripeEvent.type === 'checkout.session.completed') {
-    const session = stripeEvent.data.object;
-    const { xekieId } = session.metadata || {};
-    if (xekieId) {
-      const _sb = createClient(
-        'https://jlcrarqiyejgjbdesxik.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA'
-      );
+  if (stripeEvent.type !== 'checkout.session.completed') {
+    return { statusCode: 200, body: JSON.stringify({ received: true }) };
+  }
+
+  const session = stripeEvent.data.object;
+  const { type, xekieId, offerId, buyerId, sellerId, offerPrice, xekieTitle } = session.metadata || {};
+
+  if (!xekieId) return { statusCode: 200, body: JSON.stringify({ received: true }) };
+
+  const _sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
+  try {
+    if (type === 'promoted') {
+      // Mark XEKIE as promoted for 7 days
       const promotedUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-      await _sb.from('xekies').update({ is_promoted: true, promoted_until: promotedUntil }).eq('id', xekieId);
+      await _sb.from('xekies')
+        .update({ is_promoted: true, promoted_until: promotedUntil })
+        .eq('id', xekieId);
+
+    } else if (type === 'transaction') {
+      // Mark XEKIE as fulfilled, record payment
+      await _sb.from('xekies')
+        .update({ is_fulfilled: true })
+        .eq('id', xekieId);
+
+      // Send confirmation email to buyer
+      if (buyerId && offerId) {
+        const baseUrl = 'https://xekie.com/.netlify/functions/send-email';
+        await fetch(baseUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'transaction_complete',
+            xekieId,
+            offerId,
+            buyerId,
+            sellerId,
+            offerPrice,
+            xekieTitle,
+          }),
+        });
+      }
     }
+
+  } catch (err) {
+    console.error('Webhook handler error:', err.message);
   }
 
   return { statusCode: 200, body: JSON.stringify({ received: true }) };
