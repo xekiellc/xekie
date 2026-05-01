@@ -139,21 +139,6 @@
     .btn-payment-go:hover{background:var(--accent);}
     .btn-payment-go:disabled{background:#ccc;cursor:not-allowed;}
     .payment-note{font-size:12px;color:var(--mid);text-align:center;margin-top:12px;}
-    /* ── CRYPTO ADDRESS MODAL ── */
-    .crypto-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;padding:20px;}
-    .crypto-modal.open{display:flex;}
-    .crypto-box{background:var(--white);border-radius:20px;padding:36px;max-width:480px;width:100%;position:relative;}
-    .crypto-title{font-family:var(--font-display);font-size:20px;font-weight:800;margin-bottom:6px;}
-    .crypto-sub{font-size:14px;color:var(--mid);margin-bottom:20px;}
-    .crypto-amount{background:var(--cream);border-radius:12px;padding:16px 18px;margin-bottom:16px;text-align:center;}
-    .crypto-amount-value{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--accent);}
-    .crypto-amount-label{font-size:13px;color:var(--mid);margin-top:4px;}
-    .crypto-address-box{background:#0a0a0a;border-radius:12px;padding:16px 18px;margin-bottom:16px;}
-    .crypto-address-label{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#666;margin-bottom:8px;}
-    .crypto-address-value{font-size:13px;color:#fff;word-break:break-all;line-height:1.6;font-family:monospace;}
-    .btn-copy-address{width:100%;padding:12px;background:var(--accent);color:white;border:none;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px;}
-    .crypto-warning{font-size:12px;color:#ef4444;text-align:center;margin-bottom:16px;}
-    .btn-crypto-done{width:100%;padding:12px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -257,46 +242,17 @@
             <div class="payment-option-sub">Visa, Mastercard, Amex — powered by Stripe</div>
           </div>
         </div>
-        <div class="payment-option" id="opt-crypto" onclick="selectPayment('crypto')">
+        <div class="payment-option" id="opt-crypto" style="opacity:0.5;cursor:not-allowed;" onclick="void(0)">
           <div class="payment-option-icon">₿</div>
           <div style="flex:1;">
             <div class="payment-option-label">Pay with Crypto</div>
-            <div class="payment-option-sub">BTC, ETH, SOL, XRP, DOGE, USDC + more</div>
-            <select id="crypto-currency-select" onclick="event.stopPropagation()" style="margin-top:8px;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:13px;background:var(--white);color:var(--black);width:100%;">
-              <option value="btc">Bitcoin (BTC)</option>
-              <option value="eth">Ethereum (ETH)</option>
-              <option value="sol">Solana (SOL)</option>
-              <option value="xrp">XRP</option>
-              <option value="doge">Dogecoin (DOGE)</option>
-              <option value="ltc">Litecoin (LTC)</option>
-              <option value="bch">Bitcoin Cash (BCH)</option>
-              <option value="usdcbsc">USDC</option>
-            </select>
+            <div class="payment-option-sub">Coming soon — BTC, ETH, SOL, XRP, DOGE, USDC + more</div>
           </div>
+          <div style="font-size:11px;font-weight:600;padding:3px 8px;background:var(--cream);border-radius:100px;color:var(--mid);border:1px solid var(--border);white-space:nowrap;">SOON</div>
         </div>
       </div>
       <button class="btn-payment-go" id="btn-payment-go" onclick="processPayment()">Pay now →</button>
       <div class="payment-note">5% platform fee · Secure checkout · Seller receives the rest</div>
-    </div>
-  </div>
-
-  <!-- Crypto Address Modal -->
-  <div class="crypto-modal" id="crypto-modal">
-    <div class="crypto-box">
-      <button style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);" onclick="closeCryptoModal()">✕</button>
-      <div class="crypto-title">₿ Send Crypto Payment</div>
-      <div class="crypto-sub">Send the exact amount below to complete your purchase.</div>
-      <div class="crypto-amount">
-        <div class="crypto-amount-value" id="crypto-amount-value">—</div>
-        <div class="crypto-amount-label" id="crypto-amount-label">Loading...</div>
-      </div>
-      <div class="crypto-address-box">
-        <div class="crypto-address-label">Send to this address</div>
-        <div class="crypto-address-value" id="crypto-address-value">—</div>
-      </div>
-      <button class="btn-copy-address" onclick="copyAddress()">📋 Copy Address</button>
-      <div class="crypto-warning">⚠️ Send the exact amount shown. Your XEKIE will be fulfilled once the payment confirms on-chain.</div>
-      <button class="btn-crypto-done" onclick="closeCryptoModal()">I've sent the payment ✓</button>
     </div>
   </div>
 
@@ -325,7 +281,6 @@
     let lightboxPhotos = [], lightboxIndex = 0;
     let activeOffer = null;
     let selectedPaymentMethod = 'card';
-    let currentCryptoAddress = '';
     const params = new URLSearchParams(window.location.search);
     const xekieSlug = params.get('slug');
     const xekieId = params.get('id');
@@ -473,7 +428,6 @@
       activeOffer = { id: offerId, price: parseFloat(offerPrice) || 0, sellerId };
       selectedPaymentMethod = 'card';
       document.getElementById('opt-card').classList.add('selected');
-      document.getElementById('opt-crypto').classList.remove('selected');
       const fee = Math.max(Math.round(activeOffer.price * 0.05 * 100) / 100, 0.50);
       document.getElementById('payment-summary').innerHTML = `
         <div class="payment-summary-row"><span>Offer amount</span><span>$${activeOffer.price.toLocaleString()}</span></div>
@@ -485,7 +439,6 @@
     function selectPayment(method) {
       selectedPaymentMethod = method;
       document.getElementById('opt-card').classList.toggle('selected', method === 'card');
-      document.getElementById('opt-crypto').classList.toggle('selected', method === 'crypto');
     }
     async function processPayment() {
       if (!activeOffer || !currentXekie || !currentUser) return;
@@ -493,73 +446,29 @@
       btn.disabled = true;
       btn.textContent = 'Processing...';
       try {
-        if (selectedPaymentMethod === 'card') {
-          const res = await fetch('/.netlify/functions/create-checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              type: 'transaction',
-              xekieId: currentXekie.id,
-              xekieTitle: currentXekie.title,
-              userId: currentUser.id,
-              offerId: activeOffer.id,
-              offerPrice: activeOffer.price,
-              sellerId: activeOffer.sellerId,
-            }),
-          });
-          const data = await res.json();
-          if (data.url) { window.location.href = data.url; }
-          else { alert('Payment error: ' + (data.error || 'Unknown error')); btn.disabled = false; btn.textContent = 'Pay now →'; }
-        } else {
-          // Crypto — NowPayments
-          const cryptoSelect = document.getElementById('crypto-currency-select');
-          const currency = cryptoSelect ? cryptoSelect.value : 'btc';
-          const res = await fetch('/.netlify/functions/create-crypto-checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              xekieId: currentXekie.id,
-              xekieTitle: currentXekie.title,
-              userId: currentUser.id,
-              offerId: activeOffer.id,
-              offerPrice: activeOffer.price,
-              sellerId: activeOffer.sellerId,
-              currency,
-            }),
-          });
-          const data = await res.json();
-          if (data.payAddress) {
-            closePayment();
-            showCryptoPayment(data);
-          } else {
-            alert('Crypto payment error: ' + (data.error || 'Unknown error'));
-            btn.disabled = false;
-            btn.textContent = 'Pay now →';
-          }
-        }
+        const res = await fetch('/.netlify/functions/create-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'transaction',
+            xekieId: currentXekie.id,
+            xekieTitle: currentXekie.title,
+            userId: currentUser.id,
+            offerId: activeOffer.id,
+            offerPrice: activeOffer.price,
+            sellerId: activeOffer.sellerId,
+          }),
+        });
+        const data = await res.json();
+        if (data.url) { window.location.href = data.url; }
+        else { alert('Payment error: ' + (data.error || 'Unknown error')); btn.disabled = false; btn.textContent = 'Pay now →'; }
       } catch (err) {
         alert('Payment error: ' + err.message);
         btn.disabled = false;
         btn.textContent = 'Pay now →';
       }
     }
-    function showCryptoPayment(data) {
-      currentCryptoAddress = data.payAddress;
-      document.getElementById('crypto-amount-value').textContent = `${data.payAmount} ${data.payCurrency.toUpperCase()}`;
-      document.getElementById('crypto-amount-label').textContent = `≈ $${Math.max(activeOffer.price * 0.05, 0.50).toFixed(2)} USD platform fee`;
-      document.getElementById('crypto-address-value').textContent = data.payAddress;
-      document.getElementById('crypto-modal').classList.add('open');
-    }
-    function closeCryptoModal() { document.getElementById('crypto-modal').classList.remove('open'); }
-    function copyAddress() {
-      navigator.clipboard.writeText(currentCryptoAddress).then(() => {
-        const btn = document.querySelector('.btn-copy-address');
-        btn.textContent = '✓ Copied!';
-        setTimeout(() => { btn.textContent = '📋 Copy Address'; }, 2000);
-      });
-    }
     document.getElementById('payment-modal').addEventListener('click', e => { if (e.target === document.getElementById('payment-modal')) closePayment(); });
-    document.getElementById('crypto-modal').addEventListener('click', e => { if (e.target === document.getElementById('crypto-modal')) closeCryptoModal(); });
 
     // ── EXISTING FUNCTIONS ──
     function openLightbox(i) { lightboxPhotos = currentXekie?.photos || []; lightboxIndex = i; document.getElementById('lightbox-img').src = lightboxPhotos[i]; document.getElementById('photo-lightbox').classList.add('open'); }
