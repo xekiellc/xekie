@@ -43,6 +43,7 @@
     .status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;}
     .status-fulfilled{background:#EAF3DE;color:#3B6D11;}
     .status-expired{background:#f4f2ec;color:#6b6b6b;}
+    .status-escrowed{background:#EEF2FF;color:#3730a3;}
     .category-pill{display:inline-block;font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;background:var(--cream);color:var(--mid);border:1px solid var(--border);}
     .xekie-title{font-family:var(--font-display);font-size:32px;font-weight:800;letter-spacing:-0.03em;margin-bottom:12px;line-height:1.15;}
     .xekie-desc{font-size:16px;font-weight:300;color:#444;line-height:1.7;margin-bottom:24px;}
@@ -75,6 +76,12 @@
     .cta-band{background:var(--black);border-radius:16px;padding:32px;text-align:center;margin-top:16px;}
     .cta-band h3{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--white);margin-bottom:8px;}
     .cta-band p{font-size:15px;color:#888;margin-bottom:20px;}
+    .escrow-banner{background:#EEF2FF;border:1px solid #c7d2fe;border-radius:16px;padding:20px 24px;margin-bottom:20px;}
+    .escrow-banner-title{font-family:var(--font-display);font-size:16px;font-weight:700;color:#3730a3;margin-bottom:6px;}
+    .escrow-banner-sub{font-size:14px;color:#4338ca;margin-bottom:14px;line-height:1.5;}
+    .btn-confirm-receipt{width:100%;padding:14px;background:#3730a3;color:white;border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:background 0.2s;}
+    .btn-confirm-receipt:hover{background:#4338ca;}
+    .btn-confirm-receipt:disabled{background:#ccc;cursor:not-allowed;}
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;padding:20px;}
     .modal-overlay.open{display:flex;}
     .modal{background:var(--white);border-radius:20px;padding:36px;max-width:480px;width:100%;position:relative;}
@@ -139,6 +146,19 @@
     .btn-payment-go:hover{background:var(--accent);}
     .btn-payment-go:disabled{background:#ccc;cursor:not-allowed;}
     .payment-note{font-size:12px;color:var(--mid);text-align:center;margin-top:12px;}
+    /* ── CONFIRM RECEIPT MODAL ── */
+    .confirm-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:400;align-items:center;justify-content:center;padding:20px;}
+    .confirm-modal.open{display:flex;}
+    .confirm-box{background:var(--white);border-radius:20px;padding:36px;max-width:440px;width:100%;position:relative;text-align:center;}
+    .confirm-icon{font-size:48px;margin-bottom:16px;}
+    .confirm-title{font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:8px;}
+    .confirm-sub{font-size:14px;color:var(--mid);margin-bottom:24px;line-height:1.6;}
+    .confirm-warning{background:#FEF3C7;border:1px solid #FCD34D;border-radius:10px;padding:12px 16px;font-size:13px;color:#92400e;margin-bottom:20px;text-align:left;}
+    .btn-confirm-yes{width:100%;padding:14px;background:#3730a3;color:white;border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px;transition:background 0.2s;}
+    .btn-confirm-yes:hover{background:#4338ca;}
+    .btn-confirm-yes:disabled{background:#ccc;cursor:not-allowed;}
+    .btn-confirm-no{width:100%;padding:12px;background:transparent;color:var(--mid);border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:14px;cursor:pointer;transition:all 0.2s;}
+    .btn-confirm-no:hover{border-color:var(--black);color:var(--black);}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -232,7 +252,7 @@
     <div class="payment-box">
       <button style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);" onclick="closePayment()">✕</button>
       <div class="payment-title">💳 Complete your purchase</div>
-      <div class="payment-sub">Accept this offer and pay the XEKIE platform fee to connect.</div>
+      <div class="payment-sub">Accept this offer and pay securely. Funds held in escrow until you confirm receipt.</div>
       <div class="payment-summary" id="payment-summary"></div>
       <div class="payment-options">
         <div class="payment-option selected" id="opt-card" onclick="selectPayment('card')">
@@ -251,8 +271,21 @@
           <div style="font-size:11px;font-weight:600;padding:3px 8px;background:var(--cream);border-radius:100px;color:var(--mid);border:1px solid var(--border);white-space:nowrap;">SOON</div>
         </div>
       </div>
-      <button class="btn-payment-go" id="btn-payment-go" onclick="processPayment()">Pay now →</button>
-      <div class="payment-note">5% platform fee · Secure checkout · Seller receives the rest</div>
+      <button class="btn-payment-go" id="btn-payment-go" onclick="processPayment()">Pay & hold in escrow →</button>
+      <div class="payment-note">🔒 Funds held securely until you confirm receipt · Seller paid automatically</div>
+    </div>
+  </div>
+
+  <!-- Confirm Receipt Modal -->
+  <div class="confirm-modal" id="confirm-modal">
+    <div class="confirm-box">
+      <button style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);" onclick="closeConfirmModal()">✕</button>
+      <div class="confirm-icon">📦</div>
+      <div class="confirm-title">Confirm you received your item</div>
+      <div class="confirm-sub">By confirming, you release payment to the seller. Only confirm if you have received your item and are satisfied.</div>
+      <div class="confirm-warning">⚠️ This action cannot be undone. Once you confirm, the seller will be paid and the transaction will be complete.</div>
+      <button class="btn-confirm-yes" id="btn-confirm-yes" onclick="confirmReceipt()">✓ Yes, I received my item</button>
+      <button class="btn-confirm-no" onclick="closeConfirmModal()">Not yet — keep in escrow</button>
     </div>
   </div>
 
@@ -280,6 +313,7 @@
     let currentXekie = null, currentUser = null;
     let lightboxPhotos = [], lightboxIndex = 0;
     let activeOffer = null;
+    let activeTransaction = null;
     let selectedPaymentMethod = 'card';
     const params = new URLSearchParams(window.location.search);
     const xekieSlug = params.get('slug');
@@ -288,9 +322,9 @@
     if (params.get('payment') === 'success') {
       setTimeout(() => {
         const t = document.getElementById('share-toast');
-        t.textContent = '✅ Payment complete! XEKIE fulfilled.';
+        t.textContent = '✅ Payment received! Funds held in escrow. Ship your item and confirm when received.';
         t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 4000);
+        setTimeout(() => t.classList.remove('show'), 6000);
       }, 800);
     }
 
@@ -351,26 +385,53 @@
         photoGallery = `<div class="photo-gallery ${cls}">${x.photos.map((url, i) => `<div class="photo-item" onclick="openLightbox(${i})"><img src="${url}" alt="Photo ${i+1}" loading="lazy" /></div>`).join('')}</div>`;
       }
 
+      // Check for escrowed transaction
+      let escrowBanner = '';
       let offerSection = '';
-      if (isBuyer && canRespond) {
-        const { data: offers } = await _sb.from('offers').select('*').eq('xekie_id', x.id).order('created_at', { ascending: false });
-        if (offers && offers.length > 0) {
-          const offerItems = offers.map(o => `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
-              <div>
-                <div style="font-size:14px;font-weight:500;">${o.message ? o.message.slice(0,60)+'...' : 'No message'}</div>
-                <div style="font-size:12px;color:var(--mid);">${timeAgo(o.created_at)}</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                ${o.price ? `<span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);">$${Number(o.price).toLocaleString()}</span>` : ''}
-                <button onclick="openPayment('${o.id}','${o.price||0}','${o.seller_id}')" style="padding:7px 14px;background:var(--black);color:var(--white);border:none;border-radius:100px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;">Accept & Pay</button>
-              </div>
-            </div>`).join('');
-          offerSection = `
-            <div style="background:var(--cream);border-radius:16px;padding:20px 24px;margin-bottom:20px;">
-              <div style="font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:12px;">📬 Offers received (${offers.length})</div>
-              ${offerItems}
+
+      if (isBuyer) {
+        // Check for active escrowed transaction
+        const { data: transaction } = await _sb
+          .from('transactions')
+          .select('*')
+          .eq('xekie_id', x.id)
+          .eq('buyer_id', currentUser.id)
+          .eq('status', 'escrowed')
+          .single();
+
+        if (transaction) {
+          activeTransaction = transaction;
+          const offerAmt = (transaction.offer_amount_cents / 100).toFixed(2);
+          const payoutAmt = ((transaction.offer_amount_cents - Math.round(transaction.offer_amount_cents * 0.029) - 30) / 100).toFixed(2);
+          escrowBanner = `
+            <div class="escrow-banner">
+              <div class="escrow-banner-title">🔒 Payment in escrow</div>
+              <div class="escrow-banner-sub">Your payment of $${offerAmt} is held securely. Once you receive your item, confirm receipt to release payment to the seller.</div>
+              <button class="btn-confirm-receipt" onclick="openConfirmModal()">📦 I received my item — release payment</button>
             </div>`;
+        }
+
+        // Show pending offers (only if no escrowed transaction)
+        if (!transaction && canRespond) {
+          const { data: offers } = await _sb.from('offers').select('*').eq('xekie_id', x.id).order('created_at', { ascending: false });
+          if (offers && offers.length > 0) {
+            const offerItems = offers.map(o => `
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+                <div>
+                  <div style="font-size:14px;font-weight:500;">${o.message ? o.message.slice(0,60)+'...' : 'No message'}</div>
+                  <div style="font-size:12px;color:var(--mid);">${timeAgo(o.created_at)}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  ${o.offer_price ? `<span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);">$${Number(o.offer_price).toLocaleString()}</span>` : ''}
+                  <button onclick="openPayment('${o.id}','${o.offer_price||0}','${o.seller_id}')" style="padding:7px 14px;background:var(--black);color:var(--white);border:none;border-radius:100px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;">Accept & Pay</button>
+                </div>
+              </div>`).join('');
+            offerSection = `
+              <div style="background:var(--cream);border-radius:16px;padding:20px 24px;margin-bottom:20px;">
+                <div style="font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:12px;">📬 Offers received (${offers.length})</div>
+                ${offerItems}
+              </div>`;
+          }
         }
       }
 
@@ -394,9 +455,10 @@
               <div class="detail-value">${x.location || 'Not specified'}</div>
             </div>
           </div>
+          ${escrowBanner}
           ${offerSection}
           ${canRespond && !isBuyer ? `<button class="btn-respond-big" onclick="openModal()">Respond with an offer →</button>` : ''}
-          ${!canRespond ? `<div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">${isFulfilled ? '✓ This XEKIE has been fulfilled.' : '⏰ This XEKIE has expired.'}</div>` : ''}
+          ${!canRespond && !escrowBanner ? `<div style="text-align:center;padding:16px;color:var(--mid);font-size:15px;">${isFulfilled ? '✓ This XEKIE has been fulfilled.' : '⏰ This XEKIE has expired.'}</div>` : ''}
           <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareThis()">🔗 Copy link</button>
             <button class="btn-share-big" style="flex:1;min-width:120px;" onclick="shareToSMS()">💬 iMessage</button>
@@ -428,11 +490,13 @@
       activeOffer = { id: offerId, price: parseFloat(offerPrice) || 0, sellerId };
       selectedPaymentMethod = 'card';
       document.getElementById('opt-card').classList.add('selected');
-      const fee = Math.max(Math.round(activeOffer.price * 0.05 * 100) / 100, 0.50);
+      const offerAmt = activeOffer.price;
+      const fee = Math.max(Math.round(offerAmt * 0.05 * 100) / 100, 0.50);
+      const total = offerAmt + fee;
       document.getElementById('payment-summary').innerHTML = `
-        <div class="payment-summary-row"><span>Offer amount</span><span>$${activeOffer.price.toLocaleString()}</span></div>
+        <div class="payment-summary-row"><span>Item price</span><span>$${offerAmt.toLocaleString()}</span></div>
         <div class="payment-summary-row"><span>XEKIE platform fee (5%)</span><span>$${fee.toFixed(2)}</span></div>
-        <div class="payment-summary-row"><span>You pay today</span><span>$${fee.toFixed(2)}</span></div>`;
+        <div class="payment-summary-row"><span>Total charged today</span><span>$${total.toFixed(2)}</span></div>`;
       document.getElementById('payment-modal').classList.add('open');
     }
     function closePayment() { document.getElementById('payment-modal').classList.remove('open'); }
@@ -461,14 +525,52 @@
         });
         const data = await res.json();
         if (data.url) { window.location.href = data.url; }
-        else { alert('Payment error: ' + (data.error || 'Unknown error')); btn.disabled = false; btn.textContent = 'Pay now →'; }
+        else { alert('Payment error: ' + (data.error || 'Unknown error')); btn.disabled = false; btn.textContent = 'Pay & hold in escrow →'; }
       } catch (err) {
         alert('Payment error: ' + err.message);
         btn.disabled = false;
-        btn.textContent = 'Pay now →';
+        btn.textContent = 'Pay & hold in escrow →';
       }
     }
     document.getElementById('payment-modal').addEventListener('click', e => { if (e.target === document.getElementById('payment-modal')) closePayment(); });
+
+    // ── CONFIRM RECEIPT ──
+    function openConfirmModal() { document.getElementById('confirm-modal').classList.add('open'); }
+    function closeConfirmModal() { document.getElementById('confirm-modal').classList.remove('open'); }
+    async function confirmReceipt() {
+      if (!activeTransaction || !currentXekie || !currentUser) return;
+      const btn = document.getElementById('btn-confirm-yes');
+      btn.disabled = true;
+      btn.textContent = 'Releasing payment...';
+      try {
+        const res = await fetch('/.netlify/functions/release-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            xekieId: currentXekie.id,
+            offerId: activeTransaction.offer_id,
+            buyerId: currentUser.id,
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          closeConfirmModal();
+          const t = document.getElementById('share-toast');
+          t.textContent = `✅ Payment released! Seller receives $${data.payoutAmount}. Thank you!`;
+          t.classList.add('show');
+          setTimeout(() => { t.classList.remove('show'); window.location.reload(); }, 4000);
+        } else {
+          alert('Error: ' + (data.error || 'Unknown error'));
+          btn.disabled = false;
+          btn.textContent = '✓ Yes, I received my item';
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = '✓ Yes, I received my item';
+      }
+    }
+    document.getElementById('confirm-modal').addEventListener('click', e => { if (e.target === document.getElementById('confirm-modal')) closeConfirmModal(); });
 
     // ── EXISTING FUNCTIONS ──
     function openLightbox(i) { lightboxPhotos = currentXekie?.photos || []; lightboxIndex = i; document.getElementById('lightbox-img').src = lightboxPhotos[i]; document.getElementById('photo-lightbox').classList.add('open'); }
@@ -494,7 +596,7 @@
       const msgEl = document.getElementById('modal-msg');
       if (!message) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Please write a message to the buyer.'; return; }
       btn.disabled = true; btn.textContent = 'Sending...';
-      const { error } = await _sb.from('offers').insert({ xekie_id: currentXekie.id, seller_id: currentUser.id, message, price: price ? parseInt(price) : null });
+      const { error } = await _sb.from('offers').insert({ xekie_id: currentXekie.id, seller_id: currentUser.id, message, offer_price: price ? parseInt(price) : null });
       if (error) { msgEl.className='modal-msg error'; msgEl.style.display='block'; msgEl.textContent='Error: '+error.message; btn.disabled=false; btn.textContent='Send & open chat →'; return; }
       trackEvent('offer_submitted', { xekie_id: currentXekie.id, has_price: !!price });
       const buyerId = currentXekie?.user_id;
