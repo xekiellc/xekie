@@ -1,5 +1,6 @@
 // stripe-webhook.js — handles Stripe payment confirmation
-// Handles both 'promoted' ($5 listing boost) and 'transaction' (5% platform fee)
+// On payment success: updates transaction to 'escrowed' status
+// Funds held until buyer confirms receipt, then release-payment.js pays out seller
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -15,7 +16,7 @@ exports.handler = async (event) => {
   }
 
   const session = stripeEvent.data.object;
-  const { type, xekieId, offerId, buyerId, sellerId, offerPrice, xekieTitle } = session.metadata || {};
+  const { type, xekieId, offerId, buyerId, sellerId, offerAmountCents, feeAmountCents, xekieTitle } = session.metadata || {};
 
   if (!xekieId) return { statusCode: 200, body: JSON.stringify({ received: true }) };
 
@@ -30,32 +31,40 @@ exports.handler = async (event) => {
         .eq('id', xekieId);
 
     } else if (type === 'transaction') {
-      // Mark XEKIE as fulfilled, record payment
-      await _sb.from('xekies')
-        .update({ is_fulfilled: true })
-        .eq('id', xekieId);
+      // Payment confirmed — move transaction to escrowed status
+      // Funds are held until buyer confirms receipt
+      await _sb.from('transactions')
+        .update({
+          status: 'escrowed',
+          stripe_payment_intent_id: session.payment_intent,
+        })
+        .eq('xekie_id', xekieId)
+        .eq('offer_id', offerId)
+        .eq('status', 'pending');
 
-      // Send confirmation email to buyer
-      if (buyerId && offerId) {
-        const baseUrl = 'https://xekie.com/.netlify/functions/send-email';
-        await fetch(baseUrl, {
+      // Send confirmation emails to buyer and seller
+      try {
+        await fetch('https://xekie.com/.netlify/functions/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            type: 'transaction_complete',
+            type: 'payment_escrowed',
             xekieId,
             offerId,
             buyerId,
             sellerId,
-            offerPrice,
+            offerAmountCents,
+            feeAmountCents,
             xekieTitle,
           }),
         });
+      } catch (e) {
+        console.error('Email error:', e.message);
       }
     }
 
   } catch (err) {
-    console.error('Webhook handler error:', err.message);
+    console.error('Webhook error:', err.message);
   }
 
   return { statusCode: 200, body: JSON.stringify({ received: true }) };
