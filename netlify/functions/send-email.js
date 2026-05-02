@@ -135,7 +135,7 @@ exports.handler = async (event) => {
 </table></td></tr></table></body></html>`;
 
   // ─────────────────────────────────────────
-  // SELLER REPLY (seller gets notified when buyer replies in chat)
+  // SELLER REPLY
   // ─────────────────────────────────────────
   } else if (type === 'seller_reply') {
     subject = `💬 The buyer replied to you on "${data.xekieTitle}"`;
@@ -149,7 +149,6 @@ exports.handler = async (event) => {
     <div style="font-size:10px;letter-spacing:0.2em;color:#444;text-transform:uppercase;margin-top:4px;">TRADE DIFFERENT</div>
   </div>
   <div style="text-align:center;margin-bottom:28px;">
-    <div style="width:56px;height:56px;background:rgba(255,77,28,0.12);border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:28px;line-height:56px;text-align:center;">💬</div>
     <div style="display:inline-block;background:rgba(255,77,28,0.12);color:#ff4d1c;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:16px;">Buyer replied</div>
     <h1 style="font-size:26px;font-weight:800;color:#fafaf8;margin:0 0 8px 0;letter-spacing:-0.02em;">The buyer messaged you!</h1>
     <p style="font-size:15px;color:#666;margin:0;">They're interested. Don't leave them waiting.</p>
@@ -161,9 +160,6 @@ exports.handler = async (event) => {
   <div style="background:#1a1a1a;border:1px solid rgba(255,77,28,0.2);border-left:4px solid #ff4d1c;border-radius:12px;padding:20px 22px;margin-bottom:28px;">
     <div style="font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#555;margin-bottom:10px;">Their message</div>
     <p style="font-size:16px;color:#ccc;line-height:1.7;margin:0;font-style:italic;">"${data.message}"</p>
-  </div>
-  <div style="background:linear-gradient(135deg,rgba(255,77,28,0.1),rgba(255,140,0,0.05));border:1px solid rgba(255,77,28,0.2);border-radius:12px;padding:16px 20px;margin-bottom:28px;">
-    <div style="font-size:13px;color:#888;line-height:1.6;">⚡ <strong style="color:#fafaf8;">Respond quickly</strong> — buyers who get fast replies are much more likely to close the deal.</div>
   </div>
   <div style="text-align:center;margin-bottom:24px;">
     <a href="https://xekie.com/messages.html?xekie=${data.xekieId}&other=${data.buyerId}" style="display:inline-block;background:#ff4d1c;color:#fff;text-decoration:none;padding:16px 40px;border-radius:10px;font-size:16px;font-weight:700;">Reply now →</a>
@@ -238,6 +234,182 @@ exports.handler = async (event) => {
   </div>
 </td></tr>
 </table></td></tr></table></body></html>`;
+
+  // ─────────────────────────────────────────
+  // PAYMENT ESCROWED (buyer + seller notified)
+  // ─────────────────────────────────────────
+  } else if (type === 'payment_escrowed') {
+    const { xekieId, xekieTitle, buyerId, sellerId, offerAmountCents, feeAmountCents } = data;
+    const offerAmt = (parseInt(offerAmountCents) / 100).toFixed(2);
+    const feeAmt = (parseInt(feeAmountCents) / 100).toFixed(2);
+    const totalAmt = (parseInt(offerAmountCents) / 100 + parseInt(feeAmountCents) / 100).toFixed(2);
+    const stripeFees = (Math.round(parseInt(offerAmountCents) * 0.029) + 30) / 100;
+    const sellerPayout = (parseInt(offerAmountCents) / 100 - stripeFees).toFixed(2);
+
+    // Send to both buyer and seller
+    const buyerSubject = `🔒 Payment confirmed — your item is on its way!`;
+    const sellerSubject = `💰 You have a buyer! Payment is in escrow for "${xekieTitle}"`;
+
+    const buyerHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f4f2ec;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f2ec;padding:40px 20px;"><tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+<tr><td style="background:#0a0a0a;border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
+  <div style="font-size:28px;font-weight:900;color:#fafaf8;letter-spacing:-0.03em;"><span style="color:#ff4d1c;">XE</span>KIE</div>
+  <div style="font-size:10px;letter-spacing:0.2em;color:#666;text-transform:uppercase;margin-top:4px;">TRADE DIFFERENT</div>
+</td></tr>
+<tr><td style="background:#fafaf8;padding:40px;border-radius:0 0 16px 16px;">
+  <div style="text-align:center;margin-bottom:28px;">
+    <div style="font-size:48px;margin-bottom:12px;">🔒</div>
+    <div style="display:inline-block;background:#EEF2FF;color:#3730a3;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:16px;">Payment Secured</div>
+    <h1 style="font-size:26px;font-weight:800;color:#0a0a0a;margin:0 0 8px 0;">Your payment is in escrow!</h1>
+    <p style="font-size:15px;color:#6b6b6b;margin:0;">Your funds are held securely until you confirm receipt.</p>
+  </div>
+  <div style="background:#EEF2FF;border:1px solid #c7d2fe;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+    <div style="font-size:13px;font-weight:600;color:#3730a3;margin-bottom:12px;">Transaction summary</div>
+    <div style="display:flex;justify-content:space-between;font-size:14px;color:#4338ca;margin-bottom:6px;"><span>Item: ${xekieTitle}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:14px;color:#4338ca;margin-bottom:6px;"><span>Item price</span><span>$${offerAmt}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:14px;color:#4338ca;margin-bottom:6px;"><span>Platform fee (5%)</span><span>$${feeAmt}</span></div>
+    <div style="border-top:1px solid #c7d2fe;padding-top:8px;margin-top:8px;display:flex;justify-content:space-between;font-size:15px;font-weight:700;color:#3730a3;"><span>Total charged</span><span>$${totalAmt}</span></div>
+  </div>
+  <div style="background:#f4f2ec;border-radius:12px;padding:16px 20px;margin-bottom:24px;">
+    <div style="font-size:14px;color:#333;line-height:1.6;"><strong>What happens next:</strong><br>The seller has been notified and will ship your item. Once you receive it, log in to XEKIE and confirm receipt to release payment to the seller.</div>
+  </div>
+  <div style="text-align:center;margin:24px 0;">
+    <a href="https://xekie.com/xekie.html?id=${xekieId}" style="display:inline-block;background:#3730a3;color:#fff;text-decoration:none;padding:15px 34px;border-radius:10px;font-size:15px;font-weight:700;">Confirm receipt when ready →</a>
+  </div>
+  <p style="font-size:13px;color:#999;margin:0;">Questions? <a href="mailto:hello@xekie.com" style="color:#ff4d1c;">hello@xekie.com</a></p>
+</td></tr>
+<tr><td style="padding:20px 0;text-align:center;"><p style="font-size:12px;color:#999;margin:0;">© 2025 XEKIE LLC · <a href="https://xekie.com/privacy.html" style="color:#999;">Privacy</a> · <a href="https://xekie.com/terms.html" style="color:#999;">Terms</a></p></td></tr>
+</table></td></tr></table></body></html>`;
+
+    const sellerHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;"><tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+<tr><td style="background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:40px;">
+  <div style="text-align:center;margin-bottom:32px;">
+    <div style="font-size:28px;font-weight:900;color:#fafaf8;letter-spacing:-0.03em;"><span style="color:#ff4d1c;">XE</span>KIE</div>
+    <div style="font-size:10px;letter-spacing:0.2em;color:#444;text-transform:uppercase;margin-top:4px;">TRADE DIFFERENT</div>
+  </div>
+  <div style="text-align:center;margin-bottom:28px;">
+    <div style="font-size:48px;margin-bottom:12px;">💰</div>
+    <div style="display:inline-block;background:rgba(55,48,163,0.2);color:#a5b4fc;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:16px;">Payment Secured</div>
+    <h1 style="font-size:26px;font-weight:800;color:#fafaf8;margin:0 0 8px 0;">You have a buyer!</h1>
+    <p style="font-size:15px;color:#666;margin:0;">Payment is held in escrow and waiting for you.</p>
+  </div>
+  <div style="background:#1a1a1a;border:1px solid rgba(165,180,252,0.2);border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+    <div style="font-size:13px;font-weight:600;color:#a5b4fc;margin-bottom:12px;">Your payout details</div>
+    <div style="font-size:14px;color:#888;margin-bottom:6px;">Item: ${xekieTitle}</div>
+    <div style="font-size:14px;color:#888;margin-bottom:6px;">Offer price: $${offerAmt}</div>
+    <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:8px;margin-top:8px;font-size:16px;font-weight:700;color:#fafaf8;">You receive: ~$${sellerPayout} <span style="font-size:12px;font-weight:400;color:#666;">(after Stripe fees)</span></div>
+  </div>
+  <div style="background:#1a1a1a;border-radius:12px;padding:16px 20px;margin-bottom:24px;">
+    <div style="font-size:14px;color:#888;line-height:1.6;"><strong style="color:#fafaf8;">Ship the item now.</strong><br>Once the buyer confirms receipt, your payout will be released automatically to your connected bank account within 2 business days.</div>
+  </div>
+  <div style="text-align:center;margin-bottom:24px;">
+    <a href="https://xekie.com/messages.html" style="display:inline-block;background:#ff4d1c;color:#fff;text-decoration:none;padding:15px 34px;border-radius:10px;font-size:15px;font-weight:700;">Message the buyer →</a>
+  </div>
+  <div style="text-align:center;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
+    <p style="font-size:12px;color:#444;margin:0;line-height:1.8;">Questions? <a href="mailto:hello@xekie.com" style="color:#ff4d1c;text-decoration:none;">hello@xekie.com</a><br>© 2025 XEKIE LLC</p>
+  </div>
+</td></tr>
+</table></td></tr></table></body></html>`;
+
+    // For escrowed payments we need to send two emails
+    // We'll send buyer email first, then seller
+    try {
+      const _sb = require('@supabase/supabase-js').createClient(
+        'https://jlcrarqiyejgjbdesxik.supabase.co',
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+
+      // Get buyer email
+      const { data: buyerData } = await _sb.auth.admin.getUserById(buyerId);
+      const buyerEmail = buyerData?.user?.email;
+
+      // Get seller email
+      const { data: sellerData } = await _sb.auth.admin.getUserById(sellerId);
+      const sellerEmail = sellerData?.user?.email;
+
+      const promises = [];
+      if (buyerEmail) {
+        promises.push(fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${RESEND_API_KEY}` },
+          body: JSON.stringify({ from: 'XEKIE <hello@xekie.com>', to: buyerEmail, subject: buyerSubject, html: buyerHtml })
+        }));
+      }
+      if (sellerEmail) {
+        promises.push(fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${RESEND_API_KEY}` },
+          body: JSON.stringify({ from: 'XEKIE <hello@xekie.com>', to: sellerEmail, subject: sellerSubject, html: sellerHtml })
+        }));
+      }
+      await Promise.all(promises);
+      return { statusCode: 200, body: JSON.stringify({ success: true }) };
+    } catch (err) {
+      return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+    }
+
+  // ─────────────────────────────────────────
+  // PAYOUT RELEASED (seller gets paid)
+  // ─────────────────────────────────────────
+  } else if (type === 'payout_released') {
+    const { sellerId, xekieId, payoutAmount } = data;
+    subject = `🎉 You've been paid! $${payoutAmount} is on its way to your bank`;
+    html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;"><tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+<tr><td style="background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:40px;">
+  <div style="text-align:center;margin-bottom:32px;">
+    <div style="font-size:28px;font-weight:900;color:#fafaf8;letter-spacing:-0.03em;"><span style="color:#ff4d1c;">XE</span>KIE</div>
+    <div style="font-size:10px;letter-spacing:0.2em;color:#444;text-transform:uppercase;margin-top:4px;">TRADE DIFFERENT</div>
+  </div>
+  <div style="text-align:center;margin-bottom:32px;">
+    <div style="font-size:64px;margin-bottom:16px;">🎉</div>
+    <div style="display:inline-block;background:rgba(59,109,17,0.2);color:#86efac;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:16px;">Payment Released</div>
+    <h1 style="font-size:32px;font-weight:900;color:#fafaf8;margin:0 0 8px 0;letter-spacing:-0.02em;">$${payoutAmount}</h1>
+    <p style="font-size:16px;color:#666;margin:0;">is on its way to your bank account.</p>
+  </div>
+  <div style="background:#1a1a1a;border:1px solid rgba(134,239,172,0.2);border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+    <div style="font-size:14px;color:#888;line-height:1.7;">The buyer confirmed receipt of their item. Your payout of <strong style="color:#fafaf8;">$${payoutAmount}</strong> has been transferred and will arrive in your connected bank account within <strong style="color:#fafaf8;">2 business days</strong> via Stripe.</div>
+  </div>
+  <div style="background:linear-gradient(135deg,rgba(255,77,28,0.08),rgba(255,140,0,0.04));border:1px solid rgba(255,77,28,0.15);border-radius:12px;padding:16px 20px;margin-bottom:28px;">
+    <div style="font-size:14px;color:#888;line-height:1.6;">🔶 <strong style="color:#fafaf8;">Keep selling on XEKIE.</strong> Browse active XEKIEs and submit your next offer — buyers are waiting.</div>
+  </div>
+  <div style="text-align:center;margin-bottom:24px;">
+    <a href="https://xekie.com/radar.html" style="display:inline-block;background:#ff4d1c;color:#fff;text-decoration:none;padding:15px 34px;border-radius:10px;font-size:15px;font-weight:700;">Browse XEKIEs →</a>
+  </div>
+  <div style="text-align:center;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
+    <p style="font-size:12px;color:#444;margin:0;line-height:1.8;">Questions? <a href="mailto:hello@xekie.com" style="color:#ff4d1c;text-decoration:none;">hello@xekie.com</a><br>© 2025 XEKIE LLC</p>
+  </div>
+</td></tr>
+</table></td></tr></table></body></html>`;
+
+    // Get seller email and send
+    try {
+      const _sb = require('@supabase/supabase-js').createClient(
+        'https://jlcrarqiyejgjbdesxik.supabase.co',
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+      const { data: sellerData } = await _sb.auth.admin.getUserById(sellerId);
+      const sellerEmail = sellerData?.user?.email;
+      if (!sellerEmail) return { statusCode: 400, body: JSON.stringify({ error: 'Seller email not found' }) };
+
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${RESEND_API_KEY}` },
+        body: JSON.stringify({ from: 'XEKIE <hello@xekie.com>', to: sellerEmail, subject, html })
+      });
+      const result = await res.json();
+      if (!res.ok) return { statusCode: 500, body: JSON.stringify({ error: result }) };
+      return { statusCode: 200, body: JSON.stringify({ success: true, id: result.id }) };
+    } catch (err) {
+      return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+    }
 
   // ─────────────────────────────────────────
   // REPORT
