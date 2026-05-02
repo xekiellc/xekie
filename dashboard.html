@@ -39,9 +39,11 @@
     .xekie-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:22px 26px;margin-bottom:12px;transition:box-shadow 0.2s;}
     .xekie-card.fulfilled{border-color:#c0dd97;background:#f9fdf5;}
     .xekie-card.expired{opacity:0.65;}
+    .xekie-card.escrowed{border-color:#c7d2fe;background:#f5f3ff;}
     .xekie-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06);}
     .card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
-    .card-title{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.02em;}
+    .card-title{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.02em;color:var(--black);text-decoration:none;transition:color 0.2s;}
+    .card-title:hover{color:var(--accent);}
     .card-budget{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);white-space:nowrap;}
     .card-budget-flex{font-size:11px;color:var(--mid);font-weight:400;display:block;}
     .card-desc{font-size:14px;font-weight:300;color:var(--mid);line-height:1.5;margin-bottom:12px;}
@@ -52,16 +54,19 @@
     .status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;}
     .status-fulfilled{background:#EAF3DE;color:#3B6D11;}
     .status-expired{background:#f4f2ec;color:#6b6b6b;}
+    .status-escrowed{background:#EEF2FF;color:#3730a3;}
     .expiry-info{font-size:12px;color:var(--mid);}
     .expiry-info.urgent{color:#ff4d1c;}
     .card-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-    .btn-view-offers{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:var(--black);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;}
+    .btn-view-offers{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:var(--black);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
     .btn-view-offers:hover{border-color:var(--black);}
     .offers-badge{display:inline-block;background:var(--accent);color:white;border-radius:100px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px;}
     .btn-share-xekie{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:var(--mid);border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;}
     .btn-share-xekie:hover{border-color:var(--black);color:var(--black);}
     .btn-fulfill{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:#3B6D11;border:1.5px solid #c0dd97;cursor:pointer;transition:all 0.2s;}
     .btn-fulfill:hover{background:#EAF3DE;}
+    .btn-confirm-receipt{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:#3730a3;color:white;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+    .btn-confirm-receipt:hover{background:#4338ca;}
     .btn-repost{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:#1d4ed8;border:1.5px solid rgba(29,78,216,0.3);cursor:pointer;transition:all 0.2s;}
     .btn-repost:hover{background:#eff6ff;border-color:#1d4ed8;}
     .btn-promote{font-size:13px;font-weight:500;padding:7px 14px;border-radius:100px;background:transparent;color:#7c3aed;border:1.5px solid rgba(124,58,237,0.3);cursor:pointer;transition:all 0.2s;}
@@ -138,14 +143,6 @@
     <div id="xekie-list"><div style="text-align:center;padding:40px;color:var(--mid);">Loading...</div></div>
   </div>
 
-  <div class="modal-overlay" id="offers-modal">
-    <div class="modal">
-      <button class="modal-close" onclick="closeOffersModal()">✕</button>
-      <h2 class="modal-title" id="offers-modal-title">Responses</h2>
-      <div id="offers-list"></div>
-    </div>
-  </div>
-
   <div class="modal-overlay" id="rating-modal">
     <div class="modal" style="text-align:center;">
       <button class="modal-close" onclick="closeRatingModal()">✕</button>
@@ -206,6 +203,10 @@
       return '$—';
     }
 
+    function getXekieUrl(x) {
+      return x.slug ? `/x/${x.slug}` : `/xekie.html?id=${x.id}`;
+    }
+
     function getExpiryDisplay(x) {
       if (x.is_fulfilled) return '';
       if (!x.expires_at) return '<span class="expiry-info">♾️ No expiry</span>';
@@ -241,11 +242,22 @@
       const { data: xekies } = await _sb.from('xekies').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
       const list = xekies || [];
       const ids = list.map(x => x.id);
+
       let offerCounts = {};
+      let escrowedIds = new Set();
+
       if (ids.length) {
         const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
         (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
+
+        // Check for escrowed transactions
+        const { data: transactions } = await _sb.from('transactions')
+          .select('xekie_id')
+          .in('xekie_id', ids)
+          .eq('status', 'escrowed');
+        (transactions || []).forEach(t => escrowedIds.add(t.xekie_id));
       }
+
       document.getElementById('stat-xekies').textContent = list.length;
       document.getElementById('stat-offers').textContent = Object.values(offerCounts).reduce((a,b)=>a+b,0);
       document.getElementById('stat-views').textContent = list.reduce((a,x)=>a+(x.view_count||0),0);
@@ -255,20 +267,25 @@
         container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Nothing XEKIE'd yet</div><p class="empty-sub">Can't find something? Just XEKIE it — tell sellers what you want and let them come to you.</p><a href="request.html" class="btn-nav primary" style="display:inline-block;">XEKIE something →</a></div>`;
         return;
       }
+
       container.innerHTML = list.map(x => {
         const budget = formatBudget(x);
         const flexTag = x.is_flexible ? '<span class="card-budget-flex">flexible</span>' : '';
         const offerCount = offerCounts[x.id] || 0;
         const isFulfilled = x.is_fulfilled;
+        const isEscrowed = escrowedIds.has(x.id);
         const expiryDisplay = getExpiryDisplay(x);
         const isExpired = !isFulfilled && x.expires_at && new Date(x.expires_at) < new Date();
-        const cardClass = isFulfilled ? 'fulfilled' : isExpired ? 'expired' : '';
+        const cardClass = isEscrowed ? 'escrowed' : isFulfilled ? 'fulfilled' : isExpired ? 'expired' : '';
         const isPromoted = x.is_promoted && x.promoted_until && new Date(x.promoted_until) > new Date();
+        const xekieUrl = getXekieUrl(x);
+
         return `<div class="xekie-card ${cardClass}" id="card-${x.id}">
           <div class="card-header">
             <div>
               ${isFulfilled ? '<span class="status-badge status-fulfilled">✓ Fulfilled</span>' : ''}
-              <div class="card-title">${x.title}</div>
+              ${isEscrowed ? '<span class="status-badge status-escrowed">🔒 Payment in escrow</span>' : ''}
+              <a href="${xekieUrl}" class="card-title">${x.title}</a>
             </div>
             <div class="card-budget">${budget}${flexTag}</div>
           </div>
@@ -282,13 +299,14 @@
               ${expiryDisplay}
             </div>
             <div class="card-actions">
-              <button class="btn-view-offers" onclick="viewOffers('${x.id}','${(x.title||'').replace(/'/g,"\\'")}')">
-                Responses${offerCount?`<span class="offers-badge">${offerCount}</span>`:''}
-              </button>
-              <button class="btn-share-xekie" onclick="shareXekie('${x.id}')">Share</button>
-              ${!isFulfilled && !isExpired ? `<button class="btn-fulfill" onclick="markFulfilled('${x.id}')">✓ Fulfilled</button>` : ''}
+              ${isEscrowed
+                ? `<a href="${xekieUrl}" class="btn-confirm-receipt">📦 Confirm receipt</a>`
+                : `<a href="${xekieUrl}" class="btn-view-offers">Responses${offerCount?`<span class="offers-badge">${offerCount}</span>`:''}</a>`
+              }
+              <button class="btn-share-xekie" onclick="shareXekie('${x.id}','${x.slug||''}')">Share</button>
+              ${!isFulfilled && !isExpired && !isEscrowed ? `<button class="btn-fulfill" onclick="markFulfilled('${x.id}')">✓ Fulfilled</button>` : ''}
               ${isExpired ? `<button class="btn-repost" onclick="repostXekie('${x.id}')">🔁 Repost</button>` : ''}
-              ${!isPromoted && !isFulfilled ? `<button class="btn-promote" onclick="promoteXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">⚡ Promote $5</button>` : isPromoted ? '<span class="promoted-badge">⚡ Promoted</span>' : ''}
+              ${!isPromoted && !isFulfilled && !isEscrowed ? `<button class="btn-promote" onclick="promoteXekie('${x.id}', '${(x.title||'').replace(/'/g,"\\'")}')">⚡ Promote $5</button>` : isPromoted ? '<span class="promoted-badge">⚡ Promoted</span>' : ''}
               <button class="btn-delete" onclick="deleteXekie('${x.id}')">Delete</button>
             </div>
           </div>
@@ -298,12 +316,10 @@
 
     let pendingFulfillId = null, selectedStar = 0, ratingXekieId = null;
 
-    // ── CONFETTI CELEBRATION SOUND (Web Audio API — no files needed) ──
     function playConfettiSound() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const now = ctx.currentTime;
-        // Rising sparkle fanfare
         [[523,0],[659,0.1],[784,0.2],[1047,0.3],[1319,0.4],[1047,0.55],[1319,0.65],[1568,0.75]].forEach(([freq, t]) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -314,7 +330,6 @@
           gain.gain.exponentialRampToValueAtTime(0.001, now + t + 0.4);
           osc.start(now + t); osc.stop(now + t + 0.4);
         });
-        // Pop burst at the start
         const buf = ctx.createBuffer(1, ctx.sampleRate * 0.15, ctx.sampleRate);
         const data = buf.getChannelData(0);
         for (let i = 0; i < data.length; i++) data[i] = (Math.random()*2-1) * Math.pow(1 - i/data.length, 2);
@@ -365,6 +380,7 @@
     }
 
     function closeRatingModal() { document.getElementById('rating-modal').classList.remove('open'); }
+    document.getElementById('rating-modal').addEventListener('click', e => { if (e.target === document.getElementById('rating-modal')) closeRatingModal(); });
 
     async function repostXekie(id) {
       if (!confirm('Repost this XEKIE for another week?')) return;
@@ -385,38 +401,17 @@
       loadDashboard();
     }
 
-    function shareXekie(id) {
-      const url = `${window.location.origin}/xekie.html?id=${id}`;
+    function shareXekie(id, slug) {
+      const url = slug ? `${window.location.origin}/x/${slug}` : `${window.location.origin}/xekie.html?id=${id}`;
       if (navigator.share) { navigator.share({ url }).catch(() => {}); }
       else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
     }
-
-    async function viewOffers(xekieId, title) {
-      document.getElementById('offers-modal-title').textContent = 'Responses: ' + title;
-      document.getElementById('offers-list').innerHTML = '<div class="no-offers">Loading...</div>';
-      document.getElementById('offers-modal').classList.add('open');
-      const { data: offers } = await _sb.from('offers').select('*').eq('xekie_id', xekieId).order('created_at', { ascending: false });
-      if (!offers || !offers.length) { document.getElementById('offers-list').innerHTML = '<div class="no-offers">No responses yet. Share your XEKIE to get more visibility!</div>'; return; }
-      document.getElementById('offers-list').innerHTML = offers.map(o => `
-        <div class="offer-item">
-          ${o.price ? `<div class="offer-price">$${Number(o.price).toLocaleString()}</div>` : ''}
-          <div class="offer-msg">${o.message}</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
-            <div class="offer-time">${timeAgo(o.created_at)}</div>
-            <a href="messages.html?xekie=${xekieId}&other=${o.seller_id}" style="font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;padding:4px 12px;border:1.5px solid var(--accent);border-radius:100px;">💬 Open Chat</a>
-          </div>
-        </div>`).join('');
-    }
-
-    function closeOffersModal() { document.getElementById('offers-modal').classList.remove('open'); }
-    document.getElementById('offers-modal').addEventListener('click', e => { if (e.target === document.getElementById('offers-modal')) closeOffersModal(); });
-    document.getElementById('rating-modal').addEventListener('click', e => { if (e.target === document.getElementById('rating-modal')) closeRatingModal(); });
 
     async function promoteXekie(id, title) {
       const btn = event.target;
       btn.disabled = true; btn.textContent = 'Loading...';
       try {
-        const res = await fetch('/.netlify/functions/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ xekieId: id, xekieTitle: title, userId: currentUser.id }) });
+        const res = await fetch('/.netlify/functions/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'promoted', xekieId: id, xekieTitle: title, userId: currentUser.id }) });
         const data = await res.json();
         if (data.url) window.location.href = data.url;
         else { btn.disabled = false; btn.textContent = '⚡ Promote $5'; alert('Error: ' + (data.error || 'Unknown')); }
