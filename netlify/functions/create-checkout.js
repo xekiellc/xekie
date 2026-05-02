@@ -1,8 +1,12 @@
-// create-checkout.js — Stripe checkout for promoted listings + offer transactions
+// create-checkout.js — Stripe checkout for promoted listings + full escrow transactions
 // Type 'promoted' = $5 flat fee
-// Type 'transaction' = 5% of offer price (seller pays, XEKIE keeps 5%)
+// Type 'transaction' = buyer pays full amount (offer price + 5% fee) into escrow
 
+const { createClient } = require('@supabase/supabase-js');
 const { rateLimit, getIP, limitedResponse } = require('./rate-limit');
+
+const SUPABASE_URL = 'https://jlcrarqiyejgjbdesxik.supabase.co';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
@@ -41,27 +45,34 @@ exports.handler = async (event) => {
       });
 
     } else if (type === 'transaction') {
-      // 5% platform fee on offer price
+      // Full escrow — buyer pays offer price + 5% platform fee
       if (!offerId || !offerPrice || !sellerId) {
-        return { statusCode: 400, body: 'Missing offerId, offerPrice, or sellerId for transaction' };
+        return { statusCode: 400, body: 'Missing offerId, offerPrice, or sellerId' };
       }
 
       const offerAmountCents = Math.round(parseFloat(offerPrice) * 100);
       if (offerAmountCents < 100) return { statusCode: 400, body: 'Offer price too low' };
 
-      const feeAmountCents = Math.round(offerAmountCents * 0.05);
-      const feeAmountFinal = Math.max(feeAmountCents, 50); // minimum 50 cents
-
+      const feeAmountCents = Math.max(Math.round(offerAmountCents * 0.05), 50);
+      const totalCents = offerAmountCents + feeAmountCents;
       const title = (xekieTitle || 'XEKIE').slice(0, 100);
 
       params = new URLSearchParams({
         'payment_method_types[0]': 'card',
         'line_items[0][price_data][currency]': 'usd',
-        'line_items[0][price_data][product_data][name]': `XEKIE Transaction: ${title}`,
-        'line_items[0][price_data][product_data][description]': `5% platform fee on $${offerPrice} offer. Seller receives $${(offerAmountCents - feeAmountFinal) / 100}.`,
-        'line_items[0][price_data][unit_amount]': String(feeAmountFinal),
+        'line_items[0][price_data][product_data][name]': title,
+        'line_items[0][price_data][product_data][description]': `Item: $${offerPrice} + XEKIE 5% fee: $${(feeAmountCents/100).toFixed(2)}`,
+        'line_items[0][price_data][unit_amount]': String(totalCents),
         'line_items[0][quantity]': '1',
         'mode': 'payment',
+        'payment_intent_data[capture_method]': 'automatic',
+        'payment_intent_data[metadata][type]': 'transaction',
+        'payment_intent_data[metadata][xekieId]': xekieId,
+        'payment_intent_data[metadata][offerId]': offerId,
+        'payment_intent_data[metadata][buyerId]': userId,
+        'payment_intent_data[metadata][sellerId]': sellerId,
+        'payment_intent_data[metadata][offerAmountCents]': String(offerAmountCents),
+        'payment_intent_data[metadata][feeAmountCents]': String(feeAmountCents),
         'success_url': `https://xekie.com/xekie.html?id=${xekieId}&payment=success`,
         'cancel_url': `https://xekie.com/xekie.html?id=${xekieId}&payment=cancel`,
         'metadata[type]': 'transaction',
@@ -69,7 +80,8 @@ exports.handler = async (event) => {
         'metadata[offerId]': offerId,
         'metadata[buyerId]': userId,
         'metadata[sellerId]': sellerId,
-        'metadata[offerPrice]': String(offerPrice),
+        'metadata[offerAmountCents]': String(offerAmountCents),
+        'metadata[feeAmountCents]': String(feeAmountCents),
         'metadata[xekieTitle]': title,
       });
     }
@@ -87,6 +99,26 @@ exports.handler = async (event) => {
 
     if (session.error) {
       return { statusCode: 400, body: JSON.stringify({ error: session.error.message }) };
+    }
+
+    // Create pending transaction record in Supabase
+    if (type === 'transaction') {
+      const offerAmountCents = Math.round(parseFloat(offerPrice) * 100);
+      const feeAmountCents = Math.max(Math.round(offerAmountCents * 0.05), 50);
+      const totalCents = offerAmountCents + feeAmountCents;
+
+      const _sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+      await _sb.from('transactions').insert({
+        xekie_id: xekieId,
+        offer_id: offerId,
+        buyer_id: userId,
+        seller_id: sellerId,
+        offer_amount_cents: offerAmountCents,
+        fee_amount_cents: feeAmountCents,
+        total_charged_cents: totalCents,
+        stripe_payment_intent_id: session.payment_intent,
+        status: 'pending',
+      });
     }
 
     return {
