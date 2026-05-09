@@ -1,12 +1,12 @@
-// release-payment.js — releases escrowed funds to seller after buyer confirms receipt
-// Called when buyer clicks "I received my item" button
-// Transfers offer amount minus 5% fee to seller's Stripe Connect account
+// release-payment.js — releases escrowed funds to seller's XEKIE balance
+// Called when buyer confirms receipt of item
+// Seller balance accumulates until they request a cashout via cashout.html
+// No Stripe Connect required upfront — seller connects bank when they cash out
 
 const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = 'https://jlcrarqiyejgjbdesxik.supabase.co';
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
@@ -42,60 +42,39 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: 'Payment already released' }) };
     }
 
-    // Get seller Stripe account
-    const { data: sellerProfile } = await _sb
-      .from('user_profiles')
-      .select('stripe_account_id, stripe_onboarded')
-      .eq('user_id', transaction.seller_id)
-      .single();
-
-    if (!sellerProfile?.stripe_account_id || !sellerProfile?.stripe_onboarded) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Seller has not completed payout setup' }) };
-    }
-
-    // Calculate payout amount
-    // Buyer paid: offer_price + 5% fee
-    // Seller receives: offer_price minus Stripe processing fee (~2.9% + $0.30)
+    // Calculate payout — offer amount minus Stripe processing fees (~2.9% + $0.30)
     const offerAmountCents = transaction.offer_amount_cents;
     const stripeFeesCents = Math.round(offerAmountCents * 0.029) + 30;
     const payoutCents = offerAmountCents - stripeFeesCents;
 
-    // Transfer to seller via Stripe Connect
-    const transferRes = await fetch('https://api.stripe.com/v1/transfers', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${STRIPE_SECRET_KEY}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        'amount': String(payoutCents),
-        'currency': 'usd',
-        'destination': sellerProfile.stripe_account_id,
-        'transfer_group': `xekie-${xekieId}`,
-        'metadata[xekie_id]': xekieId,
-        'metadata[offer_id]': offerId,
-        'metadata[buyer_id]': buyerId,
-        'metadata[seller_id]': transaction.seller_id,
-      }).toString(),
-    });
+    // Add to seller's XEKIE balance
+    // First get current balance
+    const { data: sellerProfile } = await _sb
+      .from('user_profiles')
+      .select('balance_cents')
+      .eq('user_id', transaction.seller_id)
+      .single();
 
-    const transfer = await transferRes.json();
-    if (transfer.error) {
-      return { statusCode: 400, body: JSON.stringify({ error: transfer.error.message }) };
-    }
+    const currentBalance = sellerProfile?.balance_cents || 0;
+    const newBalance = currentBalance + payoutCents;
 
-    // Update transaction status
+    // Upsert seller profile with new balance
+    await _sb.from('user_profiles').upsert({
+      user_id: transaction.seller_id,
+      balance_cents: newBalance,
+    }, { onConflict: 'user_id' });
+
+    // Update transaction status to released
     await _sb.from('transactions').update({
       status: 'released',
       released_at: new Date().toISOString(),
-      stripe_transfer_id: transfer.id,
       payout_amount_cents: payoutCents,
     }).eq('id', transaction.id);
 
-    // Mark XEKIE fulfilled
+    // Mark XEKIE as fulfilled
     await _sb.from('xekies').update({ is_fulfilled: true }).eq('id', xekieId);
 
-    // Notify seller via email
+    // Send payout notification email to seller
     try {
       await fetch('https://xekie.com/.netlify/functions/send-email', {
         method: 'POST',
@@ -106,6 +85,7 @@ exports.handler = async (event) => {
           xekieId,
           offerId,
           payoutAmount: (payoutCents / 100).toFixed(2),
+          newBalance: (newBalance / 100).toFixed(2),
         }),
       });
     } catch (e) {}
@@ -115,8 +95,8 @@ exports.handler = async (event) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         success: true,
-        transferId: transfer.id,
         payoutAmount: (payoutCents / 100).toFixed(2),
+        newBalance: (newBalance / 100).toFixed(2),
       }),
     };
 
