@@ -112,16 +112,22 @@
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
-    const STRIPE_PK = "pk_live_51TABmhI1ESy65BqbHLLmHQ8N83nM1Xx6AojySNlWoDVlgfSqcuOiDbEmNTx9iJPwNYLx2yP1eEgtKhr4rwRZ0yNc00qZt6No7S";
 
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const stripe = Stripe(STRIPE_PK);
-    const elements = stripe.elements();
 
+    let stripe = null;
+    let elements = null;
     let cardElement = null;
     let currentUser = null;
     let currentBalance = 0;
     let sessionToken = null;
+
+    async function initStripe() {
+      const res = await fetch("/.netlify/functions/get-config");
+      const config = await res.json();
+      stripe = Stripe(config.stripePk);
+      elements = stripe.elements();
+    }
 
     function mountCard() {
       if (cardElement) return;
@@ -147,7 +153,10 @@
       });
     }
 
-    _sb.auth.getSession().then(async ({ data: { session } }) => {
+    async function boot() {
+      await initStripe();
+
+      const { data: { session } } = await _sb.auth.getSession();
       if (!session) {
         window.location.href = "login.html?redirect=" + encodeURIComponent(window.location.href);
         return;
@@ -155,7 +164,7 @@
       currentUser = session.user;
       sessionToken = session.access_token;
       loadBalance();
-    });
+    }
 
     async function loadBalance() {
       const { data: profile } = await _sb
@@ -357,6 +366,8 @@
         btn.textContent = "Try again";
       }
     }
+
+    boot();
   </script>
 </body>
 </html>
