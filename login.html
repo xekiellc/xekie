@@ -31,8 +31,12 @@
     .tab-panel{display:none;}.tab-panel.active{display:block;}
     .form-group{margin-bottom:18px;}
     label{display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--black);}
+    .password-wrap{position:relative;display:flex;align-items:center;}
+    .password-wrap input{width:100%;padding:11px 44px 11px 14px;}
     input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:15px;background:var(--cream);color:var(--black);outline:none;transition:border-color 0.2s;}
     input:focus{border-color:var(--black);}
+    .eye-btn{position:absolute;right:12px;background:none;border:none;cursor:pointer;padding:4px;color:var(--mid);display:flex;align-items:center;justify-content:center;transition:color 0.2s;}
+    .eye-btn:hover{color:var(--black);}
     .btn-submit{width:100%;padding:13px;background:var(--black);color:var(--white);border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;margin-top:4px;transition:background 0.2s;}
     .btn-submit:hover{background:var(--accent);}
     .btn-submit:disabled{background:#ccc;cursor:not-allowed;}
@@ -78,7 +82,16 @@
 
       <div class="tab-panel active" id="panel-signin">
         <div class="form-group"><label>Email</label><input type="email" id="signin-email" placeholder="you@example.com" /></div>
-        <div class="form-group"><label>Password</label><input type="password" id="signin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')signIn()" /></div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="password-wrap">
+            <input type="password" id="signin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')signIn()" />
+            <button class="eye-btn" type="button" onclick="togglePassword('signin-password', this)" tabindex="-1">
+              <svg id="eye-signin-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              <svg id="eye-signin-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
         <button class="btn-submit" id="btn-signin" onclick="signIn()">Sign in</button>
         <div class="forgot" onclick="forgotPassword()">Forgot password?</div>
         <div class="msg" id="signin-msg"></div>
@@ -87,7 +100,16 @@
       <div class="tab-panel" id="panel-signup">
         <div class="form-group"><label>First name</label><input type="text" id="signup-name" placeholder="e.g. Zach" autocomplete="given-name" /></div>
         <div class="form-group"><label>Email</label><input type="email" id="signup-email" placeholder="you@example.com" /></div>
-        <div class="form-group"><label>Password</label><input type="password" id="signup-password" placeholder="At least 6 characters" onkeydown="if(event.key==='Enter')signUp()" /></div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="password-wrap">
+            <input type="password" id="signup-password" placeholder="At least 6 characters" onkeydown="if(event.key==='Enter')signUp()" />
+            <button class="eye-btn" type="button" onclick="togglePassword('signup-password', this)" tabindex="-1">
+              <svg id="eye-signup-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              <svg id="eye-signup-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
         <button class="btn-submit" id="btn-signup" onclick="signUp()">Create account</button>
         <div class="msg" id="signup-msg"></div>
       </div>
@@ -110,6 +132,15 @@
 
     _sb.auth.getSession().then(({ data: { session } }) => { if (session) window.location.href = 'dashboard.html'; });
 
+    function togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const prefix = inputId === 'signin-password' ? 'eye-signin' : 'eye-signup';
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      document.getElementById(prefix + '-closed').style.display = isPassword ? 'none' : 'block';
+      document.getElementById(prefix + '-open').style.display = isPassword ? 'block' : 'none';
+    }
+
     function switchTab(tab) {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -129,7 +160,6 @@
       el.textContent = msg;
     }
 
-    // ── WINE GLASSES CLINK (crisp high ping) ──
     function playWineGlassClink() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
