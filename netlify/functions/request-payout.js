@@ -1,150 +1,152 @@
-// request-payout.js — seller requests cashout of their XEKIE balance
-// THIS is when Stripe Connect onboarding happens — not upfront
-// Seller sees their balance on cashout.html and requests a transfer to their bank
+// request-payout.js — XEKIE Instant Payout
+// Architecture: Direct platform payout via Stripe Instant Payouts
+// No Stripe Connect, no onboarding, no capability errors.
+// Seller provides debit card → Stripe tokenizes client-side → platform fires payout directly.
 
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require("@supabase/supabase-js");
 
-const SUPABASE_URL = 'https://jlcrarqiyejgjbdesxik.supabase.co';
+const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Content-Type": "application/json",
+};
+
 exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
-
-  let body;
-  try { body = JSON.parse(event.body); } catch { return { statusCode: 400, body: 'Invalid JSON' }; }
-
-  const { userId, amountCents } = body;
-  if (!userId) return { statusCode: 400, body: 'Missing userId' };
+  if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers: CORS, body: "" };
+  if (event.httpMethod !== "POST") return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: "Method not allowed" }) };
 
   const _sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
   try {
-    // Get seller profile and balance
-    const { data: profile, error: profileError } = await _sb
-      .from('user_profiles')
-      .select('*')
-      .eq('user_id', userId)
+    const authHeader = event.headers.authorization || event.headers.Authorization || "";
+    const token = authHeader.replace("Bearer ", "").trim();
+    if (!token) return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: "Unauthorized" }) };
+
+    const { data: { user }, error: authErr } = await _sb.auth.getUser(token);
+    if (authErr || !user) return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: "Invalid session. Please log in again." }) };
+
+    let body;
+    try { body = JSON.parse(event.body || "{}"); }
+    catch { return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid request" }) }; }
+
+    const { cardToken, amountCents } = body;
+
+    if (!cardToken) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Card token missing." }) };
+    if (!amountCents || typeof amountCents !== "number") return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Amount missing." }) };
+    if (amountCents < 100) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Minimum payout is $1.00." }) };
+
+    const { data: profile, error: profileErr } = await _sb
+      .from("user_profiles")
+      .select("balance_cents")
+      .eq("user_id", user.id)
       .single();
 
-    const balance = profile?.balance_cents || 0;
+    if (profileErr || !profile) return { statusCode: 404, headers: CORS, body: JSON.stringify({ error: "Profile not found." }) };
 
-    if (balance <= 0) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'No balance available to cash out' }) };
+    const balance = profile.balance_cents || 0;
+    if (amountCents > balance) {
+      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: `Insufficient balance. Available: $${(balance / 100).toFixed(2)}` }) };
     }
 
-    const cashoutCents = amountCents ? Math.min(amountCents, balance) : balance;
-
-    if (cashoutCents < 100) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Minimum cashout is $1.00' }) };
-    }
-
-    // If seller hasn't connected Stripe yet — create onboarding link
-    if (!profile?.stripe_account_id || !profile?.stripe_onboarded) {
-      let accountId = profile?.stripe_account_id;
-
-      // Create Stripe Connect account if doesn't exist
-      if (!accountId) {
-        const res = await fetch('https://api.stripe.com/v1/accounts', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${STRIPE_SECRET_KEY}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-            'type': 'express',
-            'capabilities[transfers][requested]': 'true',
-            'capabilities[card_payments][requested]': 'true',
-          }).toString(),
-        });
-        const account = await res.json();
-        if (account.error) return { statusCode: 400, body: JSON.stringify({ error: account.error.message }) };
-        accountId = account.id;
-
-        await _sb.from('user_profiles').upsert({
-          user_id: userId,
-          stripe_account_id: accountId,
-          stripe_onboarded: false,
-        }, { onConflict: 'user_id' });
-      }
-
-      // Create onboarding link
-      const linkRes = await fetch('https://api.stripe.com/v1/account_links', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${STRIPE_SECRET_KEY}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          'account': accountId,
-          'refresh_url': 'https://xekie.com/cashout.html',
-          'return_url': 'https://xekie.com/cashout.html?onboarded=true',
-          'type': 'account_onboarding',
-        }).toString(),
-      });
-      const link = await linkRes.json();
-      if (link.error) return { statusCode: 400, body: JSON.stringify({ error: link.error.message }) };
-
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ needsOnboarding: true, url: link.url }),
-      };
-    }
-
-    // Seller is onboarded — execute the transfer
-    const transferRes = await fetch('https://api.stripe.com/v1/transfers', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${STRIPE_SECRET_KEY}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        'amount': String(cashoutCents),
-        'currency': 'usd',
-        'destination': profile.stripe_account_id,
-        'metadata[user_id]': userId,
-        'metadata[type]': 'seller_cashout',
-      }).toString(),
+    const extAcctRes = await stripePost("accounts/acct_1TABmhI1ESy65Bqb/external_accounts", {
+      "external_account": cardToken,
+      "metadata[user_id]": user.id,
+      "metadata[payout_type]": "instant_debit",
     });
 
-    const transfer = await transferRes.json();
-    if (transfer.error) {
-      return { statusCode: 400, body: JSON.stringify({ error: transfer.error.message }) };
+    if (extAcctRes.error) {
+      const msg = extAcctRes.error.message || "Could not attach card.";
+      console.error("External account error:", msg);
+      if (msg.includes("debit")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "This card does not support instant payouts. Please use a Visa or Mastercard debit card." }) };
+      if (msg.includes("invalid")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid card. Please check your card details and try again." }) };
+      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: msg }) };
     }
 
-    // Deduct from seller balance
-    const newBalance = balance - cashoutCents;
-    await _sb.from('user_profiles').update({
-      balance_cents: newBalance,
-    }).eq('user_id', userId);
+    const externalAccountId = extAcctRes.id;
 
-    // Send cashout confirmation email
+    const payoutRes = await stripePost("payouts", {
+      "amount": String(amountCents),
+      "currency": "usd",
+      "method": "instant",
+      "destination": externalAccountId,
+      "description": `XEKIE seller payout — ${user.email}`,
+      "metadata[user_id]": user.id,
+      "metadata[user_email]": user.email,
+    });
+
+    if (payoutRes.error) {
+      const msg = payoutRes.error.message || "Payout failed.";
+      console.error("Payout error:", msg);
+      if (msg.includes("instant")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "This card is not eligible for instant payouts. Please try a different debit card." }) };
+      if (msg.includes("balance")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Platform balance insufficient. Please contact support." }) };
+      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: msg }) };
+    }
+
+    const newBalance = balance - amountCents;
+    await _sb
+      .from("user_profiles")
+      .update({ balance_cents: newBalance })
+      .eq("user_id", user.id);
+
+    await _sb.from("cashout_history").insert({
+      user_id: user.id,
+      amount_cents: amountCents,
+      method: "instant_debit",
+      stripe_payout_id: payoutRes.id,
+      status: payoutRes.status,
+      card_last4: extAcctRes.last4 || null,
+      created_at: new Date().toISOString(),
+    });
+
     try {
-      await fetch('https://xekie.com/.netlify/functions/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch("https://xekie.com/.netlify/functions/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: 'payout_released',
-          sellerId: userId,
-          payoutAmount: (cashoutCents / 100).toFixed(2),
+          type: "payout_released",
+          sellerId: user.id,
+          payoutAmount: (amountCents / 100).toFixed(2),
           newBalance: (newBalance / 100).toFixed(2),
         }),
       });
-    } catch (e) {}
+    } catch (_) {}
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: CORS,
       body: JSON.stringify({
         success: true,
-        transferId: transfer.id,
-        cashedOut: (cashoutCents / 100).toFixed(2),
-        remainingBalance: (newBalance / 100).toFixed(2),
+        payoutId: payoutRes.id,
+        status: payoutRes.status,
+        amountCents,
+        newBalanceCents: newBalance,
       }),
     };
 
   } catch (err) {
-    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+    console.error("request-payout unhandled error:", err);
+    return {
+      statusCode: 500,
+      headers: CORS,
+      body: JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
+    };
   }
 };
+
+async function stripePost(endpoint, params) {
+  const res = await fetch(`https://api.stripe.com/v1/${endpoint}`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${STRIPE_SECRET_KEY}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Stripe-Version": "2023-10-16",
+    },
+    body: new URLSearchParams(params).toString(),
+  });
+  return res.json();
+}
