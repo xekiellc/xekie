@@ -126,7 +126,6 @@
     .report-msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;}
     .report-msg.error{background:#FCEBEB;color:#A32D2D;display:block;}
     .report-msg.success{background:#EAF3DE;color:#3B6D11;display:block;}
-    /* ── PAYMENT MODAL ── */
     .payment-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:400;align-items:center;justify-content:center;padding:20px;}
     .payment-modal.open{display:flex;}
     .payment-box{background:var(--white);border-radius:20px;padding:36px;max-width:460px;width:100%;position:relative;}
@@ -146,7 +145,6 @@
     .btn-payment-go:hover{background:var(--accent);}
     .btn-payment-go:disabled{background:#ccc;cursor:not-allowed;}
     .payment-note{font-size:12px;color:var(--mid);text-align:center;margin-top:12px;}
-    /* ── CONFIRM RECEIPT MODAL ── */
     .confirm-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:400;align-items:center;justify-content:center;padding:20px;}
     .confirm-modal.open{display:flex;}
     .confirm-box{background:var(--white);border-radius:20px;padding:36px;max-width:440px;width:100%;position:relative;text-align:center;}
@@ -159,17 +157,6 @@
     .btn-confirm-yes:disabled{background:#ccc;cursor:not-allowed;}
     .btn-confirm-no{width:100%;padding:12px;background:transparent;color:var(--mid);border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:14px;cursor:pointer;transition:all 0.2s;}
     .btn-confirm-no:hover{border-color:var(--black);color:var(--black);}
-    /* ── PAYOUT PROMPT MODAL ── */
-    .payout-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:400;align-items:center;justify-content:center;padding:20px;}
-    .payout-modal.open{display:flex;}
-    .payout-box{background:var(--white);border-radius:20px;padding:36px;max-width:440px;width:100%;position:relative;text-align:center;}
-    .payout-icon{font-size:48px;margin-bottom:16px;}
-    .payout-title{font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:8px;}
-    .payout-sub{font-size:14px;color:var(--mid);margin-bottom:24px;line-height:1.6;}
-    .btn-payout-yes{width:100%;padding:14px;background:var(--black);color:white;border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px;transition:background 0.2s;}
-    .btn-payout-yes:hover{background:var(--accent);}
-    .btn-payout-skip{width:100%;padding:12px;background:transparent;color:var(--mid);border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:14px;cursor:pointer;transition:all 0.2s;}
-    .btn-payout-skip:hover{border-color:var(--black);color:var(--black);}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
@@ -300,17 +287,6 @@
     </div>
   </div>
 
-  <!-- Payout Setup Prompt Modal -->
-  <div class="payout-modal" id="payout-modal">
-    <div class="payout-box">
-      <div class="payout-icon">💸</div>
-      <div class="payout-title">Get paid for your offers</div>
-      <div class="payout-sub">Your offer was sent! To receive payment when the buyer accepts, connect your bank account. It only takes 2 minutes.</div>
-      <button class="btn-payout-yes" id="btn-payout-yes" onclick="goToOnboarding()">Connect bank account →</button>
-      <button class="btn-payout-skip" onclick="skipPayout()">Skip for now</button>
-    </div>
-  </div>
-
   <footer>
     <div class="footer-inner">
       <div>
@@ -337,7 +313,6 @@
     let activeOffer = null;
     let activeTransaction = null;
     let selectedPaymentMethod = 'card';
-    let pendingRedirectUrl = null;
     const params = new URLSearchParams(window.location.search);
     const xekieSlug = params.get('slug');
     const xekieId = params.get('id');
@@ -504,7 +479,6 @@
       checkSaved();
     }
 
-    // ── PAYMENT MODAL ──
     function openPayment(offerId, offerPrice, sellerId) {
       activeOffer = { id: offerId, price: parseFloat(offerPrice) || 0, sellerId };
       selectedPaymentMethod = 'card';
@@ -553,7 +527,6 @@
     }
     document.getElementById('payment-modal').addEventListener('click', e => { if (e.target === document.getElementById('payment-modal')) closePayment(); });
 
-    // ── CONFIRM RECEIPT ──
     function openConfirmModal() { document.getElementById('confirm-modal').classList.add('open'); }
     function closeConfirmModal() { document.getElementById('confirm-modal').classList.remove('open'); }
     async function confirmReceipt() {
@@ -591,20 +564,6 @@
     }
     document.getElementById('confirm-modal').addEventListener('click', e => { if (e.target === document.getElementById('confirm-modal')) closeConfirmModal(); });
 
-    // ── PAYOUT PROMPT ──
-    function openPayoutModal(redirectUrl) {
-      pendingRedirectUrl = redirectUrl;
-      document.getElementById('payout-modal').classList.add('open');
-    }
-    function goToOnboarding() {
-      window.location.href = `seller-onboard.html?return=${encodeURIComponent(pendingRedirectUrl || window.location.href)}`;
-    }
-    function skipPayout() {
-      document.getElementById('payout-modal').classList.remove('open');
-      if (pendingRedirectUrl) window.location.href = pendingRedirectUrl;
-    }
-
-    // ── EXISTING FUNCTIONS ──
     function openLightbox(i) { lightboxPhotos = currentXekie?.photos || []; lightboxIndex = i; document.getElementById('lightbox-img').src = lightboxPhotos[i]; document.getElementById('photo-lightbox').classList.add('open'); }
     function closeLightbox() { document.getElementById('photo-lightbox').classList.remove('open'); }
     function lightboxNav(dir) { lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length; document.getElementById('lightbox-img').src = lightboxPhotos[lightboxIndex]; }
@@ -639,25 +598,8 @@
       msgEl.className='modal-msg success'; msgEl.style.display='block';
       msgEl.textContent='Offer sent!';
       btn.textContent='Sent ✓';
-
-      // Check if seller has connected payout account
-      const { data: sellerProfile } = await _sb
-        .from('user_profiles')
-        .select('stripe_onboarded')
-        .eq('user_id', currentUser.id)
-        .single();
-
-      const chatUrl = buyerId ? `messages.html?xekie=${currentXekie.id}&other=${buyerId}` : null;
-
-      if (!sellerProfile?.stripe_onboarded) {
-        setTimeout(() => {
-          closeModal();
-          openPayoutModal(chatUrl || window.location.href);
-        }, 1200);
-      } else {
-        if (chatUrl) setTimeout(() => { window.location.href = chatUrl; }, 1200);
-        else setTimeout(closeModal, 2000);
-      }
+      if (buyerId) setTimeout(() => { window.location.href = `messages.html?xekie=${currentXekie.id}&other=${buyerId}`; }, 1200);
+      else setTimeout(closeModal, 2000);
     }
     function getShareUrl() { return currentXekie?.slug ? `https://xekie.com/x/${currentXekie.slug}` : window.location.href; }
     function shareThis() {
