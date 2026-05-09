@@ -25,16 +25,25 @@
     .btn-nav:hover{border-color:var(--black);color:var(--black);}
     .btn-nav.primary{background:var(--black);color:var(--white);border-color:transparent;}
     .btn-nav.primary:hover{background:var(--accent);}
+    .btn-nav.cashout{background:#EAF3DE;color:#3B6D11;border-color:#c0dd97;}
+    .btn-nav.cashout:hover{background:#d4edba;border-color:#3B6D11;}
     .container{max-width:860px;margin:0 auto;padding:48px 20px;flex:1;}
     .page-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:36px;}
     .user-info{display:flex;flex-direction:column;gap:6px;}
     .user-name{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-0.02em;}
     .user-meta{font-size:14px;color:var(--mid);}
     .early-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;background:linear-gradient(135deg,#ff4d1c,#ff8c00);color:white;}
-    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px;}
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
     .stat-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 24px;}
     .stat-num{font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--accent);}
     .stat-label{font-size:13px;color:var(--mid);margin-top:4px;}
+    .balance-banner{background:var(--black);border-radius:16px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+    .balance-banner-left{display:flex;flex-direction:column;gap:4px;}
+    .balance-banner-label{font-size:12px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#666;}
+    .balance-banner-amount{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--accent);}
+    .balance-banner-sub{font-size:13px;color:#555;}
+    .btn-cashout-banner{font-size:14px;font-weight:600;padding:10px 22px;border-radius:100px;background:#EAF3DE;color:#3B6D11;border:none;cursor:pointer;text-decoration:none;white-space:nowrap;display:inline-block;transition:background 0.2s;}
+    .btn-cashout-banner:hover{background:#d4edba;}
     .section-title{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:16px;}
     .xekie-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:22px 26px;margin-bottom:12px;transition:box-shadow 0.2s;}
     .xekie-card.fulfilled{border-color:#c0dd97;background:#f9fdf5;}
@@ -83,11 +92,6 @@
     .modal{background:var(--white);border-radius:20px;padding:36px;max-width:520px;width:100%;position:relative;max-height:85vh;overflow-y:auto;}
     .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--mid);}
     .modal-title{font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:20px;letter-spacing:-0.02em;}
-    .offer-item{background:var(--cream);border-radius:12px;padding:16px 18px;margin-bottom:10px;}
-    .offer-price{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--accent);margin-bottom:4px;}
-    .offer-msg{font-size:14px;color:var(--black);line-height:1.5;}
-    .offer-time{font-size:12px;color:var(--mid);}
-    .no-offers{text-align:center;padding:32px;color:var(--mid);font-size:15px;}
     .rating-stars{display:flex;gap:8px;justify-content:center;margin:20px 0;}
     .star-btn{font-size:32px;background:none;border:none;cursor:pointer;transition:transform 0.1s;opacity:0.3;}
     .star-btn:hover,.star-btn.active{opacity:1;transform:scale(1.2);}
@@ -107,7 +111,7 @@
     .footer-links a{font-size:13px;color:#666;text-decoration:none;}
     .footer-links a:hover{color:var(--white);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;}
-    @media(max-width:600px){nav{padding:0 20px;}.stats-row{grid-template-columns:1fr 1fr;}}
+    @media(max-width:600px){nav{padding:0 20px;}.stats-row{grid-template-columns:1fr 1fr;}.balance-banner{flex-direction:column;align-items:flex-start;}}
   </style>
 </head>
 <body>
@@ -120,6 +124,7 @@
       <a href="saved.html" class="btn-nav">🔖 Saved</a>
       <a href="radar.html" class="btn-nav">Browse XEKIEs</a>
       <a href="messages.html" class="btn-nav">💬 Messages</a>
+      <a href="cashout.html" class="btn-nav cashout" id="nav-cashout" style="display:none;">💸 Cash Out</a>
       <a href="request.html" class="btn-nav primary">XEKIE it →</a>
       <button class="btn-nav" onclick="signOut()">Sign out</button>
     </div>
@@ -139,6 +144,7 @@
       <div class="stat-card"><div class="stat-num" id="stat-offers">—</div><div class="stat-label">Responses received</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-views">—</div><div class="stat-label">Total views</div></div>
     </div>
+    <div id="balance-banner-container"></div>
     <div class="section-title">Your XEKIEs</div>
     <div id="xekie-list"><div style="text-align:center;padding:40px;color:var(--mid);">Loading...</div></div>
   </div>
@@ -236,7 +242,34 @@
       document.getElementById('user-meta').textContent = 'Member since ' + joined.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
       if (joined < BETA_CUTOFF) document.getElementById('early-badge-container').innerHTML = '<div class="early-badge">⚡ Early Adopter</div>';
       loadDashboard();
+      loadBalance();
     });
+
+    async function loadBalance() {
+      const { data: profile } = await _sb
+        .from('user_profiles')
+        .select('balance_cents')
+        .eq('user_id', currentUser.id)
+        .single();
+
+      const balance = profile?.balance_cents || 0;
+
+      if (balance > 0) {
+        // Show cash out button in nav
+        document.getElementById('nav-cashout').style.display = 'inline-block';
+
+        // Show balance banner
+        document.getElementById('balance-banner-container').innerHTML = `
+          <div class="balance-banner">
+            <div class="balance-banner-left">
+              <div class="balance-banner-label">💸 Seller balance</div>
+              <div class="balance-banner-amount">$${(balance / 100).toFixed(2)}</div>
+              <div class="balance-banner-sub">Ready to transfer to your bank account</div>
+            </div>
+            <a href="cashout.html" class="btn-cashout-banner">Cash out →</a>
+          </div>`;
+      }
+    }
 
     async function loadDashboard() {
       const { data: xekies } = await _sb.from('xekies').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
@@ -250,7 +283,6 @@
         const { data: offers } = await _sb.from('offers').select('xekie_id').in('xekie_id', ids);
         (offers || []).forEach(o => { offerCounts[o.xekie_id] = (offerCounts[o.xekie_id] || 0) + 1; });
 
-        // Check for escrowed transactions
         const { data: transactions } = await _sb.from('transactions')
           .select('xekie_id')
           .in('xekie_id', ids)
