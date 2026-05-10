@@ -33,17 +33,33 @@
     .balance-label{font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#555;margin-bottom:12px;}
     .balance-amount{font-family:var(--font-display);font-size:56px;font-weight:800;color:var(--accent);letter-spacing:-0.03em;line-height:1;}
     .balance-sub{font-size:13px;color:#555;margin-top:8px;}
-    .instant-badge{display:inline-flex;align-items:center;gap:6px;background:#0f1f07;border:1px solid #3a6010;color:#6aaa2a;font-size:11px;font-weight:600;letter-spacing:0.05em;padding:5px 12px;border-radius:20px;margin-bottom:20px;}
     .card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:16px;}
     .card-title{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:6px;}
     .card-sub{font-size:14px;color:var(--mid);margin-bottom:20px;line-height:1.6;}
+
+    /* METHOD TOGGLE */
+    .method-toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+    .method-btn{padding:14px 12px;border:1.5px solid var(--border);border-radius:12px;background:var(--cream);cursor:pointer;text-align:center;transition:all 0.2s;font-family:var(--font-body);}
+    .method-btn:hover{border-color:#aaa;}
+    .method-btn.active{border-color:var(--black);background:var(--white);}
+    .method-btn-icon{font-size:20px;margin-bottom:6px;}
+    .method-btn-label{font-size:13px;font-weight:600;color:var(--black);display:block;}
+    .method-btn-sub{font-size:11px;color:var(--mid);display:block;margin-top:2px;}
+    .method-btn.active .method-btn-label{color:var(--accent);}
+
+    /* BADGES */
+    .instant-badge{display:inline-flex;align-items:center;gap:6px;background:#0f1f07;border:1px solid #3a6010;color:#6aaa2a;font-size:11px;font-weight:600;letter-spacing:0.05em;padding:5px 12px;border-radius:20px;margin-bottom:20px;}
+    .standard-badge{display:inline-flex;align-items:center;gap:6px;background:#0f1a2e;border:1px solid #1a4a8a;color:#5a9af0;font-size:11px;font-weight:600;letter-spacing:0.05em;padding:5px 12px;border-radius:20px;margin-bottom:20px;}
+
     .field-group{margin-bottom:20px;}
     .field-label{display:block;font-size:11px;font-weight:600;letter-spacing:0.1em;color:var(--mid);text-transform:uppercase;margin-bottom:8px;}
     .amount-wrap{position:relative;}
     .amount-prefix{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:18px;font-weight:500;color:var(--mid);pointer-events:none;}
-    input[type="number"]{width:100%;padding:14px 16px 14px 30px;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;color:var(--black);font-family:var(--font-body);font-size:18px;font-weight:500;outline:none;transition:border 0.2s;-moz-appearance:textfield;}
+    input[type="number"],input[type="text"]{width:100%;padding:14px 16px;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;color:var(--black);font-family:var(--font-body);font-size:16px;font-weight:500;outline:none;transition:border 0.2s;}
+    input[type="number"]{padding-left:30px;font-size:18px;-moz-appearance:textfield;}
     input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;}
-    input[type="number"]:focus{border-color:var(--black);}
+    input[type="number"]:focus,input[type="text"]:focus{border-color:var(--black);}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
     .stripe-wrap{background:var(--cream);border:1.5px solid var(--border);border-radius:12px;padding:15px 16px;transition:border 0.2s;}
     .stripe-wrap.focused{border-color:var(--black);}
     .card-errors{color:#A32D2D;font-size:12px;margin-top:6px;min-height:16px;}
@@ -78,12 +94,13 @@
     .loading{text-align:center;padding:60px;color:var(--mid);}
     .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
     @keyframes spin{to{transform:rotate(360deg);}}
+    .hidden{display:none;}
     footer{background:var(--black);color:var(--white);padding:40px;margin-top:auto;}
     .footer-inner{max-width:900px;margin:0 auto;}
     .footer-logo{font-family:var(--font-display);font-size:22px;font-weight:800;}
     .footer-logo .xe{color:var(--accent);}
     .footer-bottom{font-size:12px;color:#444;border-top:1px solid #1a1a1a;padding-top:20px;margin-top:20px;}
-    @media(max-width:600px){nav{padding:0 20px;}.container{padding:32px 16px;}.balance-amount{font-size:44px;}}
+    @media(max-width:600px){nav{padding:0 20px;}.container{padding:32px 16px;}.balance-amount{font-size:44px;}.two-col{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
@@ -121,6 +138,7 @@
     let currentUser = null;
     let currentBalance = 0;
     let sessionToken = null;
+    let currentMethod = "instant"; // "instant" or "standard"
 
     async function initStripe() {
       const res = await fetch("/.netlify/functions/get-config");
@@ -153,9 +171,28 @@
       });
     }
 
+    function selectMethod(method) {
+      currentMethod = method;
+      // Toggle active state on buttons
+      document.querySelectorAll(".method-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById("btn-method-" + method).classList.add("active");
+      // Show/hide form sections
+      document.getElementById("instant-form").classList.toggle("hidden", method !== "instant");
+      document.getElementById("standard-form").classList.toggle("hidden", method !== "standard");
+      // Update button label
+      const balAmt = (currentBalance / 100).toFixed(2);
+      const btnEl = document.getElementById("btn-cashout");
+      if (btnEl) {
+        btnEl.textContent = method === "instant"
+          ? `Cash out $${balAmt} — instantly`
+          : `Cash out $${balAmt} — 2 business days`;
+      }
+      // Mount card element when instant tab selected
+      if (method === "instant") setTimeout(mountCard, 50);
+    }
+
     async function boot() {
       await initStripe();
-
       const { data: { session } } = await _sb.auth.getSession();
       if (!session) {
         window.location.href = "login.html?redirect=" + encodeURIComponent(window.location.href);
@@ -199,22 +236,30 @@
 
       document.getElementById("content").innerHTML = `
         <h1 class="page-title">Cash Out</h1>
-        <p class="page-sub">Your XEKIE earnings — instant to any debit card.</p>
+        <p class="page-sub">Your XEKIE earnings — your way, your timeline.</p>
 
         <div class="balance-card">
           <div class="balance-label">Available Balance</div>
           <div class="balance-amount" id="live-balance">$${balanceAmt}</div>
-          <div class="balance-sub" id="live-balance-sub">${hasBalance ? "Ready to send to your debit card" : "Complete sales to build your balance"}</div>
+          <div class="balance-sub" id="live-balance-sub">${hasBalance ? "Ready to send" : "Complete sales to build your balance"}</div>
         </div>
 
         ${hasBalance ? `
         <div class="card">
-          <div class="card-title">Instant debit card payout</div>
-          <div class="card-sub">Enter your debit card below — funds arrive within 30 minutes. No account setup required.</div>
+          <div class="card-title">Choose your payout method</div>
+          <div class="card-sub">Instant to your debit card, or standard to your bank account.</div>
 
-          <div class="instant-badge">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5.5 1L2 5.5H5L4.5 9L8 4.5H5L5.5 1Z" fill="#6aaa2a"/></svg>
-            Arrives within 30 minutes
+          <div class="method-toggle">
+            <div class="method-btn active" id="btn-method-instant" onclick="selectMethod('instant')">
+              <div class="method-btn-icon">⚡</div>
+              <span class="method-btn-label">Instant</span>
+              <span class="method-btn-sub">Debit card · 30 min</span>
+            </div>
+            <div class="method-btn" id="btn-method-standard" onclick="selectMethod('standard')">
+              <div class="method-btn-icon">🏦</div>
+              <span class="method-btn-label">Standard</span>
+              <span class="method-btn-sub">Bank account · 2 days</span>
+            </div>
           </div>
 
           <div class="field-group">
@@ -225,36 +270,64 @@
             </div>
           </div>
 
-          <div class="field-group">
-            <label class="field-label">Debit card</label>
-            <div class="stripe-wrap" id="stripe-card-wrap">
-              <div id="stripe-card-element"></div>
+          <!-- INSTANT: Debit card via Stripe.js -->
+          <div id="instant-form">
+            <div class="field-group">
+              <label class="field-label">Debit card</label>
+              <div class="stripe-wrap" id="stripe-card-wrap">
+                <div id="stripe-card-element"></div>
+              </div>
+              <div class="card-errors" id="card-errors"></div>
+              <div class="card-hint">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1a5 5 0 100 10A5 5 0 006 1zm.5 7.5h-1v-3h1v3zm0-4h-1v-1h1v1z" fill="#999"/></svg>
+                <span class="card-hint-text">Visa &amp; Mastercard debit only</span>
+                <div class="card-types"><span class="card-type">VISA</span><span class="card-type">MC</span></div>
+              </div>
             </div>
-            <div class="card-errors" id="card-errors"></div>
-            <div class="card-hint">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1a5 5 0 100 10A5 5 0 006 1zm.5 7.5h-1v-3h1v3zm0-4h-1v-1h1v1z" fill="#999"/></svg>
-              <span class="card-hint-text">Debit cards only — Visa &amp; Mastercard</span>
-              <div class="card-types"><span class="card-type">VISA</span><span class="card-type">MC</span></div>
+            <div class="instant-badge">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5.5 1L2 5.5H5L4.5 9L8 4.5H5L5.5 1Z" fill="#6aaa2a"/></svg>
+              Arrives within 30 minutes
+            </div>
+          </div>
+
+          <!-- STANDARD: Bank account manual entry -->
+          <div id="standard-form" class="hidden">
+            <div class="field-group">
+              <label class="field-label">Account holder name</label>
+              <input type="text" id="bank-name" placeholder="Full name on account" />
+            </div>
+            <div class="two-col">
+              <div class="field-group">
+                <label class="field-label">Routing number</label>
+                <input type="text" id="bank-routing" placeholder="9 digits" maxlength="9" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Account number</label>
+                <input type="text" id="bank-account" placeholder="Account number" />
+              </div>
+            </div>
+            <div class="standard-badge">
+              🏦 Arrives within 2 business days
             </div>
           </div>
 
           <div class="msg" id="cashout-msg"></div>
 
           <button class="btn-primary" id="btn-cashout" onclick="requestPayout()">
-            Cash out $${balanceAmt}
+            Cash out $${balanceAmt} — instantly
           </button>
           <a href="dashboard.html" class="btn-secondary">Back to dashboard</a>
 
           <div class="security-note">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;margin-top:2px"><path d="M7 1L2 3v4c0 2.76 2.12 5.34 5 5.95C9.88 12.34 12 9.76 12 7V3L7 1z" fill="#bbb"/></svg>
-            <p>Your card number is tokenized by Stripe — it never touches XEKIE servers. Your payout is protected by 256-bit TLS encryption.</p>
+            <p>Your payment details are tokenized by Stripe — they never touch XEKIE servers. Protected by 256-bit TLS encryption.</p>
           </div>
         </div>
         ` : `
         <div class="zero-state">
           <div class="zero-icon">💸</div>
           <div class="zero-title">No balance yet</div>
-          <div class="zero-sub">When buyers confirm receipt of your items, your earnings appear here — ready to cash out instantly to any debit card.</div>
+          <div class="zero-sub">When buyers confirm receipt of your items, your earnings appear here — ready to cash out instantly to your debit card or bank account.</div>
           <a href="radar.html" class="btn-primary" style="display:block;text-decoration:none;text-align:center;padding:15px;">Find XEKIEs to respond to →</a>
         </div>
         `}
@@ -265,7 +338,7 @@
           ${history.map(h => `
             <div class="history-item">
               <div>
-                <div class="history-label">Instant payout</div>
+                <div class="history-label">${h.method === "instant_debit" ? "Instant payout" : "Bank transfer"}</div>
                 <div class="history-meta">${new Date(h.created_at).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}${h.card_last4 ? " · ····" + h.card_last4 : ""}</div>
                 <span class="history-badge ${h.status === "paid" ? "badge-delivered" : "badge-processing"}">${h.status === "paid" ? "Delivered" : "Processing"}</span>
               </div>
@@ -289,7 +362,8 @@
         ` : ""}
       `;
 
-      if (hasBalance) setTimeout(mountCard, 50);
+      // Mount card for instant method by default
+      setTimeout(mountCard, 50);
     }
 
     function showMsg(text, type) {
@@ -310,21 +384,55 @@
       if (amountCents > currentBalance) {
         showMsg("Amount exceeds your available balance of $" + (currentBalance / 100).toFixed(2) + ".", "error"); return;
       }
-      if (!cardElement) {
-        showMsg("Card input not ready. Please refresh the page.", "error"); return;
-      }
 
       btn.disabled = true;
       btn.innerHTML = '<div class="spinner"></div> Processing…';
-      showMsg("Securing your card with Stripe…", "info");
 
-      const { token, error } = await stripe.createToken(cardElement, { currency: "usd" });
+      let bankToken = null;
 
-      if (error) {
-        showMsg(error.message, "error");
-        btn.disabled = false;
-        btn.textContent = "Try again";
-        return;
+      if (currentMethod === "instant") {
+        // Tokenize debit card
+        if (!cardElement) {
+          showMsg("Card input not ready. Please refresh.", "error");
+          btn.disabled = false; btn.textContent = "Try again"; return;
+        }
+        showMsg("Securing your card with Stripe…", "info");
+        const { token, error } = await stripe.createToken(cardElement, { currency: "usd" });
+        if (error) {
+          showMsg(error.message, "error");
+          btn.disabled = false; btn.textContent = "Try again"; return;
+        }
+        bankToken = token.id;
+
+      } else {
+        // Tokenize bank account
+        const name = document.getElementById("bank-name").value.trim();
+        const routing = document.getElementById("bank-routing").value.trim();
+        const account = document.getElementById("bank-account").value.trim();
+
+        if (!name || !routing || !account) {
+          showMsg("Please fill in all bank account fields.", "error");
+          btn.disabled = false; btn.textContent = "Try again"; return;
+        }
+        if (routing.length !== 9 || !/^\d+$/.test(routing)) {
+          showMsg("Routing number must be 9 digits.", "error");
+          btn.disabled = false; btn.textContent = "Try again"; return;
+        }
+
+        showMsg("Securing your bank details with Stripe…", "info");
+        const { token, error } = await stripe.createToken("bank_account", {
+          country: "US",
+          currency: "usd",
+          routing_number: routing,
+          account_number: account,
+          account_holder_name: name,
+          account_holder_type: "individual",
+        });
+        if (error) {
+          showMsg(error.message, "error");
+          btn.disabled = false; btn.textContent = "Try again"; return;
+        }
+        bankToken = token.id;
       }
 
       showMsg("Sending payout…", "info");
@@ -336,7 +444,7 @@
             "Content-Type": "application/json",
             "Authorization": "Bearer " + sessionToken,
           },
-          body: JSON.stringify({ cardToken: token.id, amountCents }),
+          body: JSON.stringify({ bankToken, amountCents, method: currentMethod }),
         });
 
         const data = await res.json();
@@ -352,11 +460,15 @@
         const balEl = document.getElementById("live-balance");
         const subEl = document.getElementById("live-balance-sub");
         if (balEl) balEl.textContent = "$" + (currentBalance / 100).toFixed(2);
-        if (subEl) subEl.textContent = currentBalance >= 100 ? "Ready to send to your debit card" : "Balance cleared";
+        if (subEl) subEl.textContent = currentBalance >= 100 ? "Ready to send" : "Balance cleared";
 
-        showMsg("✓ $" + (amountCents / 100).toFixed(2) + " sent — arrives within 30 minutes.", "success");
+        const successMsg = currentMethod === "instant"
+          ? "✓ $" + (amountCents / 100).toFixed(2) + " sent — arrives within 30 minutes."
+          : "✓ $" + (amountCents / 100).toFixed(2) + " on its way — arrives within 2 business days.";
+
+        showMsg(successMsg, "success");
         btn.textContent = "Cashed out ✓";
-        cardElement.clear();
+        if (cardElement) cardElement.clear();
 
         setTimeout(() => loadBalance(), 3500);
 
