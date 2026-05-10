@@ -1,7 +1,6 @@
 // request-payout.js — XEKIE Instant Payout
-// Architecture: Direct platform payout via Stripe Instant Payouts
+// Supports: debit card (instant, 30 min) + bank account (standard, 2 business days)
 // No Stripe Connect, no onboarding, no capability errors.
-// Seller provides debit card → Stripe tokenizes client-side → platform fires payout directly.
 
 const { createClient } = require("@supabase/supabase-js");
 
@@ -34,11 +33,12 @@ exports.handler = async (event) => {
     try { body = JSON.parse(event.body || "{}"); }
     catch { return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid request" }) }; }
 
-    const { cardToken, amountCents } = body;
+    const { bankToken, amountCents, method } = body;
 
-    if (!cardToken) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Card token missing." }) };
+    if (!bankToken) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Payment token missing." }) };
     if (!amountCents || typeof amountCents !== "number") return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Amount missing." }) };
     if (amountCents < 100) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Minimum payout is $1.00." }) };
+    if (!["instant", "standard"].includes(method)) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid payout method." }) };
 
     const { data: profile, error: profileErr } = await _sb
       .from("user_profiles")
@@ -53,56 +53,63 @@ exports.handler = async (event) => {
       return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: `Insufficient balance. Available: $${(balance / 100).toFixed(2)}` }) };
     }
 
+    // Attach external account (debit card or bank account)
     const extAcctRes = await stripePost("accounts/acct_1TABmhI1ESy65Bqb/external_accounts", {
-      "external_account": cardToken,
+      "external_account": bankToken,
       "metadata[user_id]": user.id,
-      "metadata[payout_type]": "instant_debit",
+      "metadata[payout_type]": method,
     });
 
     if (extAcctRes.error) {
-      const msg = extAcctRes.error.message || "Could not attach card.";
+      const msg = extAcctRes.error.message || "Could not attach payment method.";
       console.error("External account error:", msg);
       if (msg.includes("debit")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "This card does not support instant payouts. Please use a Visa or Mastercard debit card." }) };
-      if (msg.includes("invalid")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid card. Please check your card details and try again." }) };
+      if (msg.includes("invalid")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid details. Please check and try again." }) };
       return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: msg }) };
     }
 
     const externalAccountId = extAcctRes.id;
 
-    const payoutRes = await stripePost("payouts", {
+    // Fire payout — instant for debit, standard for bank
+    const payoutParams = {
       "amount": String(amountCents),
       "currency": "usd",
-      "method": "instant",
+      "method": method,
       "destination": externalAccountId,
       "description": `XEKIE seller payout — ${user.email}`,
       "metadata[user_id]": user.id,
       "metadata[user_email]": user.email,
-    });
+    };
+
+    const payoutRes = await stripePost("payouts", payoutParams);
 
     if (payoutRes.error) {
       const msg = payoutRes.error.message || "Payout failed.";
       console.error("Payout error:", msg);
-      if (msg.includes("instant")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "This card is not eligible for instant payouts. Please try a different debit card." }) };
+      if (msg.includes("instant")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "This card is not eligible for instant payouts. Please try a different debit card or use bank account instead." }) };
       if (msg.includes("balance")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Platform balance insufficient. Please contact support." }) };
       return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: msg }) };
     }
 
+    // Deduct seller balance
     const newBalance = balance - amountCents;
     await _sb
       .from("user_profiles")
       .update({ balance_cents: newBalance })
       .eq("user_id", user.id);
 
+    // Log payout
     await _sb.from("cashout_history").insert({
       user_id: user.id,
       amount_cents: amountCents,
-      method: "instant_debit",
+      method: method === "instant" ? "instant_debit" : "standard_bank",
       stripe_payout_id: payoutRes.id,
       status: payoutRes.status,
       card_last4: extAcctRes.last4 || null,
       created_at: new Date().toISOString(),
     });
 
+    // Email notification (non-blocking)
     try {
       await fetch("https://xekie.com/.netlify/functions/send-email", {
         method: "POST",
@@ -123,6 +130,7 @@ exports.handler = async (event) => {
         success: true,
         payoutId: payoutRes.id,
         status: payoutRes.status,
+        method,
         amountCents,
         newBalanceCents: newBalance,
       }),
