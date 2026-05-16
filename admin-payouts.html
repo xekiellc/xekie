@@ -20,28 +20,27 @@
     .nav-logo .xe{color:var(--accent);}
     .nav-badge{background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:0.05em;}
     .container{max-width:900px;margin:0 auto;padding:48px 20px;}
-    .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
-    .page-title{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-0.03em;}
+    .page-title{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-0.03em;margin-bottom:32px;}
     .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
     .stat-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 24px;}
     .stat-label{font-size:11px;font-weight:600;letter-spacing:0.1em;color:var(--mid);text-transform:uppercase;margin-bottom:6px;}
-    .stat-value{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--black);}
+    .stat-value{font-family:var(--font-display);font-size:28px;font-weight:800;}
     .stat-value.accent{color:var(--accent);}
     .stat-value.green{color:var(--green);}
-    .section-title{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
-    .count-badge{background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;}
+    .tab-row{display:flex;gap:8px;margin-bottom:24px;}
+    .tab{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--mid);transition:all 0.2s;}
+    .tab.active{background:var(--black);color:var(--white);border-color:var(--black);}
     .payout-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
-    .payout-card.paid{opacity:0.6;}
+    .payout-card.paid{opacity:0.55;}
     .payout-info{flex:1;}
-    .payout-name{font-size:15px;font-weight:600;color:var(--black);margin-bottom:2px;}
-    .payout-email{font-size:13px;color:var(--mid);margin-bottom:4px;}
-    .payout-paypal{font-size:13px;color:#003087;font-weight:500;}
-    .payout-meta{font-size:11px;color:#aaa;margin-top:4px;}
-    .payout-amount{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--accent);white-space:nowrap;}
+    .payout-paypal{font-size:14px;font-weight:600;color:#003087;margin-bottom:4px;}
+    .payout-uid{font-size:12px;color:var(--mid);margin-bottom:4px;}
+    .payout-meta{font-size:11px;color:#aaa;}
+    .payout-amount{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--accent);white-space:nowrap;margin-right:16px;}
     .payout-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
-    .btn-send{background:#003087;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;white-space:nowrap;transition:background 0.2s;}
+    .btn-send{background:#003087;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;white-space:nowrap;}
     .btn-send:hover{background:#001f5e;}
-    .btn-paid{background:var(--green);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;}
+    .btn-paid{background:var(--green);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
     .btn-paid:hover{background:#2a5009;}
     .btn-paid:disabled{background:#ccc;cursor:not-allowed;}
     .status-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:0.05em;}
@@ -50,16 +49,12 @@
     .empty-state{text-align:center;padding:48px;color:var(--mid);}
     .empty-icon{font-size:40px;margin-bottom:12px;}
     .loading{text-align:center;padding:60px;color:var(--mid);}
-    .tab-row{display:flex;gap:8px;margin-bottom:24px;}
-    .tab{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--mid);transition:all 0.2s;}
-    .tab.active{background:var(--black);color:var(--white);border-color:var(--black);}
-    .divider{border:none;border-top:1px solid var(--border);margin:24px 0;}
     @media(max-width:600px){
       nav{padding:0 20px;}
       .container{padding:32px 16px;}
       .stats-row{grid-template-columns:1fr;}
       .payout-card{flex-direction:column;align-items:flex-start;}
-      .payout-actions{flex-direction:row;width:100%;}
+      .payout-actions{flex-direction:row;}
     }
   </style>
 </head>
@@ -70,20 +65,18 @@
   </nav>
 
   <div class="container">
-    <div class="page-header">
-      <div class="page-title">Payout Dashboard</div>
-    </div>
+    <div class="page-title">Payout Dashboard</div>
 
-    <div class="stats-row" id="stats-row">
+    <div class="stats-row">
       <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value accent" id="stat-pending">—</div></div>
       <div class="stat-card"><div class="stat-label">Pending Amount</div><div class="stat-value accent" id="stat-pending-amt">—</div></div>
       <div class="stat-card"><div class="stat-label">Total Paid Out</div><div class="stat-value green" id="stat-total">—</div></div>
     </div>
 
     <div class="tab-row">
-      <button class="tab active" onclick="showTab('pending')">Pending</button>
-      <button class="tab" onclick="showTab('paid')">Paid</button>
-      <button class="tab" onclick="showTab('all')">All</button>
+      <button class="tab active" id="tab-pending" onclick="showTab('pending', this)">Pending</button>
+      <button class="tab" id="tab-paid" onclick="showTab('paid', this)">Paid</button>
+      <button class="tab" id="tab-all" onclick="showTab('all', this)">All</button>
     </div>
 
     <div id="payout-list"><div class="loading">Loading payouts…</div></div>
@@ -92,10 +85,8 @@
   <script>
     const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA";
-    const RESEND_API_KEY = ""; // handled server-side
     const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const ADMIN_USER_ID = ""; // set to your Supabase user ID
     let allPayouts = [];
     let currentTab = "pending";
 
@@ -108,15 +99,15 @@
     async function loadPayouts() {
       const { data, error } = await _sb
         .from("cashout_history")
-        .select("*, user_profiles(display_name, email:user_id)")
+        .select("*")
         .order("created_at", { ascending: false });
 
       if (error) {
-        document.getElementById("payout-list").innerHTML = '<div class="empty-state">Error loading payouts.</div>';
+        console.error("Supabase error:", error);
+        document.getElementById("payout-list").innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
         return;
       }
 
-      // Also get user emails from auth
       allPayouts = data || [];
       updateStats();
       renderList();
@@ -130,10 +121,10 @@
       document.getElementById("stat-total").textContent = "$" + (paid.reduce((s, p) => s + p.amount_cents, 0) / 100).toFixed(2);
     }
 
-    function showTab(tab) {
+    function showTab(tab, el) {
       currentTab = tab;
       document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-      event.target.classList.add("active");
+      el.classList.add("active");
       renderList();
     }
 
@@ -147,38 +138,36 @@
       const list = document.getElementById("payout-list");
 
       if (filtered.length === 0) {
-        list.innerHTML = `<div class="empty-state"><div class="empty-icon">${currentTab === "pending" ? "✅" : "💸"}</div><div>${currentTab === "pending" ? "No pending payouts" : "No paid payouts yet"}</div></div>`;
+        list.innerHTML = `<div class="empty-state"><div class="empty-icon">${currentTab === "pending" ? "✅" : "💸"}</div><p>${currentTab === "pending" ? "No pending payouts — all clear!" : "No paid payouts yet."}</p></div>`;
         return;
       }
 
       list.innerHTML = filtered.map(p => {
-        const date = new Date(p.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+        const date = new Date(p.created_at).toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit" });
         const paypalLink = `https://www.paypal.com/myaccount/transfer/homepage/send?amount=${(p.amount_cents/100).toFixed(2)}&recipient=${encodeURIComponent(p.paypal_email || "")}&currencyCode=USD`;
         const isPending = p.status === "pending";
 
         return `
           <div class="payout-card ${isPending ? "" : "paid"}" id="card-${p.id}">
             <div class="payout-info">
-              <div class="payout-name">${p.user_profiles?.display_name || "Seller"}</div>
-              <div class="payout-paypal">PayPal: ${p.paypal_email || "—"}</div>
-              <div class="payout-meta">${date} · ID: ${p.id?.slice(0, 8)}…</div>
+              <div class="payout-paypal">📧 ${p.paypal_email || "—"}</div>
+              <div class="payout-uid">User: ${p.user_id?.slice(0,12)}…</div>
+              <div class="payout-meta">${date} · ${p.id?.slice(0,8)}…</div>
               <span class="status-badge ${isPending ? "status-pending" : "status-paid"}">${isPending ? "PENDING" : "PAID"}</span>
             </div>
             <div class="payout-amount">$${(p.amount_cents / 100).toFixed(2)}</div>
             <div class="payout-actions">
               ${isPending ? `
                 <a href="${paypalLink}" target="_blank" class="btn-send">Send via PayPal →</a>
-                <button class="btn-paid" onclick="markPaid('${p.id}', '${p.paypal_email}', ${p.amount_cents})" id="btn-${p.id}">Mark as Paid ✓</button>
-              ` : `
-                <span class="status-badge status-paid">PAID ✓</span>
-              `}
+                <button class="btn-paid" id="btn-${p.id}" onclick="markPaid('${p.id}', '${p.paypal_email}', ${p.amount_cents}, '${p.user_id}')">Mark Paid ✓</button>
+              ` : `<span class="status-badge status-paid">PAID ✓</span>`}
             </div>
           </div>
         `;
       }).join("");
     }
 
-    async function markPaid(payoutId, paypalEmail, amountCents) {
+    async function markPaid(payoutId, paypalEmail, amountCents, userId) {
       const btn = document.getElementById(`btn-${payoutId}`);
       btn.disabled = true;
       btn.textContent = "Updating…";
@@ -189,22 +178,21 @@
         .eq("id", payoutId);
 
       if (error) {
+        alert("Error: " + error.message);
         btn.disabled = false;
-        btn.textContent = "Mark as Paid ✓";
-        alert("Error updating status. Please try again.");
+        btn.textContent = "Mark Paid ✓";
         return;
       }
 
-      // Send confirmation email to seller via function
+      // Send confirmation to seller
       try {
         await fetch("/.netlify/functions/confirm-payout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ payoutId, paypalEmail, amountCents }),
+          body: JSON.stringify({ payoutId, paypalEmail, amountCents, userId }),
         });
       } catch (_) {}
 
-      // Update local state
       const idx = allPayouts.findIndex(p => p.id === payoutId);
       if (idx > -1) allPayouts[idx].status = "paid";
       updateStats();
