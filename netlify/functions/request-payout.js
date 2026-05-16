@@ -1,12 +1,14 @@
-// request-payout.js — XEKIE Instant Payout
-// Supports: debit card (instant, 30 min) + bank account (standard, 2 business days)
-// No Stripe Connect, no onboarding, no capability errors.
+// request-payout.js — XEKIE PayPal Payouts
+// Seller enters PayPal or Venmo email → funds arrive in minutes
+// No KYC, no onboarding, no eligibility requirements
 
 const { createClient } = require("@supabase/supabase-js");
 
 const SUPABASE_URL = "https://jlcrarqiyejgjbdesxik.supabase.co";
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const PAYPAL_SECRET = process.env.PAYPAL_SECRET;
+const PAYPAL_BASE = "https://api-m.paypal.com";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -22,6 +24,7 @@ exports.handler = async (event) => {
   const _sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
   try {
+    // Verify user session
     const authHeader = event.headers.authorization || event.headers.Authorization || "";
     const token = authHeader.replace("Bearer ", "").trim();
     if (!token) return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: "Unauthorized" }) };
@@ -29,17 +32,21 @@ exports.handler = async (event) => {
     const { data: { user }, error: authErr } = await _sb.auth.getUser(token);
     if (authErr || !user) return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: "Invalid session. Please log in again." }) };
 
+    // Parse body
     let body;
     try { body = JSON.parse(event.body || "{}"); }
     catch { return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid request" }) }; }
 
-    const { bankToken, amountCents, method } = body;
+    const { paypalEmail, amountCents } = body;
 
-    if (!bankToken) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Payment token missing." }) };
-    if (!amountCents || typeof amountCents !== "number") return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Amount missing." }) };
-    if (amountCents < 100) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Minimum payout is $1.00." }) };
-    if (!["instant", "standard"].includes(method)) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid payout method." }) };
+    if (!paypalEmail || !paypalEmail.includes("@")) {
+      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Valid PayPal email required." }) };
+    }
+    if (!amountCents || typeof amountCents !== "number" || amountCents < 100) {
+      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Minimum payout is $1.00." }) };
+    }
 
+    // Verify seller balance
     const { data: profile, error: profileErr } = await _sb
       .from("user_profiles")
       .select("balance_cents")
@@ -53,43 +60,62 @@ exports.handler = async (event) => {
       return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: `Insufficient balance. Available: $${(balance / 100).toFixed(2)}` }) };
     }
 
-    // Attach external account (debit card or bank account)
-    const extAcctRes = await stripePost("accounts/acct_1TABmhI1ESy65Bqb/external_accounts", {
-      "external_account": bankToken,
-      "metadata[user_id]": user.id,
-      "metadata[payout_type]": method,
+    // Get PayPal access token
+    const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, {
+      method: "POST",
+      headers: {
+        "Authorization": "Basic " + Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_SECRET}`).toString("base64"),
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: "grant_type=client_credentials",
+    });
+    const tokenData = await tokenRes.json();
+    if (!tokenData.access_token) {
+      console.error("PayPal token error:", tokenData);
+      return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: "Payment service unavailable. Please try again." }) };
+    }
+
+    const accessToken = tokenData.access_token;
+    const amountDollars = (amountCents / 100).toFixed(2);
+    const payoutId = `XEKIE-${user.id.slice(0, 8)}-${Date.now()}`;
+
+    // Fire PayPal payout
+    const payoutRes = await fetch(`${PAYPAL_BASE}/v1/payments/payouts`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        sender_batch_header: {
+          sender_batch_id: payoutId,
+          email_subject: "Your XEKIE earnings have arrived!",
+          email_message: `You've received $${amountDollars} from your XEKIE sales. Trade Different.`,
+        },
+        items: [{
+          recipient_type: "EMAIL",
+          amount: {
+            value: amountDollars,
+            currency: "USD",
+          },
+          receiver: paypalEmail,
+          note: "XEKIE seller payout",
+          sender_item_id: payoutId,
+        }],
+      }),
     });
 
-    if (extAcctRes.error) {
-      const msg = extAcctRes.error.message || "Could not attach payment method.";
-      console.error("External account error:", msg);
-      if (msg.includes("debit")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "This card does not support instant payouts. Please use a Visa or Mastercard debit card." }) };
-      if (msg.includes("invalid")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid details. Please check and try again." }) };
+    const payoutData = await payoutRes.json();
+    console.log("PayPal payout response:", JSON.stringify(payoutData));
+
+    if (!payoutRes.ok || payoutData.error) {
+      const msg = payoutData.message || payoutData.error || "Payout failed.";
+      console.error("PayPal payout error:", msg);
       return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: msg }) };
     }
 
-    const externalAccountId = extAcctRes.id;
-
-    // Fire payout — instant for debit, standard for bank
-    const payoutParams = {
-      "amount": String(amountCents),
-      "currency": "usd",
-      "method": method,
-      "destination": externalAccountId,
-      "description": `XEKIE seller payout — ${user.email}`,
-      "metadata[user_id]": user.id,
-      "metadata[user_email]": user.email,
-    };
-
-    const payoutRes = await stripePost("payouts", payoutParams);
-
-    if (payoutRes.error) {
-      const msg = payoutRes.error.message || "Payout failed.";
-      console.error("Payout error:", msg);
-      if (msg.includes("instant")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "This card is not eligible for instant payouts. Please try a different debit card or use bank account instead." }) };
-      if (msg.includes("balance")) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Platform balance insufficient. Please contact support." }) };
-      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: msg }) };
-    }
+    const batchId = payoutData.batch_header?.payout_batch_id;
+    const status = payoutData.batch_header?.batch_status;
 
     // Deduct seller balance
     const newBalance = balance - amountCents;
@@ -98,14 +124,14 @@ exports.handler = async (event) => {
       .update({ balance_cents: newBalance })
       .eq("user_id", user.id);
 
-    // Log payout
+    // Log payout history
     await _sb.from("cashout_history").insert({
       user_id: user.id,
       amount_cents: amountCents,
-      method: method === "instant" ? "instant_debit" : "standard_bank",
-      stripe_payout_id: payoutRes.id,
-      status: payoutRes.status,
-      card_last4: extAcctRes.last4 || null,
+      method: "paypal",
+      stripe_payout_id: batchId || payoutId,
+      status: status || "pending",
+      card_last4: null,
       created_at: new Date().toISOString(),
     });
 
@@ -117,7 +143,7 @@ exports.handler = async (event) => {
         body: JSON.stringify({
           type: "payout_released",
           sellerId: user.id,
-          payoutAmount: (amountCents / 100).toFixed(2),
+          payoutAmount: amountDollars,
           newBalance: (newBalance / 100).toFixed(2),
         }),
       });
@@ -128,9 +154,8 @@ exports.handler = async (event) => {
       headers: CORS,
       body: JSON.stringify({
         success: true,
-        payoutId: payoutRes.id,
-        status: payoutRes.status,
-        method,
+        batchId,
+        status,
         amountCents,
         newBalanceCents: newBalance,
       }),
@@ -145,16 +170,3 @@ exports.handler = async (event) => {
     };
   }
 };
-
-async function stripePost(endpoint, params) {
-  const res = await fetch(`https://api.stripe.com/v1/${endpoint}`, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${STRIPE_SECRET_KEY}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Stripe-Version": "2023-10-16",
-    },
-    body: new URLSearchParams(params).toString(),
-  });
-  return res.json();
-}
