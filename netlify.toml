@@ -4,6 +4,12 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+  edge_functions = "netlify/edge-functions"
+
+# ─── Edge Function: dynamic OG tags for social sharing ──────────────────────
+[[edge_functions]]
+  path = "/x/*"
+  function = "xekie-og"
 
 # ─── Clean URL: /x/:slug → xekie.html?slug=:slug ───────────────────────────
 [[redirects]]
