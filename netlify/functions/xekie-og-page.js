@@ -14,15 +14,16 @@ exports.handler = async function(event) {
   const userAgent = event.headers['user-agent'] || '';
   const isBot = BOT_AGENTS.some(bot => userAgent.toLowerCase().includes(bot.toLowerCase()));
 
-  // Real users — just redirect straight to the listing page
   if (!isBot) {
     return {
       statusCode: 302,
-      headers: { Location: `/xekie.html?slug=${encodeURIComponent(slug)}` }
+      headers: { 
+        'Location': `/xekie.html?slug=${encodeURIComponent(slug)}`,
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+      }
     };
   }
 
-  // Bots — fetch listing data and return OG tags
   let title = 'XEKIE — Trade Different';
   let description = 'Someone is looking to buy this on XEKIE. Respond with your best offer.';
   let ogImage = 'https://xekie.com/icon-512x512.png';
@@ -104,7 +105,7 @@ exports.handler = async function(event) {
     statusCode: 200,
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'public, max-age=60',
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
     },
     body: html,
   };
