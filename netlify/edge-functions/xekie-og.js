@@ -5,19 +5,28 @@ export default async function handler(request, context) {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
-  // Determine lookup method — slug path or id param
   let supaQuery = null;
   let canonicalUrl = null;
 
   if (pathname.startsWith('/x/')) {
+    // Direct /x/slug URL (edge function fires before redirect)
     const slug = pathname.replace('/x/', '').replace(/^\/|\/$/g, '');
     if (!slug) return context.next();
     supaQuery = `${SUPABASE_URL}/rest/v1/xekies?slug=eq.${encodeURIComponent(slug)}&select=id,title,description,budget,budget_min,budget_max,is_flexible,location,category,slug&limit=1`;
     canonicalUrl = `https://xekie.com/x/${slug}`;
+
+  } else if (url.searchParams.get('slug')) {
+    // /xekie.html?slug=... — rewritten by Netlify redirect
+    const slug = url.searchParams.get('slug');
+    supaQuery = `${SUPABASE_URL}/rest/v1/xekies?slug=eq.${encodeURIComponent(slug)}&select=id,title,description,budget,budget_min,budget_max,is_flexible,location,category,slug&limit=1`;
+    canonicalUrl = `https://xekie.com/x/${slug}`;
+
   } else if (url.searchParams.get('id')) {
+    // Legacy ?id= URL
     const xekieId = url.searchParams.get('id');
     supaQuery = `${SUPABASE_URL}/rest/v1/xekies?id=eq.${encodeURIComponent(xekieId)}&select=id,title,description,budget,budget_min,budget_max,is_flexible,location,category,slug&limit=1`;
     canonicalUrl = `https://xekie.com${pathname}?id=${xekieId}`;
+
   } else {
     return context.next();
   }
@@ -41,7 +50,6 @@ export default async function handler(request, context) {
       const x = Array.isArray(data) ? data[0] : null;
 
       if (x && x.title) {
-        // Build budget string
         let budget = '';
         if (x.budget_min && x.budget_max) budget = `$${Number(x.budget_min).toLocaleString()} – $${Number(x.budget_max).toLocaleString()}`;
         else if (x.budget_min) budget = `$${Number(x.budget_min).toLocaleString()}+`;
@@ -49,7 +57,6 @@ export default async function handler(request, context) {
         else if (x.budget) budget = `$${Number(x.budget).toLocaleString()}`;
         if (x.is_flexible) budget += ' (flexible)';
 
-        // Use slug canonical if available
         if (x.slug) canonicalUrl = `https://xekie.com/x/${x.slug}`;
 
         title = `${x.title} — XEKIE`;
@@ -88,12 +95,9 @@ export default async function handler(request, context) {
     const originalResponse = await context.next();
     let html = await originalResponse.text();
 
-    // Remove existing og/twitter meta tags to avoid duplicates
     html = html.replace(/<meta property="og:[^"]*"[^>]*>/g, '');
     html = html.replace(/<meta name="twitter:[^"]*"[^>]*>/g, '');
     html = html.replace(/<title>.*?<\/title>/s, `<title>${escHtml(title)}</title>`);
-
-    // Inject dynamic tags right after <head>
     html = html.replace('<head>', `<head>${injection}`);
 
     return new Response(html, {
