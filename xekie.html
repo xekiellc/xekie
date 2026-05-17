@@ -494,6 +494,9 @@
       checkSaved();
     }
 
+    function getShareUrl() { return currentXekie?.slug ? `https://xekie.com/x/${currentXekie.slug}` : window.location.href; }
+    function getFacebookShareUrl() { return currentXekie?.slug ? `https://xekie.com/.netlify/functions/xekie-og-page?slug=${encodeURIComponent(currentXekie.slug)}` : getShareUrl(); }
+
     function openPayment(offerId, offerPrice, sellerId) {
       activeOffer = { id: offerId, price: parseFloat(offerPrice) || 0, sellerId };
       selectedPaymentMethod = 'card';
@@ -616,7 +619,6 @@
       if (buyerId) setTimeout(() => { window.location.href = `messages.html?xekie=${currentXekie.id}&other=${buyerId}`; }, 1200);
       else setTimeout(closeModal, 2000);
     }
-    function getShareUrl() { return currentXekie?.slug ? `https://xekie.com/x/${currentXekie.slug}` : window.location.href; }
     function shareThis() {
       const url = getShareUrl();
       trackEvent('xekie_shared', { method: 'link', xekie_id: currentXekie?.id });
@@ -624,7 +626,7 @@
       else { navigator.clipboard.writeText(url).then(() => { const t = document.getElementById('share-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }); }
     }
     function shareToSMS() { trackEvent('xekie_shared', { method: 'sms', xekie_id: currentXekie?.id }); window.open(`sms:&body=${encodeURIComponent((currentXekie?.title || 'Check this XEKIE') + ' — ' + getShareUrl())}`); }
-    function shareToFacebook() { trackEvent('xekie_shared', { method: 'facebook', xekie_id: currentXekie?.id }); window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(getShareUrl()), '_blank'); }
+    function shareToFacebook() { trackEvent('xekie_shared', { method: 'facebook', xekie_id: currentXekie?.id }); window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(getFacebookShareUrl()), '_blank'); }
     function shareToX() { trackEvent('xekie_shared', { method: 'x', xekie_id: currentXekie?.id }); window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent((currentXekie?.title || 'Check this XEKIE') + ' — respond with your best offer on XEKIE') + '&url=' + encodeURIComponent(getShareUrl()), '_blank'); }
     function checkSaved() {
       const saved = JSON.parse(localStorage.getItem('savedXekies') || '[]');
