@@ -1,14 +1,28 @@
 const SUPABASE_URL = 'https://jlcrarqiyejgjbdesxik.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsY3JhcnFpeWVqZ2piZGVzeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU1NTQsImV4cCI6MjA4ODU4MTU1NH0.c4wUvoU_j8CXtLN7Lm-iCzPD-4aQRL2r1-FhfUCK2wA';
 
+const BOT_AGENTS = ['facebookexternalhit', 'Facebot', 'Twitterbot', 'LinkedInBot', 'WhatsApp', 'TelegramBot', 'Slackbot', 'pinterest', 'Instagram'];
+
 exports.handler = async function(event) {
-  const parts = event.path.replace('/.netlify/functions/xekie-og-page', '').replace(/^\//, '');
-  const slug = parts || event.queryStringParameters?.slug;
+  const pathParts = event.path.replace('/.netlify/functions/xekie-og-page', '').replace(/^\//, '');
+  const slug = pathParts || event.queryStringParameters?.slug;
 
   if (!slug) {
     return { statusCode: 302, headers: { Location: '/radar.html' } };
   }
 
+  const userAgent = event.headers['user-agent'] || '';
+  const isBot = BOT_AGENTS.some(bot => userAgent.toLowerCase().includes(bot.toLowerCase()));
+
+  // Real users — just redirect straight to the listing page
+  if (!isBot) {
+    return {
+      statusCode: 302,
+      headers: { Location: `/xekie.html?slug=${encodeURIComponent(slug)}` }
+    };
+  }
+
+  // Bots — fetch listing data and return OG tags
   let title = 'XEKIE — Trade Different';
   let description = 'Someone is looking to buy this on XEKIE. Respond with your best offer.';
   let ogImage = 'https://xekie.com/icon-512x512.png';
@@ -62,8 +76,6 @@ exports.handler = async function(event) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 
-  const redirectTarget = `/xekie.html?slug=${encodeURIComponent(slug)}`;
-
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,10 +93,11 @@ exports.handler = async function(event) {
   <meta name="twitter:title" content="${esc(title)}">
   <meta name="twitter:description" content="${esc(description)}">
   <meta name="twitter:image" content="${ogImage}">
-  <meta http-equiv="refresh" content="0;url=${redirectTarget}">
-  <script>window.location.replace('${redirectTarget}');</script>
 </head>
-<body>Loading...</body>
+<body>
+  <h1>${esc(title)}</h1>
+  <p>${esc(description)}</p>
+</body>
 </html>`;
 
   return {
