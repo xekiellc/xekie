@@ -6,20 +6,12 @@
   functions = "netlify/functions"
   edge_functions = "netlify/edge-functions"
 
-# ─── Edge Function: dynamic OG tags for social sharing ──────────────────────
-[[edge_functions]]
-  path = "/x/*"
-  function = "xekie-og"
-
-[[edge_functions]]
-  path = "/xekie.html"
-  function = "xekie-og"
-
-# ─── Clean URL: /x/:slug → xekie.html?slug=:slug ────────────────────────────
+# ─── /x/:slug → serverless OG function (handles social scrapers) ─────────────
 [[redirects]]
   from = "/x/:slug"
-  to   = "/xekie.html?slug=:slug"
+  to   = "/.netlify/functions/xekie-og-page/:slug"
   status = 200
+  force = true
 
 # ─── Custom 404 ─────────────────────────────────────────────────────────────
 [[redirects]]
