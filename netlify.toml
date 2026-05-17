@@ -11,6 +11,10 @@
   path = "/x/*"
   function = "xekie-og"
 
+[[edge_functions]]
+  path = "/xekie.html"
+  function = "xekie-og"
+
 # ─── Clean URL: /x/:slug → xekie.html?slug=:slug ───────────────────────────
 [[redirects]]
   from = "/x/:slug"
