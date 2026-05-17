@@ -5,29 +5,22 @@ export default async function handler(request, context) {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
-  let supaQuery = null;
+  // Determine slug
+  let slug = null;
   let canonicalUrl = null;
 
   if (pathname.startsWith('/x/')) {
-    // Direct /x/slug URL (edge function fires before redirect)
-    const slug = pathname.replace('/x/', '').replace(/^\/|\/$/g, '');
-    if (!slug) return context.next();
-    supaQuery = `${SUPABASE_URL}/rest/v1/xekies?slug=eq.${encodeURIComponent(slug)}&select=id,title,description,budget,budget_min,budget_max,is_flexible,location,category,slug&limit=1`;
+    slug = pathname.replace('/x/', '').replace(/^\/|\/$/g, '');
     canonicalUrl = `https://xekie.com/x/${slug}`;
-
   } else if (url.searchParams.get('slug')) {
-    // /xekie.html?slug=... — rewritten by Netlify redirect
-    const slug = url.searchParams.get('slug');
-    supaQuery = `${SUPABASE_URL}/rest/v1/xekies?slug=eq.${encodeURIComponent(slug)}&select=id,title,description,budget,budget_min,budget_max,is_flexible,location,category,slug&limit=1`;
+    slug = url.searchParams.get('slug');
     canonicalUrl = `https://xekie.com/x/${slug}`;
-
   } else if (url.searchParams.get('id')) {
-    // Legacy ?id= URL
-    const xekieId = url.searchParams.get('id');
-    supaQuery = `${SUPABASE_URL}/rest/v1/xekies?id=eq.${encodeURIComponent(xekieId)}&select=id,title,description,budget,budget_min,budget_max,is_flexible,location,category,slug&limit=1`;
-    canonicalUrl = `https://xekie.com${pathname}?id=${xekieId}`;
+    // id-based lookup — fall through to context.next(), OG tags injected below
+  }
 
-  } else {
+  // If no slug and no id, just pass through
+  if (!slug && !url.searchParams.get('id')) {
     return context.next();
   }
 
@@ -36,8 +29,16 @@ export default async function handler(request, context) {
   let ogImage = 'https://xekie.com/icon-512x512.png';
 
   try {
+    let supaQuery;
+    if (slug) {
+      supaQuery = `${SUPABASE_URL}/rest/v1/xekies?slug=eq.${encodeURIComponent(slug)}&select=id,title,description,budget,budget_min,budget_max,is_flexible,location,category,slug&limit=1`;
+    } else {
+      const xekieId = url.searchParams.get('id');
+      supaQuery = `${SUPABASE_URL}/rest/v1/xekies?id=eq.${encodeURIComponent(xekieId)}&select=id,title,description,budget,budget_min,budget_max,is_flexible,location,category,slug&limit=1`;
+      canonicalUrl = `https://xekie.com${pathname}?id=${xekieId}`;
+    }
+
     const supaRes = await fetch(supaQuery, {
-      method: 'GET',
       headers: {
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
@@ -92,8 +93,9 @@ export default async function handler(request, context) {
 <meta name="twitter:image" content="${ogImage}">`;
 
   try {
-    const originalResponse = await context.next();
-    let html = await originalResponse.text();
+    // Fetch xekie.html directly — don't rely on context.next() which gets bypassed by redirects
+    const htmlRes = await fetch('https://xekie.com/xekie.html');
+    let html = await htmlRes.text();
 
     html = html.replace(/<meta property="og:[^"]*"[^>]*>/g, '');
     html = html.replace(/<meta name="twitter:[^"]*"[^>]*>/g, '');
@@ -101,15 +103,14 @@ export default async function handler(request, context) {
     html = html.replace('<head>', `<head>${injection}`);
 
     return new Response(html, {
-      status: originalResponse.status,
+      status: 200,
       headers: {
-        ...Object.fromEntries(originalResponse.headers),
         'content-type': 'text/html; charset=utf-8',
         'cache-control': 'public, max-age=300',
       }
     });
   } catch (e) {
-    console.error('OG edge function response error:', e);
+    console.error('OG edge function fetch error:', e);
     return context.next();
   }
 }
