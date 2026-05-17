@@ -17,7 +17,7 @@ exports.handler = async function(event) {
   if (!isBot) {
     return {
       statusCode: 302,
-      headers: { 
+      headers: {
         'Location': `/xekie.html?slug=${encodeURIComponent(slug)}`,
         'Cache-Control': 'no-store, no-cache, must-revalidate',
       }
@@ -28,6 +28,7 @@ exports.handler = async function(event) {
   let description = 'Someone is looking to buy this on XEKIE. Respond with your best offer.';
   let ogImage = 'https://xekie.com/icon-512x512.png';
   const canonicalUrl = `https://xekie.com/x/${slug}`;
+  const functionUrl = `https://xekie.com/.netlify/functions/xekie-og-page?slug=${encodeURIComponent(slug)}`;
 
   try {
     const res = await fetch(
@@ -82,11 +83,12 @@ exports.handler = async function(event) {
 <head>
   <meta charset="UTF-8">
   <title>${esc(title)}</title>
+  <link rel="canonical" href="${esc(canonicalUrl)}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="XEKIE">
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
-  <meta property="og:url" content="${esc(canonicalUrl)}">
+  <meta property="og:url" content="${esc(functionUrl)}">
   <meta property="og:image" content="${ogImage}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
