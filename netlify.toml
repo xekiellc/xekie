@@ -15,6 +15,12 @@
   path = "/xekie.html"
   function = "xekie-og"
 
+# ─── Clean URL: /x/:slug → xekie.html ───────────────────────────────────────
+[[redirects]]
+  from = "/x/:slug"
+  to   = "/xekie.html"
+  status = 200
+
 # ─── Custom 404 ─────────────────────────────────────────────────────────────
 [[redirects]]
   from   = "/*"
