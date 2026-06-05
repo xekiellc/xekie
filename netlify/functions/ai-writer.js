@@ -17,7 +17,6 @@ exports.handler = async (event) => {
   const { title, category } = body;
   if (!title) return { statusCode: 400, body: JSON.stringify({ error: 'Missing title' }) };
 
-  // Build niche-specific context
   const nicheContext = {
     'K-Pop': 'This is for the K-Pop collector market. Use K-Pop terminology: photocards, albums, inclusions, POBs, lightsticks, versions. Buyers are often looking for specific idol members, specific album versions, or rare inclusions.',
     'Sneakers': 'This is for the sneaker resale market. Use sneaker terminology: DS (deadstock), OG all, colorway, retail, size, box condition. Buyers want specific sizes, colorways, and condition details.',
@@ -47,7 +46,7 @@ exports.handler = async (event) => {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-haiku-4-5',
         max_tokens: 500,
         messages: [{
           role: 'user',
