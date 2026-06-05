@@ -5,7 +5,7 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
   const ip = getIP(event);
-  const { limited } = rateLimit(ip, 'ai-writer', 10, 60000);
+  const { limited } = rateLimit(ip, 'ai-writer', 20, 60000);
   if (limited) return limitedResponse();
 
   const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
@@ -67,11 +67,27 @@ Write a XEKIE listing for them. Return ONLY valid JSON with no markdown, no expl
     });
 
     const data = await res.json();
-    const raw = data.content?.[0]?.text || '{}';
+
+    // Surface API errors
+    if (data.error) {
+      return { statusCode: 500, body: JSON.stringify({ error: data.error.message || JSON.stringify(data.error) }) };
+    }
+
+    const raw = data.content?.[0]?.text || '';
+    if (!raw) {
+      return { statusCode: 500, body: JSON.stringify({ error: 'Empty response from API', debug: JSON.stringify(data) }) };
+    }
+
     const clean = raw.replace(/```json|```/g, '').trim();
-    const result = JSON.parse(clean);
+    let result;
+    try {
+      result = JSON.parse(clean);
+    } catch(parseErr) {
+      return { statusCode: 500, body: JSON.stringify({ error: 'JSON parse failed', raw: clean.slice(0, 200) }) };
+    }
 
     return { statusCode: 200, body: JSON.stringify(result) };
+
   } catch(err) {
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
